@@ -12,11 +12,11 @@ function App(): JSX.Element {
         <img src={banner} class={styles.logo} alt="logo" />
         <p>
           <button type="button" onClick={increment}>
-            count is: {count}
+            dada is {count}
           </button>
         </p>
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          sds <code>src/App.tsx</code> and save to reload.
         </p>
         <a
           class={styles.link}

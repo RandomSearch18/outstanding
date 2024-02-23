@@ -1,18 +1,18 @@
 {
   "name": "outstanding",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Yet another markdown-based note-taking app",
   "type": "module",
   "scripts": {
     "start": "vite",
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "serve": "vite preview --port 5000"
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^4.6.4",
-    "vite": "^2.9.7",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
     "voby-vite": "^1.0.0"
   },
   "dependencies": {
