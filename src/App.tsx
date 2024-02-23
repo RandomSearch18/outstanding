@@ -1,32 +1,15 @@
 import { $ } from "voby";
-import banner from "/banner.svg";
-import styles from "./styles/App.module.css";
+import "./styles/App.css";
 
 function App(): JSX.Element {
   const count = $(0);
   const increment = () => count((value) => value + 1);
 
   return (
-    <div class={styles.App}>
-      <header class={styles.header}>
-        <img src={banner} class={styles.logo} alt="logo" />
-        <p>
-          <button type="button" onClick={increment}>
-            dada is {count}
-          </button>
-        </p>
-        <p>
-          sds <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          class={styles.link}
-          href="https://github.com/vobyjs/voby"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn Voby
-        </a>
-      </header>
+    <div class="main-layout">
+      <main>
+        <div class="get-started"><p>Get started by opening a file</p><p>Note: File opening has not been implemented yet</p></div>
+      </main>
     </div>
   );
 }
