@@ -1,5 +1,5 @@
 import { $ } from "voby";
-import "./styles/App.css";
+import "./App.css";
 
 function App(): JSX.Element {
   const count = $(0);
