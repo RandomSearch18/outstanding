@@ -10,7 +10,7 @@
   - And of course, it's open-source, so you can freely inspect the source code and add features that aren't (yet) provided
 - **Lots of formatting options**
   - Bold, italic, strikethrough just isn't flexible enough for everyday note-taking
-  - Outstanding will give you the power to add semantic, flexible formatting with symbols (e.g. `++` for inserted test) and custom tags (e.g. <ans> for your answers to questions on a worksheet)
+  - Outstanding will give you the power to add semantic, flexible formatting with symbols (e.g. `++` for inserted test) and custom tags (e.g. `<ans>` for your answers to questions on a worksheet)
   - Ideally, you shouldn't feel more limited than you would if you were using a full word processor
 - **Cross-platform**
   - Outstanding runs in the browser, making it accessible from practically any computer, even in locked-down environments
