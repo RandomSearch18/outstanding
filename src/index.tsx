@@ -4,19 +4,29 @@ import { render } from "voby"
 import "./global.css"
 import MainLayout from "./components/MainLayout"
 import { App } from "./app"
-import { Registry } from "./registry/registry"
 import {
   LocalStorageSettingsProvider,
   SettingsProvider,
 } from "./registry/settingsProvider"
+import { ProviderRegistry } from "./registry/provider"
 
 const app = new App()
 
-export const settingsProviderRegistry = new Registry<SettingsProvider>()
+export const settingsProviderRegistry = new ProviderRegistry<SettingsProvider>(
+  app
+)
 
 settingsProviderRegistry.register(
   "outstanding:local_storage",
-  new LocalStorageSettingsProvider(app, "settings")
+  new LocalStorageSettingsProvider(app, "settings", 10)
 )
+
+export const settings = await settingsProviderRegistry.selectBestProvider()
+
+if (settings === null) {
+  throw new Error("No settings provider available!")
+}
+
+console.log("Settings storage provider", settings)
 
 render(<MainLayout app={App} />, document.getElementById("app"))

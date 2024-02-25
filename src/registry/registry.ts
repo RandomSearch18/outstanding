@@ -1,12 +1,16 @@
-type Namespace = string
-type NamespacedId = `${Namespace}:${string}`
+export type Namespace = string
+export type NamespacedId = `${Namespace}:${string}`
 
-type postRegisterCallback<T extends unknown> = (
+export interface RegistryItem {
+  id: NamespacedId
+}
+
+type postRegisterCallback<T extends RegistryItem> = (
   registry: Registry<T>,
   items: T
 ) => void
 
-export class Registry<T extends unknown> {
+export class Registry<T extends RegistryItem> {
   private items: Map<NamespacedId, T>
   private postRegister?: (registry: Registry<T>, item: T) => void
 
@@ -17,6 +21,14 @@ export class Registry<T extends unknown> {
 
   getKeys(): NamespacedId[] {
     return Array.from(this.items.keys())
+  }
+
+  entries(): [NamespacedId, T][] {
+    return Array.from(this.items.entries())
+  }
+
+  getItems(): T[] {
+    return Array.from(this.items.values())
   }
 
   constructor(postRegister?: postRegisterCallback<T>) {

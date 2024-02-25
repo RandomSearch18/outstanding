@@ -1,7 +1,7 @@
 import { App } from "../app"
 import { Provider } from "./provider"
-import { Registry } from "./registry"
 import areDeeplyEqual from "are-deeply-equal"
+import { NamespacedId } from "./registry"
 
 export type SettingsKey = string
 
@@ -56,10 +56,13 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   private readonly localStorageKey: string
   private readonly formatVersion = 1
   private data: Map<SettingsKey, SettingsData<unknown>>
+  id: NamespacedId = "outstanding:local_storage"
+  priority: number
 
-  constructor(app: App, localStorageKey: string) {
+  constructor(app: App, localStorageKey: string, priority: number) {
     super(app)
     this.localStorageKey = localStorageKey
+    this.priority = priority
     this.data = new Map()
   }
 

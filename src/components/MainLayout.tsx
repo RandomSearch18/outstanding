@@ -4,10 +4,6 @@ import { App } from "../app"
 import { settingsProviderRegistry } from ".."
 
 function MainLayout({ app }: { app: App }): JSX.Element {
-  const count = $(0)
-  const increment = () => count((value) => value + 1)
-  console.log(settingsProviderRegistry)
-
   return (
     <div class="main-layout">
       <main>
