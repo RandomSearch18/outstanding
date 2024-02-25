@@ -187,6 +187,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
   integrity sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==
 
+are-deeply-equal@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/are-deeply-equal/-/are-deeply-equal-1.1.1.tgz#8367f0fd6c08675a8342cf1d6fc1d5ec6e90be6b"
+  integrity sha512-c3GwQmAtD2Kq+JNYk/iXe8L6fEKizrasStqwhMzIKmi2Ax88pGbhoexQqH6fI1+bGfo5FRIhssCo+I4MTrHq5Q==
+
 esbuild@^0.19.3:
   version "0.19.12"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.19.12.tgz#dc82ee5dc79e82f5a5c3b4323a2a641827db3e04"

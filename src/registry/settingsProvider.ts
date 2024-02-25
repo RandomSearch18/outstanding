@@ -1,6 +1,7 @@
 import { App } from "../app"
 import { Provider } from "./provider"
 import { Registry } from "./registry"
+import areDeeplyEqual from "are-deeply-equal"
 
 export type SettingsKey = string
 
@@ -77,6 +78,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
           `Data from local storage (${this.localStorageKey}) is from an incompatible version`
         )
 
+      // Actually load the settings
       this.data = new Map(Object.entries(parsedData.settings))
       console.log("Successfully loaded settings from local storage", this.data)
     } catch (e) {
@@ -109,7 +111,9 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return isSupported
   }
 
-  async init(importSettings?: Map<SettingsKey, SettingsData<unknown>>) {
+  private initialiseStorage(
+    importSettings?: Map<SettingsKey, SettingsData<unknown>>
+  ) {
     // If we're importing settings, overwrite any existing settings from localstorage with the new ones
     if (importSettings) {
       importSettings.forEach((data, key) => {
@@ -125,6 +129,11 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
 
     // If not, create a the key in local storage
     this.saveToLocalStorage()
+  }
+
+  async init(importSettings?: Map<SettingsKey, SettingsData<unknown>>) {
+    this.initialiseStorage(importSettings)
+    window.addEventListener("storage", this.onStoredSettingsUpdate.bind(this))
   }
 
   async has(key: SettingsKey) {
@@ -153,5 +162,61 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   async remove(key: SettingsKey) {
     this.data.delete(key)
     this.saveToLocalStorage()
+  }
+
+  private loadChangesFromLocalStorage(
+    newState: SettingsFormattedForLocalStorage
+  ) {
+    const currentState = this.generateSettingsObject()
+
+    Object.entries(newState.settings).forEach(([key, data]) => {
+      const currentData = currentState.settings[key]
+      if (currentData === undefined) {
+        // This is a newly-added setting
+        this.data.set(key, data)
+        return
+      }
+      if (!areDeeplyEqual(data, currentData)) {
+        // This setting has been modified
+        this.data.set(key, data)
+      }
+    })
+  }
+
+  private onStoredSettingsUpdate(event: StorageEvent) {
+    if (event.key !== this.localStorageKey) return
+    if (!event.oldValue || !event.newValue) return
+    const oldState = JSON.parse(
+      event.oldValue
+    ) as SettingsFormattedForLocalStorage
+    const newState = JSON.parse(
+      event.newValue
+    ) as SettingsFormattedForLocalStorage
+
+    const ourState = this.generateSettingsObject()
+    const oldStateMatchesOurs = areDeeplyEqual(oldState, ourState)
+    const newStateMatchesOurs = areDeeplyEqual(newState, ourState)
+
+    if (oldStateMatchesOurs && newStateMatchesOurs) {
+      // Both the old and new states are consistent with our internal state,
+      // so possibly some superficial change like whitespace was made
+      return
+    }
+    if (oldStateMatchesOurs && !newStateMatchesOurs) {
+      // The settings have been updated by another tab
+      this.loadChangesFromLocalStorage(newState)
+      return
+    }
+    if (!oldStateMatchesOurs && newStateMatchesOurs) {
+      // This shouldn't really happen but we can probably just ignore it
+      // since we're already in sync with the new state
+      return
+    }
+    // If we get here, we've managed to lose track of the localstorage state
+    console.warn(
+      "Settings stored in local storage were modified without our knowledge"
+    )
+    // Let's cut our losses and load the settings as if we were just starting up
+    this.loadFromLocalStorage()
   }
 }
