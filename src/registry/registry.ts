@@ -7,12 +7,16 @@ type postRegisterCallback<T extends unknown> = (
 ) => void
 
 export class Registry<T extends unknown> {
-  items: Map<NamespacedId, T>
+  private items: Map<NamespacedId, T>
   private postRegister?: (registry: Registry<T>, item: T) => void
 
-  register(item: T, id: NamespacedId): void {
+  register(id: NamespacedId, item: T): void {
     this.items.set(id, item)
     this.postRegister?.(this, item)
+  }
+
+  getKeys(): NamespacedId[] {
+    return Array.from(this.items.keys())
   }
 
   constructor(postRegister?: postRegisterCallback<T>) {
