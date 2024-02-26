@@ -1,5 +1,5 @@
-import { App } from "../app"
-import { NamespacedId, Registry, RegistryItem } from "./registry"
+import { App } from "../app.mjs"
+import { NamespacedId, Registry, RegistryItem } from "./registry.mjs"
 
 export abstract class Provider {
   app: App

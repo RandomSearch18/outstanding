@@ -1,6 +1,6 @@
 import { $ } from "voby"
 import "./MainLayout.css"
-import { App } from "../app"
+import { App } from "../app.mjs"
 import { settingsProviderRegistry } from ".."
 
 function MainLayout({ app }: { app: App }): JSX.Element {

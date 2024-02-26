@@ -1,7 +1,7 @@
-import { App } from "../app"
-import { Provider } from "./provider"
+import { App } from "../app.mjs"
+import { Provider } from "./provider.mjs"
 import areDeeplyEqual from "are-deeply-equal"
-import { NamespacedId } from "./registry"
+import { NamespacedId } from "./registry.mjs"
 
 export type SettingsKey = string
 

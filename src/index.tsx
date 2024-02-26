@@ -3,12 +3,12 @@ import { render } from "voby"
 
 import "./global.css"
 import MainLayout from "./components/MainLayout"
-import { App } from "./app"
+import { App } from "./app.mjs"
 import {
   LocalStorageSettingsProvider,
   SettingsProvider,
-} from "./registry/settingsProvider"
-import { ProviderRegistry } from "./registry/provider"
+} from "./registry/settingsProvider.mjs"
+import { ProviderRegistry } from "./registry/provider.mjs"
 
 const app = new App()
 
