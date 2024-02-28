@@ -159,8 +159,6 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   }
 
   async getKeys(): Promise<string[]> {
-    //await fetch("https://whatthecommit.com/index.txt")
-    //throw new Error("Method not implemented.")
     return Array.from(this.data.keys())
   }
 
