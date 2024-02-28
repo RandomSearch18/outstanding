@@ -28,9 +28,20 @@ export class ProviderRegistry<T extends Provider> extends Registry<T> {
     return availableProviders
   }
 
-  async selectBestProvider(): Promise<T | null> {
+  async findBestProvider(): Promise<T | null> {
     const availableProviders = await this.availableProviders()
     if (availableProviders.length === 0) return null
-    return availableProviders.sort((a, b) => a.priority - b.priority)[0]
+    const best = availableProviders
+      .sort((a, b) => a.priority - b.priority)
+      .at(0)
+    return best || null
+  }
+
+  async getBestProvider(): Promise<T> {
+    const best = await this.findBestProvider()
+    if (best === null) {
+      throw new Error("No available providers")
+    }
+    return best
   }
 }
