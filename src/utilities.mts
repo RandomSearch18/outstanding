@@ -1,4 +1,4 @@
-import { useMemo } from "voby"
+import { useMemo, usePromise } from "voby"
 import { ObservableReadonly } from "voby/dist/oby"
 import { Resource } from "voby/dist/types"
 
@@ -13,4 +13,10 @@ export function resourceValue<T>(
     if (state.error) return `${state.error}`
     return state.value
   })
+}
+
+export function promiseValue<T>(
+  promise: Promise<T>
+): ObservableReadonly<T | string> {
+  return resourceValue(usePromise(promise))
 }

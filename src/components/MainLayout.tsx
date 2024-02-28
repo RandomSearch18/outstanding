@@ -1,11 +1,11 @@
-import { $, useEffect, useMemo, usePromise } from "voby"
+import { $ } from "voby"
 import "./MainLayout.css"
 import { App } from "../app.mjs"
-import { resourceValue } from "../utilities.mjs"
+import { promiseValue } from "../utilities.mjs"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
-  const settingsKeys = resourceValue(
-    usePromise(app.settings.getKeys().then((keys) => keys.join(", ")))
+  const settingsKeys = promiseValue(
+    app.settings.getKeys().then((keys) => keys.join(", "))
   )
 
   return (
