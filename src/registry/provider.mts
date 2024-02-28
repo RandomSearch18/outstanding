@@ -10,7 +10,7 @@ export abstract class Provider {
   abstract id: NamespacedId
   abstract priority: number
   abstract isAvailable(): Promise<boolean>
-  abstract init(): Promise<void>
+  abstract init(): Promise<this>
 }
 
 export class ProviderRegistry<T extends Provider> extends Registry<T> {

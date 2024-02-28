@@ -19,7 +19,10 @@ export interface SettingsData<T> {
 }
 
 export abstract class SettingOwner {
-  abstract toString(): string
+  abstract name: string
+  toString(): string {
+    return this.name
+  }
 }
 
 // export abstract class AppDefaultSettingOwner extends SettingOwner {
@@ -27,7 +30,11 @@ export abstract class SettingOwner {
 // }
 
 export class UserSettingOwner extends SettingOwner {
-  toString = () => "user"
+  name = "user"
+}
+
+export class DebugSettingOwner extends SettingOwner {
+  name = "debugging aid (used during development)"
 }
 
 export interface SetSettingOptions<T> {
@@ -43,6 +50,11 @@ export abstract class SettingsProvider extends Provider {
   abstract get<T>(key: SettingsKey): Promise<SettingsData<T> | null>
   abstract remove(key: SettingsKey): Promise<void>
   abstract getKeys(): Promise<SettingsKey[]>
+
+  debugSet<T>(key: SettingsKey, value: T) {
+    // Helps us when we need to quickly set a setting in the console for testing purposes
+    return this.set({ key, value, owner: new DebugSettingOwner() })
+  }
 }
 
 interface SettingsFormattedForLocalStorage {
@@ -137,6 +149,8 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   async init(importSettings?: Map<SettingsKey, SettingsData<unknown>>) {
     this.initialiseStorage(importSettings)
     window.addEventListener("storage", this.onStoredSettingsUpdate.bind(this))
+
+    return this
   }
 
   async has(key: SettingsKey) {
@@ -145,6 +159,8 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   }
 
   async getKeys(): Promise<string[]> {
+    //await fetch("https://whatthecommit.com/index.txt")
+    //throw new Error("Method not implemented.")
     return Array.from(this.data.keys())
   }
 

@@ -20,7 +20,9 @@ export class App {
       new LocalStorageSettingsProvider(this, "settings", 10)
     )
 
-    this.settings = await settingsProviderRegistry.getBestProvider()
+    this.settings = await settingsProviderRegistry
+      .getBestProvider()
+      .then((p) => p.init())
     console.log("Using settings storage provider", this.settings)
     this.datapackManager = new DatapackManager()
 
