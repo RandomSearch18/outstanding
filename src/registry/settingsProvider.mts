@@ -2,6 +2,7 @@ import { App } from "../app.mjs"
 import { Provider } from "./provider.mjs"
 import areDeeplyEqual from "are-deeply-equal"
 import { NamespacedId } from "./registry.mjs"
+import { $, Observable } from "voby"
 
 export type SettingsKey = string
 
@@ -37,10 +38,13 @@ export class DebugSettingOwner extends SettingOwner {
   name = "debugging aid (used during development)"
 }
 
-export interface SetSettingOptions<T> {
-  key: SettingsKey
+export interface SetSettingOptionsWithoutKey<T> {
   value: T
   owner: SettingOwner
+}
+
+export interface SetSettingOptions<T> extends SetSettingOptionsWithoutKey<T> {
+  key: SettingsKey
 }
 
 /** Provides persistant storage of settings (key-value mappings) and associated metadata */
@@ -54,6 +58,37 @@ export abstract class SettingsProvider extends Provider {
   debugSet<T>(key: SettingsKey, value: T) {
     // Helps us when we need to quickly set a setting in the console for testing purposes
     return this.set({ key, value, owner: new DebugSettingOwner() })
+  }
+
+  // private readonly observables = new Map<
+  //   SettingsKey,
+  //   Observable<SettingsData<unknown>>
+  // >()
+  // async observable<T extends unknown>(key: SettingsKey) {
+  //   if (this.observables.has(key))
+  //     return this.observables.get(key) as Observable<SettingsData<T>>
+  //   if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
+  //   const currentValue = await this.get<T>(key)
+  //   const observable = $<SettingsData<T>>(currentValue!)
+  //   // @ts-ignore Typescript doesn't let us assume an $<T> can be a $<unknown>
+  //   this.observables.set(key, observable)
+  //   return observable
+  // }
+}
+
+export class SettingAccessor<T> {
+  constructor(private settings: SettingsProvider, private key: SettingsKey) {}
+
+  async get(): Promise<SettingsData<T> | null> {
+    return this.settings.get<T>(this.key)
+  }
+
+  async set(options: SetSettingOptionsWithoutKey<T>) {
+    return this.settings.set({ ...options, key: this.key })
+  }
+
+  async remove() {
+    return this.settings.remove(this.key)
   }
 }
 
