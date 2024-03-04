@@ -1,5 +1,7 @@
+import { App } from "./app.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
+import { SettingAccessor } from "./registry/settingsProvider.mjs"
 
 /** An object like this should be the default export of a datapack source file */
 interface DatapackExport {
@@ -49,18 +51,30 @@ export class Datapack {
   }
 }
 
+interface KnownDatapack {
+  enabled: boolean
+}
+
 export class DatapackManager {
+  app: App
+  knownDatapacks: SettingAccessor<Map<NamespacedId, KnownDatapack>>
   registry: DatapackRegistry
+
   static readonly PACK_FORMAT = 0
 
-  constructor() {
+  constructor(
+    app: App,
+    knownDatapacks: SettingAccessor<Map<NamespacedId, KnownDatapack>>
+  ) {
+    this.app = app
+    this.knownDatapacks = knownDatapacks
     this.registry = new DatapackRegistry()
   }
 
-  loadDatapack(exportedPack: DatapackExport) {
+  registerDatapack(exportedPack: DatapackExport) {
     const datapack = new Datapack(exportedPack)
     this.registry.register(datapack.id, datapack)
-    console.log(`Loaded datapack ${datapack.id}`)
+    console.log(`Registered datapack ${datapack.id}`)
   }
 
   shouldLoadDatapack(datapack: DatapackExport) {
@@ -79,7 +93,7 @@ export class DatapackManager {
     }
   }
 
-  async loadBuiltInDatapacks() {
+  async registerBuiltInDatapacks() {
     const builtInDatapacks = import.meta.glob("../datapacks/*.mts", {
       import: "default",
     })
@@ -89,14 +103,23 @@ export class DatapackManager {
       const defaultImport = await importSource()
       this.assertValidDatapackImport(defaultImport, path)
       const importedData = defaultImport as DatapackExport
-      if (!this.shouldLoadDatapack(importedData)) continue
-      this.loadDatapack(importedData)
+      this.registerDatapack(importedData)
       loadedPackIds.push(importedData.metadata.id)
     }
 
     if (loadedPackIds.length > 0) {
-      console.log(`Loaded built-in datapacks: ${loadedPackIds.join(", ")}`)
+      console.log(`Registered built-in datapacks: ${loadedPackIds.join(", ")}`)
     }
+  }
+
+  /** Adds new datapacks to the known datapacks map, and enables it if it should be automatically enabled */
+  async handleNewDatapacks() {
+    //if (!this.shouldLoadDatapack(importedData)) continue
+    const unknownDatapacks = this.registry.getItems().filter((datapack) => {
+      return !this.knownDatapacks.get().has(datapack.id)
+    })
+
+    // TODO
   }
 }
 
