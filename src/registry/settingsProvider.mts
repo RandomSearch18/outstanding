@@ -49,11 +49,11 @@ export interface SetSettingOptions<T> extends SetSettingOptionsWithoutKey<T> {
 
 /** Provides persistant storage of settings (key-value mappings) and associated metadata */
 export abstract class SettingsProvider extends Provider {
-  abstract has(key: SettingsKey): Promise<boolean>
-  abstract set<T>(options: SetSettingOptions<T>): Promise<SettingsData<T>>
-  abstract get<T>(key: SettingsKey): Promise<SettingsData<T> | null>
-  abstract remove(key: SettingsKey): Promise<void>
-  abstract getKeys(): Promise<SettingsKey[]>
+  abstract has(key: SettingsKey): boolean
+  abstract set<T>(options: SetSettingOptions<T>): SettingsData<T>
+  abstract get<T>(key: SettingsKey): SettingsData<T> | null
+  abstract remove(key: SettingsKey): void
+  abstract getKeys(): SettingsKey[]
 
   debugSet<T>(key: SettingsKey, value: T) {
     // Helps us when we need to quickly set a setting in the console for testing purposes
@@ -79,8 +79,13 @@ export abstract class SettingsProvider extends Provider {
 export class SettingAccessor<T> {
   constructor(private settings: SettingsProvider, private key: SettingsKey) {}
 
-  async get(): Promise<SettingsData<T> | null> {
-    return this.settings.get<T>(this.key)
+  exists(): boolean {
+    return this.settings.has(this.key)
+  }
+
+  get(): T {
+    if (!this.exists()) throw new Error(`Setting ${this.key} does not exist`)
+    return this.settings.get<T>(this.key)!.value
   }
 
   async set(options: SetSettingOptionsWithoutKey<T>) {
@@ -188,22 +193,22 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return this
   }
 
-  async has(key: SettingsKey) {
-    const keys = await this.getKeys()
+  has(key: SettingsKey) {
+    const keys = this.getKeys()
     return keys.includes(key)
   }
 
-  async getKeys(): Promise<string[]> {
+  getKeys(): string[] {
     return Array.from(this.data.keys())
   }
 
-  async get<T>(key: SettingsKey): Promise<SettingsData<T> | null> {
+  get<T>(key: SettingsKey): SettingsData<T> | null {
     const data = this.data.get(key)
     if (data === undefined) return null
     return data as SettingsData<T>
   }
 
-  async set<T>(options: SetSettingOptions<T>): Promise<SettingsData<T>> {
+  set<T>(options: SetSettingOptions<T>): SettingsData<T> {
     const { key, value, owner } = options
     const data = { value, owner }
     this.data.set(key, data)
@@ -211,7 +216,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return data
   }
 
-  async remove(key: SettingsKey) {
+  remove(key: SettingsKey) {
     this.data.delete(key)
     this.saveToLocalStorage()
   }
