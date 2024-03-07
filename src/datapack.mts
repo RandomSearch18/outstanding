@@ -51,7 +51,7 @@ export class Datapack {
   }
 }
 
-interface KnownDatapack {
+export interface KnownDatapack {
   enabled: boolean
 }
 

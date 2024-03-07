@@ -1,6 +1,8 @@
-import { DatapackManager } from "./datapack.mjs"
+import { DatapackManager, KnownDatapack } from "./datapack.mjs"
 import { ProviderRegistry } from "./registry/provider.mjs"
+import { NamespacedId } from "./registry/registry.mjs"
 import {
+  AppSettingOwner,
   LocalStorageSettingsProvider,
   SettingsProvider,
 } from "./registry/settingsProvider.mjs"
@@ -36,7 +38,12 @@ export class App {
       .then((p) => p.init())
 
     // Datapack manager
-    this.datapackManager = new DatapackManager(this)
+    const knownDatapacks = this.storage.setIfNonexistent({
+      key: "knownDatapacks",
+      value: new Map<NamespacedId, KnownDatapack>(),
+      owner: new AppSettingOwner(),
+    })
+    this.datapackManager = new DatapackManager(this, knownDatapacks)
     await this.datapackManager.registerBuiltInDatapacks()
   }
 }

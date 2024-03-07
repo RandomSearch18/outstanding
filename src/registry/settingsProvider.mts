@@ -6,7 +6,7 @@ import { $, Observable } from "voby"
 
 export type SettingsKey = string
 
-export interface SettingsData<T> {
+export class SettingsData<T> {
   value: T
   /**
    * The owner of a setting is the person, process or thing that gave it its value
@@ -17,6 +17,22 @@ export interface SettingsData<T> {
    * set thee value.
    */
   owner: SettingOwner
+  key: string
+
+  constructor(options: SetSettingOptions<T>) {
+    this.value = options.value
+    this.owner = options.owner
+    this.key = options.key
+  }
+
+  set(options: SetSettingOptionsWithoutKey<T>) {
+    this.value = options.value
+    this.owner = options.owner
+  }
+
+  accessor(settings: SettingsProvider) {
+    return new SettingAccessor<T>(settings, this.key)
+  }
 }
 
 export abstract class SettingOwner {
@@ -26,9 +42,9 @@ export abstract class SettingOwner {
   }
 }
 
-// export abstract class AppDefaultSettingOwner extends SettingOwner {
-//     toString = () => "app-provided default"
-// }
+export class AppSettingOwner extends SettingOwner {
+  name = "internal app data"
+}
 
 export class UserSettingOwner extends SettingOwner {
   name = "user"
@@ -51,7 +67,12 @@ export interface SetSettingOptions<T> extends SetSettingOptionsWithoutKey<T> {
 export abstract class SettingsProvider extends Provider {
   abstract has(key: SettingsKey): boolean
   abstract set<T>(options: SetSettingOptions<T>): SettingsData<T>
+  abstract setIfNonexistent<T>(options: SetSettingOptions<T>): SettingsData<T>
   abstract get<T>(key: SettingsKey): SettingsData<T> | null
+  abstract getWithDefault<T>(
+    key: SettingsKey,
+    defaultValue: SetSettingOptionsWithoutKey<T>
+  ): SettingsData<T>
   abstract remove(key: SettingsKey): void
   abstract getKeys(): SettingsKey[]
 
@@ -134,7 +155,10 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
         )
 
       // Actually load the settings
-      this.data = new Map(Object.entries(parsedData.settings))
+      const settingsDatas: [string, SettingsData<unknown>][] = Object.entries(
+        parsedData.settings
+      ).map(([key, data]) => [key, new SettingsData(data)])
+      this.data = new Map(settingsDatas)
       console.log("Successfully loaded settings from local storage", this.data)
     } catch (e) {
       throw e instanceof SyntaxError
@@ -208,12 +232,28 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return data as SettingsData<T>
   }
 
+  getWithDefault<T>(
+    key: SettingsKey,
+    defaultValue: SetSettingOptionsWithoutKey<T>
+  ): SettingsData<T> {
+    if (!this.has(key)) return this.set({ ...defaultValue, key })
+    return this.get<T>(key)!
+  }
+
   set<T>(options: SetSettingOptions<T>): SettingsData<T> {
     const { key, value, owner } = options
     const data = { value, owner }
-    this.data.set(key, data)
+    const setting = this.data.get(key) as SettingsData<T> | undefined
+    if (setting === undefined) throw new Error(`Setting ${key} does not exist`)
+    setting.set(data)
     this.saveToLocalStorage()
-    return data
+    return setting
+  }
+
+  setIfNonexistent<T>(options: SetSettingOptions<T>): SettingsData<T> {
+    const { key, value, owner } = options
+    if (this.has(key)) return this.get<T>(key)!
+    return this.set({ key, value, owner })
   }
 
   remove(key: SettingsKey) {
