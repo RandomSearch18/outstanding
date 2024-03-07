@@ -49,9 +49,12 @@ export interface SetSettingOptions<T> extends SetSettingOptionsWithoutKey<T> {
 
 /** Provides persistant storage of settings (key-value mappings) and associated metadata */
 export abstract class SettingsProvider extends Provider {
+  abstract accessor<T>(key: SettingsKey): SettingAccessor<T>
   abstract has(key: SettingsKey): boolean
-  abstract set<T>(options: SetSettingOptions<T>): SettingsData<T>
-  abstract setIfNonexistent<T>(options: SetSettingOptions<T>): SettingsData<T>
+  abstract set<T>(options: SetSettingOptions<T>): SettingAccessor<T>
+  abstract setIfNonexistent<T>(
+    options: SetSettingOptions<T>
+  ): SettingAccessor<T>
   abstract get<T>(key: SettingsKey): SettingsData<T> | null
   abstract getWithDefault<T>(
     key: SettingsKey,
@@ -198,6 +201,11 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return this
   }
 
+  accessor<T>(key: SettingsKey): SettingAccessor<T> {
+    if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
+    return new SettingAccessor<T>(this, key)
+  }
+
   has(key: SettingsKey) {
     const keys = this.getKeys()
     return keys.includes(key)
@@ -221,15 +229,15 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return this.get<T>(key)!
   }
 
-  set<T>(options: SetSettingOptions<T>): SettingsData<T> {
+  set<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
     const { key, value, owner } = options
     const data = { value, owner }
     this.data.set(key, data)
     this.saveToLocalStorage()
-    return data
+    return this.accessor<T>(key)
   }
 
-  setIfNonexistent<T>(options: SetSettingOptions<T>): SettingsData<T> {
+  setIfNonexistent<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
     const { key, value, owner } = options
     if (this.has(key)) return this.get<T>(key)!
     return this.set({ key, value, owner })
