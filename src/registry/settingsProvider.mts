@@ -96,6 +96,11 @@ export class SettingAccessor<T> {
     return this.settings.get<T>(this.key)!.value
   }
 
+  getData(): SettingsData<T> {
+    if (!this.exists()) throw new Error(`Setting ${this.key} does not exist`)
+    return this.settings.get<T>(this.key)!
+  }
+
   async set(options: SetSettingOptionsWithoutKey<T>) {
     return this.settings.set({ ...options, key: this.key })
   }
@@ -225,7 +230,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     key: SettingsKey,
     defaultValue: SetSettingOptionsWithoutKey<T>
   ): SettingsData<T> {
-    if (!this.has(key)) return this.set({ ...defaultValue, key })
+    if (!this.has(key)) return this.set({ ...defaultValue, key }).getData()
     return this.get<T>(key)!
   }
 
@@ -239,7 +244,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
 
   setIfNonexistent<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
     const { key, value, owner } = options
-    if (this.has(key)) return this.get<T>(key)!
+    if (this.has(key)) return this.accessor<T>(key)!
     return this.set({ key, value, owner })
   }
 
