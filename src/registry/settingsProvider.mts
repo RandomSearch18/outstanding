@@ -6,7 +6,7 @@ import { $, Observable } from "voby"
 
 export type SettingsKey = string
 
-export class SettingsData<T> {
+export interface SettingsData<T> {
   value: T
   /**
    * The owner of a setting is the person, process or thing that gave it its value
@@ -17,22 +17,6 @@ export class SettingsData<T> {
    * set thee value.
    */
   owner: SettingOwner
-  key: string
-
-  constructor(options: SetSettingOptions<T>) {
-    this.value = options.value
-    this.owner = options.owner
-    this.key = options.key
-  }
-
-  set(options: SetSettingOptionsWithoutKey<T>) {
-    this.value = options.value
-    this.owner = options.owner
-  }
-
-  accessor(settings: SettingsProvider) {
-    return new SettingAccessor<T>(settings, this.key)
-  }
 }
 
 export abstract class SettingOwner {
@@ -155,10 +139,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
         )
 
       // Actually load the settings
-      const settingsDatas: [string, SettingsData<unknown>][] = Object.entries(
-        parsedData.settings
-      ).map(([key, data]) => [key, new SettingsData(data)])
-      this.data = new Map(settingsDatas)
+      this.data = new Map(Object.entries(parsedData.settings))
       console.log("Successfully loaded settings from local storage", this.data)
     } catch (e) {
       throw e instanceof SyntaxError
@@ -243,11 +224,9 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   set<T>(options: SetSettingOptions<T>): SettingsData<T> {
     const { key, value, owner } = options
     const data = { value, owner }
-    const setting = this.data.get(key) as SettingsData<T> | undefined
-    if (setting === undefined) throw new Error(`Setting ${key} does not exist`)
-    setting.set(data)
+    this.data.set(key, data)
     this.saveToLocalStorage()
-    return setting
+    return data
   }
 
   setIfNonexistent<T>(options: SetSettingOptions<T>): SettingsData<T> {
