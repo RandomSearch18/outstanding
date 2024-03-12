@@ -2,7 +2,8 @@ import { App } from "../app.mjs"
 import { Provider } from "./provider.mjs"
 import areDeeplyEqual from "are-deeply-equal"
 import { NamespacedId } from "./registry.mjs"
-import { $, Observable } from "voby"
+import { $, Observable, store } from "voby"
+import { ReactiveMap as ObservableMap } from "../utilities.mjs"
 
 export type SettingsKey = string
 
@@ -120,7 +121,7 @@ interface SettingsFormattedForLocalStorage {
 export class LocalStorageSettingsProvider extends SettingsProvider {
   private readonly localStorageKey: string
   private readonly formatVersion = 1
-  private data: Map<SettingsKey, SettingsData<unknown>>
+  private map: ObservableMap<SettingsKey, SettingsData<unknown>>
   id: NamespacedId = "outstanding:local_storage"
   priority: number
 
@@ -128,7 +129,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     super(app)
     this.localStorageKey = localStorageKey
     this.priority = priority
-    this.data = new Map()
+    this.map = new ObservableMap()
   }
 
   private loadFromLocalStorage() {
@@ -147,8 +148,8 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
         )
 
       // Actually load the settings
-      this.data = new Map(Object.entries(parsedData.settings))
-      console.log("Successfully loaded settings from local storage", this.data)
+      this.map = new ObservableMap(Object.entries(parsedData.settings))
+      console.log("Successfully loaded settings from local storage", this.map)
     } catch (e) {
       throw e instanceof SyntaxError
         ? new Error(
@@ -159,8 +160,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   }
 
   private generateSettingsObject(): SettingsFormattedForLocalStorage {
-    const settingsObject = Object.fromEntries(this.data.entries())
-
+    const settingsObject = this.map.toPlainObject()
     return {
       version: this.formatVersion,
       settings: settingsObject,
@@ -185,7 +185,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     // If we're importing settings, overwrite any existing settings from localstorage with the new ones
     if (importSettings) {
       importSettings.forEach((data, key) => {
-        this.data.set(key, data)
+        this.map.set(key, data)
       })
       this.saveToLocalStorage()
       return
@@ -217,13 +217,18 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   }
 
   getKeys(): string[] {
-    return Array.from(this.data.keys())
+    return Array.from(this.map.keys())
   }
 
   get<T>(key: SettingsKey): SettingsData<T> | null {
-    const data = this.data.get(key)
+    const data = this.map.get(key)
     if (data === undefined) return null
-    return data as SettingsData<T>
+    return data() as SettingsData<T>
+  }
+
+  getObservable<T>(key: SettingsKey): Observable<SettingsData<T>> {
+    if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
+    return this.map.get(key) as Observable<SettingsData<T>>
   }
 
   getWithDefault<T>(
@@ -237,7 +242,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   set<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
     const { key, value, owner } = options
     const data = { value, owner }
-    this.data.set(key, data)
+    this.map.set(key, data)
     this.saveToLocalStorage()
     return this.accessor<T>(key)
   }
@@ -249,7 +254,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   }
 
   remove(key: SettingsKey) {
-    this.data.delete(key)
+    this.map.delete(key)
     this.saveToLocalStorage()
   }
 
@@ -262,12 +267,12 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
       const currentData = currentState.settings[key]
       if (currentData === undefined) {
         // This is a newly-added setting
-        this.data.set(key, data)
+        this.map.set(key, data)
         return
       }
       if (!areDeeplyEqual(data, currentData)) {
         // This setting has been modified
-        this.data.set(key, data)
+        this.map.set(key, data)
       }
     })
   }

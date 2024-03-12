@@ -1,6 +1,5 @@
-import { useMemo, usePromise } from "voby"
-import { ObservableReadonly } from "voby/dist/oby"
-import { Resource } from "voby/dist/types"
+import { $, useMemo, usePromise } from "voby"
+import { Observable, Resource, ObservableReadonly } from "voby/dist/types"
 
 export type anyObject = { [key: string]: any }
 
@@ -19,4 +18,55 @@ export function promiseValue<T>(
   promise: Promise<T>
 ): ObservableReadonly<T | string> {
   return resourceValue(usePromise(promise))
+}
+
+type ReactiveMapKey = string | number
+export class ReactiveMap<K extends ReactiveMapKey, V> {
+  private map: Map<K, Observable<V>>
+
+  constructor(initialEntries?: [K, V][]) {
+    const entries = initialEntries?.map(([key, value]) => [
+      key,
+      $<V>(value),
+    ]) as [K, Observable<V>][]
+    this.map = new Map(entries)
+  }
+
+  get(key: K): Observable<V> | undefined {
+    return this.map.get(key)
+  }
+
+  toPlainObject() {
+    const plainObject: {
+      [key: string]: V
+    } = {}
+    for (const [key, value] of this.map) {
+      plainObject[key as string] = value()
+    }
+    return plainObject
+  }
+
+  toJSON() {
+    return this.toPlainObject()
+  }
+
+  set(key: K, value: V) {
+    const observable = this.map.get(key)
+
+    if (!observable) {
+      const newObservable = $<V>(value)
+      this.map.set(key, newObservable)
+      return
+    }
+
+    observable(value)
+  }
+
+  keys() {
+    return this.map.keys()
+  }
+
+  delete(key: K) {
+    this.map.delete(key)
+  }
 }

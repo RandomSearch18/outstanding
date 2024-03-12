@@ -119,7 +119,11 @@ export class DatapackManager {
       return !this.knownDatapacks.get().has(datapack.id)
     })
 
-    // TODO
+    unknownDatapacks.forEach((datapack) => {
+      this.knownDatapacks.get().set(datapack.id, { enabled: true })
+    })
+
+    
   }
 }
 
