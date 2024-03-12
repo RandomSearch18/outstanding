@@ -8,7 +8,7 @@ function MainLayout({ app }: { app: App }): JSX.Element {
         <div class="get-started">
           <p>Get started by opening a file</p>
           <p>Note: File opening has not been implemented yet</p>
-          <p>Settings: {app.settings.getKeys()}</p>
+          <p>Settings: {app.settings.getKeys().join(", ")}</p>
         </div>
       </main>
     </div>
