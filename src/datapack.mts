@@ -57,14 +57,14 @@ export interface KnownDatapack {
 
 export class DatapackManager {
   app: App
-  knownDatapacks: SettingAccessor<Map<NamespacedId, KnownDatapack>>
+  knownDatapacks: SettingAccessor<Record<NamespacedId, KnownDatapack>>
   registry: DatapackRegistry
 
   static readonly PACK_FORMAT = 0
 
   constructor(
     app: App,
-    knownDatapacks: SettingAccessor<Map<NamespacedId, KnownDatapack>>
+    knownDatapacks: SettingAccessor<Record<NamespacedId, KnownDatapack>>
   ) {
     this.app = app
     this.knownDatapacks = knownDatapacks
@@ -120,18 +120,18 @@ export class DatapackManager {
   /** Adds new datapacks to the known datapacks map, and enables it if it should be automatically enabled */
   async handleNewDatapacks() {
     const unknownDatapacks = this.registry.getItems().filter((datapack) => {
-      return !this.knownDatapacks.get().has(datapack.id)
+      return !(datapack.id in this.knownDatapacks.get())
     })
 
     unknownDatapacks.forEach((datapack) => {
       if (!this.shouldLoadDatapack(datapack.exportedSource)) {
-        this.knownDatapacks.get().set(datapack.id, { enabled: false })
+        this.knownDatapacks.get()[datapack.id] = { enabled: false }
         console.warn(
           `Disabled datapack with unsupported pack format: ${datapack.id}`
         )
         return
       }
-      this.knownDatapacks.get().set(datapack.id, { enabled: true })
+      this.knownDatapacks.get()[datapack.id] = { enabled: true }
     })
   }
 }

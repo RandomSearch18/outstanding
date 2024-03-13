@@ -56,7 +56,7 @@ export class App {
   async initDatapacks() {
     const knownDatapacks = this.storage.setIfNonexistent({
       key: "knownDatapacks",
-      value: new Map<NamespacedId, KnownDatapack>(),
+      value: {},
       owner: new AppSettingOwner(),
     })
     this.datapackManager = new DatapackManager(this, knownDatapacks)
