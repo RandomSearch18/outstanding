@@ -15,6 +15,8 @@ export class App {
   datapackManager: DatapackManager
 
   async init() {
+    window.outstanding = this
+
     // Settings provider
     const DEFAULT_SETTINGS = Object.entries({
       useDatapacks: true,
@@ -59,5 +61,8 @@ export class App {
     })
     this.datapackManager = new DatapackManager(this, knownDatapacks)
     await this.datapackManager.registerBuiltInDatapacks()
+
+    this.datapackManager.handleNewDatapacks()
+    // TODO: Load the datapack
   }
 }

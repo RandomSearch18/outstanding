@@ -4,7 +4,7 @@ import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
 import { SettingAccessor } from "./registry/settingsProvider.mjs"
 
 /** An object like this should be the default export of a datapack source file */
-interface DatapackExport {
+export interface DatapackExport {
   metadata: {
     id: NamespacedId
     packFormat: number
@@ -85,6 +85,11 @@ export class DatapackManager {
     imported: unknown,
     name: string
   ): asserts imported is DatapackExport {
+    if (typeof imported === "undefined") {
+      throw new DatapackLoadError(
+        `Datapack file ${name} doesn't have a default export`
+      )
+    }
     if (!(typeof imported === "object")) {
       throw new DatapackLoadError(`Default export of ${name} is not an object`)
     }
@@ -94,7 +99,7 @@ export class DatapackManager {
   }
 
   async registerBuiltInDatapacks() {
-    const builtInDatapacks = import.meta.glob("../datapacks/*.mts", {
+    const builtInDatapacks = import.meta.glob("./datapacks/*.mts", {
       import: "default",
     })
 
@@ -114,12 +119,18 @@ export class DatapackManager {
 
   /** Adds new datapacks to the known datapacks map, and enables it if it should be automatically enabled */
   async handleNewDatapacks() {
-    //if (!this.shouldLoadDatapack(importedData)) continue
     const unknownDatapacks = this.registry.getItems().filter((datapack) => {
       return !this.knownDatapacks.get().has(datapack.id)
     })
 
     unknownDatapacks.forEach((datapack) => {
+      if (!this.shouldLoadDatapack(datapack.exportedSource)) {
+        this.knownDatapacks.get().set(datapack.id, { enabled: false })
+        console.warn(
+          `Disabled datapack with unsupported pack format: ${datapack.id}`
+        )
+        return
+      }
       this.knownDatapacks.get().set(datapack.id, { enabled: true })
     })
   }

@@ -7,7 +7,16 @@ import { ReactiveMap as ObservableMap } from "../utilities.mjs"
 
 export type SettingsKey = string
 
-export interface SettingsData<T> {
+/** Types that can be losslessly serialised and deserialised to/from JSON */
+export type JSONSafe =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JSONSafe }
+  | JSONSafe[]
+
+export interface SettingsData<T extends JSONSafe> {
   value: T
   /**
    * The owner of a setting is the person, process or thing that gave it its value
@@ -54,22 +63,26 @@ export interface SetSettingOptions<T> extends SetSettingOptionsWithoutKey<T> {
 
 /** Provides persistant storage of settings (key-value mappings) and associated metadata */
 export abstract class SettingsProvider extends Provider {
-  abstract accessor<T>(key: SettingsKey): SettingAccessor<T>
+  abstract accessor<T extends JSONSafe>(key: SettingsKey): SettingAccessor<T>
   abstract has(key: SettingsKey): boolean
-  abstract set<T>(options: SetSettingOptions<T>): SettingAccessor<T>
-  abstract setIfNonexistent<T>(
+  abstract set<T extends JSONSafe>(
     options: SetSettingOptions<T>
   ): SettingAccessor<T>
-  abstract get<T>(key: SettingsKey): SettingsData<T> | null
-  abstract getWithDefault<T>(
+  abstract setIfNonexistent<T extends JSONSafe>(
+    options: SetSettingOptions<T>
+  ): SettingAccessor<T>
+  abstract get<T extends JSONSafe>(key: SettingsKey): SettingsData<T> | null
+  abstract getWithDefault<T extends JSONSafe>(
     key: SettingsKey,
     defaultValue: SetSettingOptionsWithoutKey<T>
   ): SettingsData<T>
   abstract remove(key: SettingsKey): void
   abstract getKeys(): SettingsKey[]
-  abstract getObservable<T>(key: SettingsKey): Observable<SettingsData<T>>
+  abstract getObservable<T extends JSONSafe>(
+    key: SettingsKey
+  ): Observable<SettingsData<T>>
 
-  debugSet<T>(key: SettingsKey, value: T) {
+  debugSet<T extends JSONSafe>(key: SettingsKey, value: T) {
     // Helps us when we need to quickly set a setting in the console for testing purposes
     return this.set({ key, value, owner: new DebugSettingOwner() })
   }
@@ -92,23 +105,23 @@ export class SettingsWithDefaults extends SettingsProvider {
     this.defaults = defaults
   }
 
-  accessor<T>(key: SettingsKey): SettingAccessor<T> {
+  accessor<T extends JSONSafe>(key: SettingsKey): SettingAccessor<T> {
     return this.settings.accessor<T>(key)
   }
 
-  getDefaultData<T>(key: SettingsKey): SettingsData<T> {
+  getDefaultData<T extends JSONSafe>(key: SettingsKey): SettingsData<T> {
     const value = this.defaults.get(key) as T
     if (value === undefined)
       throw new Error(`Default setting ${key} does not exist`)
     return { value, owner: new DefaultSettingOwner() }
   }
 
-  get<T>(key: SettingsKey): SettingsData<T> | null {
+  get<T extends JSONSafe>(key: SettingsKey): SettingsData<T> | null {
     if (this.settings.has(key)) return this.settings.get<T>(key)!
     return this.getDefaultData<T>(key)
   }
 
-  getWithDefault<T>(): SettingsData<T> {
+  getWithDefault<T extends JSONSafe>(): SettingsData<T> {
     throw new Error("getWithDefault() not available on SettingsWithDefaults")
   }
 
@@ -134,11 +147,13 @@ export class SettingsWithDefaults extends SettingsProvider {
     return this.defaults.has(key)
   }
 
-  set<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
+  set<T extends JSONSafe>(options: SetSettingOptions<T>): SettingAccessor<T> {
     return this.settings.set(options)
   }
 
-  setIfNonexistent<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
+  setIfNonexistent<T extends JSONSafe>(
+    options: SetSettingOptions<T>
+  ): SettingAccessor<T> {
     return this.settings.setIfNonexistent(options)
   }
 
@@ -155,16 +170,18 @@ export class SettingsWithDefaults extends SettingsProvider {
     return this.settings.isAvailable()
   }
 
-  debugSet<T>(key: SettingsKey, value: T) {
+  debugSet<T extends JSONSafe>(key: SettingsKey, value: T) {
     return this.settings.debugSet(key, value)
   }
 
-  getObservable<T>(key: SettingsKey): Observable<SettingsData<T>> {
+  getObservable<T extends JSONSafe>(
+    key: SettingsKey
+  ): Observable<SettingsData<T>> {
     return this.settings.getObservable(key)
   }
 }
 
-export class SettingAccessor<T> {
+export class SettingAccessor<T extends JSONSafe> {
   constructor(private settings: SettingsProvider, private key: SettingsKey) {}
 
   exists(): boolean {
@@ -193,14 +210,14 @@ export class SettingAccessor<T> {
 interface SettingsFormattedForLocalStorage {
   version: number
   settings: {
-    [key: SettingsKey]: SettingsData<unknown>
+    [key: SettingsKey]: SettingsData<JSONSafe>
   }
 }
 
 export class LocalStorageSettingsProvider extends SettingsProvider {
   private readonly localStorageKey: string
   private readonly formatVersion = 1
-  private map: ObservableMap<SettingsKey, SettingsData<unknown>>
+  private map: ObservableMap<SettingsKey, SettingsData<JSONSafe>>
   id: NamespacedId = "outstanding:local_storage"
   priority: number
 
@@ -259,7 +276,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
   }
 
   private initialiseStorage(
-    importSettings?: Map<SettingsKey, SettingsData<unknown>>
+    importSettings?: Map<SettingsKey, SettingsData<JSONSafe>>
   ) {
     // If we're importing settings, overwrite any existing settings from localstorage with the new ones
     if (importSettings) {
@@ -278,14 +295,14 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     this.saveToLocalStorage()
   }
 
-  async init(importSettings?: Map<SettingsKey, SettingsData<unknown>>) {
+  async init(importSettings?: Map<SettingsKey, SettingsData<JSONSafe>>) {
     this.initialiseStorage(importSettings)
     window.addEventListener("storage", this.onStoredSettingsUpdate.bind(this))
 
     return this
   }
 
-  accessor<T>(key: SettingsKey): SettingAccessor<T> {
+  accessor<T extends JSONSafe>(key: SettingsKey): SettingAccessor<T> {
     if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
     return new SettingAccessor<T>(this, key)
   }
@@ -299,18 +316,21 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return Array.from(this.map.keys())
   }
 
-  get<T>(key: SettingsKey): SettingsData<T> | null {
+  get<T extends JSONSafe>(key: SettingsKey): SettingsData<T> | null {
     const data = this.map.get(key)
     if (data === undefined) return null
     return data() as SettingsData<T>
   }
 
-  getObservable<T>(key: SettingsKey): Observable<SettingsData<T>> {
+  getObservable<T extends JSONSafe>(
+    key: SettingsKey
+  ): Observable<SettingsData<T>> {
     if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
-    return this.map.get(key) as Observable<SettingsData<T>>
+    const observable = this.map.get(key)!
+    return observable as unknown as Observable<SettingsData<T>>
   }
 
-  getWithDefault<T>(
+  getWithDefault<T extends JSONSafe>(
     key: SettingsKey,
     defaultValue: SetSettingOptionsWithoutKey<T>
   ): SettingsData<T> {
@@ -318,7 +338,7 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return this.get<T>(key)!
   }
 
-  set<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
+  set<T extends JSONSafe>(options: SetSettingOptions<T>): SettingAccessor<T> {
     const { key, value, owner } = options
     const data = { value, owner }
     this.map.set(key, data)
@@ -326,7 +346,9 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return this.accessor<T>(key)
   }
 
-  setIfNonexistent<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
+  setIfNonexistent<T extends JSONSafe>(
+    options: SetSettingOptions<T>
+  ): SettingAccessor<T> {
     const { key, value, owner } = options
     if (this.has(key)) return this.accessor<T>(key)!
     return this.set({ key, value, owner })
