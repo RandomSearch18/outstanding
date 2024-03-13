@@ -5,6 +5,7 @@ import {
   AppSettingOwner,
   LocalStorageSettingsProvider,
   SettingsProvider,
+  SettingsWithDefaults,
 } from "./registry/settingsProvider.mjs"
 
 export class App {
@@ -15,12 +16,19 @@ export class App {
 
   async init() {
     // Settings provider
-    const settingsProviderRegistry = new ProviderRegistry<SettingsProvider>(
+    const DEFAULT_SETTINGS = Object.entries({
+      useDatapacks: true,
+    })
+
+    const settingsProviderRegistry = new ProviderRegistry<SettingsWithDefaults>(
       this
     )
     settingsProviderRegistry.register(
       "outstanding:local_storage",
-      new LocalStorageSettingsProvider(this, "settings", 10)
+      new SettingsWithDefaults(
+        new LocalStorageSettingsProvider(this, "settings", 10),
+        new Map(DEFAULT_SETTINGS)
+      )
     )
     this.settings = await settingsProviderRegistry
       .getBestProvider()

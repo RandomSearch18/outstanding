@@ -31,6 +31,10 @@ export class AppSettingOwner extends SettingOwner {
   name = "internal app data"
 }
 
+export class DefaultSettingOwner extends SettingOwner {
+  name = "default"
+}
+
 export class UserSettingOwner extends SettingOwner {
   name = "user"
 }
@@ -63,26 +67,101 @@ export abstract class SettingsProvider extends Provider {
   ): SettingsData<T>
   abstract remove(key: SettingsKey): void
   abstract getKeys(): SettingsKey[]
+  abstract getObservable<T>(key: SettingsKey): Observable<SettingsData<T>>
 
   debugSet<T>(key: SettingsKey, value: T) {
     // Helps us when we need to quickly set a setting in the console for testing purposes
     return this.set({ key, value, owner: new DebugSettingOwner() })
   }
+}
 
-  // private readonly observables = new Map<
-  //   SettingsKey,
-  //   Observable<SettingsData<unknown>>
-  // >()
-  // async observable<T extends unknown>(key: SettingsKey) {
-  //   if (this.observables.has(key))
-  //     return this.observables.get(key) as Observable<SettingsData<T>>
-  //   if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
-  //   const currentValue = await this.get<T>(key)
-  //   const observable = $<SettingsData<T>>(currentValue!)
-  //   // @ts-ignore Typescript doesn't let us assume an $<T> can be a $<unknown>
-  //   this.observables.set(key, observable)
-  //   return observable
-  // }
+export class SettingsWithDefaults extends SettingsProvider {
+  private settings: SettingsProvider
+  private defaults: Map<SettingsKey, unknown>
+  id: NamespacedId
+  priority: number
+
+  constructor(
+    settingsProvider: SettingsProvider,
+    defaults: Map<SettingsKey, unknown>
+  ) {
+    super(settingsProvider.app)
+    this.id = settingsProvider.id
+    this.priority = settingsProvider.priority
+    this.settings = settingsProvider
+    this.defaults = defaults
+  }
+
+  accessor<T>(key: SettingsKey): SettingAccessor<T> {
+    return this.settings.accessor<T>(key)
+  }
+
+  getDefaultData<T>(key: SettingsKey): SettingsData<T> {
+    const value = this.defaults.get(key) as T
+    if (value === undefined)
+      throw new Error(`Default setting ${key} does not exist`)
+    return { value, owner: new DefaultSettingOwner() }
+  }
+
+  get<T>(key: SettingsKey): SettingsData<T> | null {
+    if (this.settings.has(key)) return this.settings.get<T>(key)!
+    return this.getDefaultData<T>(key)
+  }
+
+  getWithDefault<T>(): SettingsData<T> {
+    throw new Error("getWithDefault() not available on SettingsWithDefaults")
+  }
+
+  getExplicitKeys(): string[] {
+    return this.settings.getKeys()
+  }
+
+  getKeys(): string[] {
+    const explicitKeys = this.getExplicitKeys()
+    const defaultKeys = Array.from(this.defaults.keys())
+    return Array.from(new Set([...explicitKeys, ...defaultKeys]))
+  }
+
+  has(key: SettingsKey) {
+    return this.hasExplicitValue(key) || this.hasDefaultValue(key)
+  }
+
+  hasExplicitValue(key: SettingsKey) {
+    return this.settings.has(key)
+  }
+
+  hasDefaultValue(key: SettingsKey) {
+    return this.defaults.has(key)
+  }
+
+  set<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
+    return this.settings.set(options)
+  }
+
+  setIfNonexistent<T>(options: SetSettingOptions<T>): SettingAccessor<T> {
+    return this.settings.setIfNonexistent(options)
+  }
+
+  remove(key: SettingsKey) {
+    return this.settings.remove(key)
+  }
+
+  async init() {
+    this.settings.init()
+    return this
+  }
+
+  async isAvailable() {
+    return this.settings.isAvailable()
+  }
+
+  debugSet<T>(key: SettingsKey, value: T) {
+    return this.settings.debugSet(key, value)
+  }
+
+  getObservable<T>(key: SettingsKey): Observable<SettingsData<T>> {
+    return this.settings.getObservable(key)
+  }
 }
 
 export class SettingAccessor<T> {
