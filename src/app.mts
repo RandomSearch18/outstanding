@@ -10,7 +10,7 @@ import {
 
 export class App {
   // @ts-ignore - Living life on the edge
-  settings: SettingsProvider // @ts-ignore
+  settings: SettingsWithDefaults // @ts-ignore
   storage: SettingsProvider // @ts-ignore
   datapackManager: DatapackManager
 
@@ -46,6 +46,12 @@ export class App {
       .then((p) => p.init())
 
     // Datapack manager
+    if (this.settings.get("useDatapacks")!) {
+      await this.initDatapacks()
+    }
+  }
+
+  async initDatapacks() {
     const knownDatapacks = this.storage.setIfNonexistent({
       key: "knownDatapacks",
       value: new Map<NamespacedId, KnownDatapack>(),

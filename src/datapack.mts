@@ -122,8 +122,6 @@ export class DatapackManager {
     unknownDatapacks.forEach((datapack) => {
       this.knownDatapacks.get().set(datapack.id, { enabled: true })
     })
-
-    
   }
 }
 
