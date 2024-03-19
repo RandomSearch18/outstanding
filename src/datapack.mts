@@ -19,9 +19,11 @@ export interface DatapackExport {
 }
 
 /** A map of new registry item IDs to new registry items that should be registered by the datapack */
-interface RegistryAdditions {
+export interface RegistryAdditions {
   [id: NamespacedId]: RegistryItem
 }
+
+export type RegistryContributions = Record<NamespacedId, RegistryAdditions>
 
 export class Datapack {
   id: NamespacedId
@@ -31,9 +33,7 @@ export class Datapack {
     description?: string
   }
   data: {
-    registryAdditions?: {
-      [registry: NamespacedId]: RegistryAdditions
-    }
+    registryAdditions?: RegistryContributions
   }
   exportedSource: DatapackExport
 
@@ -103,17 +103,19 @@ export class DatapackManager {
       import: "default",
     })
 
-    const loadedPackIds: string[] = []
+    const registeredPackIds: string[] = []
     for (const [path, importSource] of Object.entries(builtInDatapacks)) {
       const defaultImport = await importSource()
       this.assertValidDatapackImport(defaultImport, path)
       const importedData = defaultImport as DatapackExport
       this.registerDatapack(importedData)
-      loadedPackIds.push(importedData.metadata.id)
+      registeredPackIds.push(importedData.metadata.id)
     }
 
-    if (loadedPackIds.length > 0) {
-      console.log(`Registered built-in datapacks: ${loadedPackIds.join(", ")}`)
+    if (registeredPackIds.length > 0) {
+      console.log(
+        `Registered built-in datapacks: ${registeredPackIds.join(", ")}`
+      )
     }
   }
 
@@ -133,6 +135,15 @@ export class DatapackManager {
       }
       this.knownDatapacks.get()[datapack.id] = { enabled: true }
     })
+  }
+
+  loadDatapack(datapack: Datapack) {
+    // Load its registry contributions
+    if (datapack.data.registryAdditions) {
+      this.app.registries.loadRegistryContributions(
+        datapack.data.registryAdditions
+      )
+    }
   }
 }
 

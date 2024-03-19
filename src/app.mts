@@ -1,6 +1,7 @@
 import { DatapackManager, KnownDatapack } from "./datapack.mjs"
 import { ProviderRegistry } from "./registry/provider.mjs"
 import { NamespacedId } from "./registry/registry.mjs"
+import RegistryRegistry from "./registry/registryRegistry.mjs"
 import {
   AppSettingOwner,
   LocalStorageSettingsProvider,
@@ -10,12 +11,15 @@ import {
 
 export class App {
   // @ts-ignore - Living life on the edge
+  registries: RegistryRegistry // @ts-ignore
   settings: SettingsWithDefaults // @ts-ignore
   storage: SettingsProvider // @ts-ignore
   datapackManager: DatapackManager
 
   async init() {
     window.outstanding = this
+
+    this.registries = new RegistryRegistry()
 
     // Settings provider
     const DEFAULT_SETTINGS = Object.entries({
@@ -24,6 +28,10 @@ export class App {
 
     const settingsProviderRegistry = new ProviderRegistry<SettingsWithDefaults>(
       this
+    )
+    this.registries.register(
+      settingsProviderRegistry.id,
+      settingsProviderRegistry
     )
     settingsProviderRegistry.register(
       "outstanding:local_storage",
@@ -42,6 +50,10 @@ export class App {
     storageProviderRegistry.register(
       "outstanding:local_storage",
       new LocalStorageSettingsProvider(this, "internal_data", 10)
+    )
+    this.registries.register(
+      storageProviderRegistry.id,
+      storageProviderRegistry
     )
     this.storage = await storageProviderRegistry
       .getBestProvider()
@@ -63,6 +75,7 @@ export class App {
     await this.datapackManager.registerBuiltInDatapacks()
 
     this.datapackManager.handleNewDatapacks()
-    // TODO: Load the datapack
+
+    // TODO: Load the packs!
   }
 }
