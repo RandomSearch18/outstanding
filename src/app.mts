@@ -1,6 +1,5 @@
 import { DatapackManager, KnownDatapack } from "./datapack.mjs"
 import { ProviderRegistry } from "./registry/provider.mjs"
-import { NamespacedId } from "./registry/registry.mjs"
 import RegistryRegistry from "./registry/registryRegistry.mjs"
 import {
   AppSettingOwner,
@@ -8,6 +7,9 @@ import {
   SettingsProvider,
   SettingsWithDefaults,
 } from "./registry/settingsProvider.mjs"
+import { TypedEventTarget } from "./utils/typedEventTarget.mjs"
+
+export type AppEvents = {}
 
 export class App {
   // @ts-ignore - Living life on the edge
@@ -15,6 +17,8 @@ export class App {
   settings: SettingsWithDefaults // @ts-ignore
   storage: SettingsProvider // @ts-ignore
   datapackManager: DatapackManager
+
+  events = new EventTarget() as TypedEventTarget<AppEvents>
 
   async init() {
     window.outstanding = this

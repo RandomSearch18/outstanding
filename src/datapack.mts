@@ -3,6 +3,13 @@ import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
 import { SettingAccessor } from "./registry/settingsProvider.mjs"
 import { toEntries } from "./utilities.mjs"
+import { TypedEventTarget } from "./utils/typedEventTarget.mjs"
+
+export type DatapackCallback = (app: App) => unknown
+
+export interface DatapackFunctions {
+  postLoad?: DatapackCallback
+}
 
 /** An object like this should be the default export of a datapack source file */
 export interface DatapackExport {
@@ -17,6 +24,8 @@ export interface DatapackExport {
   registryAdditions?: {
     [registry: NamespacedId]: RegistryAdditions
   }
+
+  functions?: DatapackFunctions
 }
 
 /** A map of new registry item IDs to new registry items that should be registered by the datapack */
@@ -35,6 +44,7 @@ export class Datapack {
   }
   data: {
     registryAdditions?: RegistryContributions
+    functions?: DatapackFunctions
   }
   exportedSource: DatapackExport
 
@@ -48,6 +58,7 @@ export class Datapack {
     }
     this.data = {
       registryAdditions: exportedPack.registryAdditions,
+      functions: exportedPack.functions,
     }
   }
 }
@@ -56,8 +67,24 @@ export interface KnownDatapack {
   enabled: boolean
 }
 
+/** Represents a change of datapack state, e.g. a pack being loaded */
+export class DatapackStateEvent extends Event {
+  datapack: Datapack
+
+  constructor(datapack: Datapack) {
+    super("datapackState")
+    this.datapack = datapack
+  }
+}
+
+export type DatapackManagerEvents = {
+  postLoad: DatapackStateEvent
+}
+
 export class DatapackManager {
   app: App
+  events = new EventTarget() as TypedEventTarget<DatapackManagerEvents>
+  postLoadCallbacks: Map<NamespacedId, DatapackCallback>
   knownDatapacks: SettingAccessor<Record<NamespacedId, KnownDatapack>>
   registry: DatapackRegistry
 
@@ -69,7 +96,19 @@ export class DatapackManager {
   ) {
     this.app = app
     this.knownDatapacks = knownDatapacks
+    this.postLoadCallbacks = new Map()
     this.registry = new DatapackRegistry()
+
+    this.events.addEventListener("postLoad", (event) =>
+      this.onPostDatapackLoad(event)
+    )
+  }
+
+  onPostDatapackLoad(event: DatapackStateEvent) {
+    debugger
+    const callback = this.postLoadCallbacks.get(event.datapack.id)
+    if (!callback) return
+    callback(this.app)
   }
 
   registerDatapack(exportedPack: DatapackExport) {
@@ -145,6 +184,20 @@ export class DatapackManager {
         datapack.data.registryAdditions
       )
     }
+
+    // Load its callback functions
+    if (datapack.data.functions) {
+      if (datapack.data.functions.postLoad) {
+        this.postLoadCallbacks.set(
+          datapack.id,
+          datapack.data.functions.postLoad
+        )
+      }
+    }
+
+    // Load is now complete
+    debugger
+    this.events.dispatchEvent(new DatapackStateEvent(datapack))
   }
 
   loadDatapacks() {

@@ -7,6 +7,11 @@ const outstandingDatapack: DatapackExport = {
     friendlyName: "Outstanding (vanilla)",
     description: "The built-in datapack for Outstanding's basic features",
   },
+  functions: {
+    postLoad: (app) => {
+      console.log("Outstanding datapack loaded!")
+    },
+  },
 }
 
 export default outstandingDatapack
