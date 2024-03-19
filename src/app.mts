@@ -26,15 +26,10 @@ export class App {
       useDatapacks: true,
     })
 
-    const settingsProviderRegistry = new ProviderRegistry<SettingsWithDefaults>(
-      this
-    )
-    this.registries.register(
-      settingsProviderRegistry.id,
-      settingsProviderRegistry
+    const settingsProviderRegistry = this.registries.register(
+      new ProviderRegistry<SettingsWithDefaults>(this)
     )
     settingsProviderRegistry.register(
-      "outstanding:local_storage",
       new SettingsWithDefaults(
         new LocalStorageSettingsProvider(this, "settings", 10),
         new Map(DEFAULT_SETTINGS)
@@ -46,14 +41,11 @@ export class App {
     console.log("Using settings storage provider", this.settings)
 
     // Persistant storage provider
-    const storageProviderRegistry = new ProviderRegistry<SettingsProvider>(this)
-    storageProviderRegistry.register(
-      "outstanding:local_storage",
-      new LocalStorageSettingsProvider(this, "internal_data", 10)
+    const storageProviderRegistry = this.registries.register(
+      new ProviderRegistry<SettingsProvider>(this)
     )
-    this.registries.register(
-      storageProviderRegistry.id,
-      storageProviderRegistry
+    storageProviderRegistry.register(
+      new LocalStorageSettingsProvider(this, "internal_data", 10)
     )
     this.storage = await storageProviderRegistry
       .getBestProvider()
@@ -77,5 +69,11 @@ export class App {
     this.datapackManager.handleNewDatapacks()
 
     // TODO: Load the packs!
+    const loadedPackIDs = this.datapackManager
+      .loadDatapacks()
+      .map((datapack) => datapack.id)
+
+    const totalLoadedPacks = loadedPackIDs.length
+    console.log(`Loaded ${totalLoadedPacks} datapack(s):`, loadedPackIDs)
   }
 }

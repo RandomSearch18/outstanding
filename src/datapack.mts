@@ -2,6 +2,7 @@ import { App } from "./app.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
 import { SettingAccessor } from "./registry/settingsProvider.mjs"
+import { toEntries } from "./utilities.mjs"
 
 /** An object like this should be the default export of a datapack source file */
 export interface DatapackExport {
@@ -73,7 +74,7 @@ export class DatapackManager {
 
   registerDatapack(exportedPack: DatapackExport) {
     const datapack = new Datapack(exportedPack)
-    this.registry.register(datapack.id, datapack)
+    this.registry.registerWithId(datapack.id, datapack)
     console.log(`Registered datapack ${datapack.id}`)
   }
 
@@ -144,6 +145,17 @@ export class DatapackManager {
         datapack.data.registryAdditions
       )
     }
+  }
+
+  loadDatapacks() {
+    const enabledDatapacksRefs = toEntries(this.knownDatapacks.get()).filter(
+      ([, datapack]) => datapack.enabled
+    )
+    const enabledDatapacks = enabledDatapacksRefs.map(
+      ([id]) => this.registry.getItem(id)!
+    )
+    enabledDatapacks.forEach((datapack) => this.loadDatapack(datapack))
+    return enabledDatapacks
   }
 }
 

@@ -3,6 +3,10 @@ import { Observable, Resource, ObservableReadonly } from "voby/dist/types"
 
 export type anyObject = { [key: string]: any }
 
+export function toEntries<K extends string, V>(object: Record<K, V>): [K, V][] {
+  return Object.entries(object) as [K, V][]
+}
+
 export function resourceValue<T>(
   resource: Resource<T>
 ): ObservableReadonly<T | string> {

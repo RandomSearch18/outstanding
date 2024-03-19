@@ -15,14 +15,20 @@ export class Registry<T extends RegistryItem> {
   private items: Map<NamespacedId, T>
   private postRegister?: (registry: Registry<T>, item: T) => void
 
-  register(id: NamespacedId, item: T): void {
+  registerWithId(id: NamespacedId, item: T): T {
     this.items.set(id, item)
     this.postRegister?.(this, item)
+    return item
+  }
+
+  register<I extends T>(item: I): I {
+    // @ts-ignore - Not sure why this wouldn't work
+    return this.registerWithId(item.id, item)
   }
 
   registerEntries(entries: [NamespacedId, T][]) {
     entries.forEach(([id, item]) => {
-      this.register(id, item)
+      this.registerWithId(id, item)
     })
   }
 
