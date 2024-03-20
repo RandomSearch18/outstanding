@@ -9,7 +9,7 @@ const outstandingDatapack: DatapackExport = {
   },
   functions: {
     postLoad: (app) => {
-      console.log("Outstanding datapack loaded!")
+      console.log("Outstanding datapack loaded, yay!")
     },
   },
 }

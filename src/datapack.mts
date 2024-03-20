@@ -3,7 +3,7 @@ import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
 import { SettingAccessor } from "./registry/settingsProvider.mjs"
 import { toEntries } from "./utilities.mjs"
-import { TypedEventTarget } from "./utils/typedEventTarget.mjs"
+import { createNanoEvents } from "./utils/nanoEvents.mjs"
 
 export type DatapackCallback = (app: App) => unknown
 
@@ -78,12 +78,12 @@ export class DatapackStateEvent extends Event {
 }
 
 export type DatapackManagerEvents = {
-  postLoad: DatapackStateEvent
+  postLoad: (event: DatapackStateEvent) => void
 }
 
 export class DatapackManager {
   app: App
-  events = new EventTarget() as TypedEventTarget<DatapackManagerEvents>
+  events = createNanoEvents<DatapackManagerEvents>()
   postLoadCallbacks: Map<NamespacedId, DatapackCallback>
   knownDatapacks: SettingAccessor<Record<NamespacedId, KnownDatapack>>
   registry: DatapackRegistry
@@ -99,13 +99,10 @@ export class DatapackManager {
     this.postLoadCallbacks = new Map()
     this.registry = new DatapackRegistry()
 
-    this.events.addEventListener("postLoad", (event) =>
-      this.onPostDatapackLoad(event)
-    )
+    this.events.on("postLoad", (event) => this.onPostDatapackLoad(event))
   }
 
   onPostDatapackLoad(event: DatapackStateEvent) {
-    debugger
     const callback = this.postLoadCallbacks.get(event.datapack.id)
     if (!callback) return
     callback(this.app)
@@ -196,8 +193,7 @@ export class DatapackManager {
     }
 
     // Load is now complete
-    debugger
-    this.events.dispatchEvent(new DatapackStateEvent(datapack))
+    this.events.emit("postLoad", new DatapackStateEvent(datapack))
   }
 
   loadDatapacks() {
