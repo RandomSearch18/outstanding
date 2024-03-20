@@ -12,6 +12,9 @@ const outstandingDatapack: DatapackExport = {
       console.log("Outstanding datapack loaded, yay!")
     },
   },
+  registryAdditions: {
+    // ""
+  },
 }
 
 export default outstandingDatapack

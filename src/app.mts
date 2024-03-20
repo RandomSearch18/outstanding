@@ -7,7 +7,7 @@ import {
   SettingsProvider,
   SettingsWithDefaults,
 } from "./registry/settingsProvider.mjs"
-import { TypedEventTarget } from "./utils/typedEventTarget.mjs"
+import { createNanoEvents } from "./utils/nanoEvents"
 
 export type AppEvents = {}
 
@@ -18,7 +18,7 @@ export class App {
   storage: SettingsProvider // @ts-ignore
   datapackManager: DatapackManager
 
-  events = new EventTarget() as TypedEventTarget<AppEvents>
+  events = createNanoEvents<AppEvents>()
 
   async init() {
     window.outstanding = this
@@ -72,7 +72,6 @@ export class App {
 
     this.datapackManager.handleNewDatapacks()
 
-    // TODO: Load the packs!
     const loadedPackIDs = this.datapackManager
       .loadDatapacks()
       .map((datapack) => datapack.id)
