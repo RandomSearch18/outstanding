@@ -14,8 +14,8 @@ export abstract class Provider {
 }
 
 export class ProviderRegistry<T extends Provider> extends Registry<T> {
-  constructor(app: App) {
-    super()
+  constructor(app: App, id: NamespacedId) {
+    super(id)
   }
 
   async availableProviders(): Promise<T[]> {

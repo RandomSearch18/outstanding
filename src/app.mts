@@ -31,7 +31,7 @@ export class App {
     })
 
     const settingsProviderRegistry = this.registries.register(
-      new ProviderRegistry<SettingsWithDefaults>(this)
+      new ProviderRegistry<SettingsWithDefaults>(this, "outstanding:settings")
     )
     settingsProviderRegistry.register(
       new SettingsWithDefaults(
@@ -46,7 +46,10 @@ export class App {
 
     // Persistant storage provider
     const storageProviderRegistry = this.registries.register(
-      new ProviderRegistry<SettingsProvider>(this)
+      new ProviderRegistry<SettingsProvider>(
+        this,
+        "outstanding:persistant_storage"
+      )
     )
     storageProviderRegistry.register(
       new LocalStorageSettingsProvider(this, "internal_data", 10)
