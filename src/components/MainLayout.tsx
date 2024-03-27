@@ -1,5 +1,6 @@
 import "./MainLayout.css"
 import { App } from "../app.mjs"
+import Button from "./Button"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
   return (
@@ -9,6 +10,10 @@ function MainLayout({ app }: { app: App }): JSX.Element {
           <p>Get started by opening a file</p>
           <p>Note: File opening has not been implemented yet</p>
           <p>Settings: {app.settings.getKeys().join(", ")}</p>
+          <Button
+            text="Open a data directory"
+            action={() => console.log(app.dataDirectoryManager)}
+          />
         </div>
       </main>
     </div>

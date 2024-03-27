@@ -1,3 +1,5 @@
+import { DataDirectoryManager } from "./dataDirectory/dataDirManager.mjs"
+import { DataDirectoryProvider } from "./dataDirectory/dataDirProvider.mjs"
 import { DatapackManager, KnownDatapack } from "./datapack.mjs"
 import { ProviderRegistry } from "./registry/provider.mjs"
 import RegistryRegistry from "./registry/registryRegistry.mjs"
@@ -16,7 +18,8 @@ export class App {
   registries: RegistryRegistry // @ts-ignore
   settings: SettingsWithDefaults // @ts-ignore
   storage: SettingsProvider // @ts-ignore
-  datapackManager: DatapackManager
+  datapackManager: DatapackManager // @ts-ignore
+  dataDirectoryManager: DataDirectoryManager // @ts-ignore
 
   events = createNanoEvents<AppEvents>()
 
@@ -62,6 +65,17 @@ export class App {
     if (this.settings.get("useDatapacks")!) {
       await this.initDatapacks()
     }
+
+    // Data directory manager
+    const dataDirectoryProviderRegistry = this.registries.register(
+      new ProviderRegistry<DataDirectoryProvider>(
+        this,
+        "outstanding:data_directory_provider"
+      )
+    )
+    this.dataDirectoryManager = new DataDirectoryManager(
+      dataDirectoryProviderRegistry
+    )
   }
 
   async initDatapacks() {

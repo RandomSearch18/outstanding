@@ -1,6 +1,6 @@
 import { App } from "../app.mjs"
 import { NamespacedId } from "../registry/registry.mjs"
-import { DataDirectoryProvider } from "./dataDirProvider"
+import { DataDirectoryProvider } from "./dataDirProvider.mjs"
 
 class FilesystemDataDirectory extends DataDirectoryProvider {
   directoryHandle
