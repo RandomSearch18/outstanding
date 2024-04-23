@@ -12,7 +12,7 @@ function MainLayout({ app }: { app: App }): JSX.Element {
           <p>Settings: {app.settings.getKeys().join(", ")}</p>
           <Button
             text="Open a data directory"
-            action={() => console.log(app.dataDirectoryManager)}
+            action={() => app.dataDirectoryManager.openDataDirectory()}
           />
         </div>
       </main>

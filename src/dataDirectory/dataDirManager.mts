@@ -1,19 +1,38 @@
 import { ProviderRegistry } from "../registry/provider.mjs"
-import { DataDirectoryProvider } from "./dataDirProvider.mjs"
+import {
+  DataDirectoryHandle,
+  DataDirectoryProvider,
+} from "./dataDirProvider.mjs"
 
 export class DataDirectoryManager {
   providerRegistry: ProviderRegistry<DataDirectoryProvider>
   activeProvider: DataDirectoryProvider | null = null
+  currentDirectory: DataDirectoryHandle | null = null
 
   constructor(providerRegistry: ProviderRegistry<DataDirectoryProvider>) {
     this.providerRegistry = providerRegistry
   }
 
   async chooseProvider() {
-    this.activeProvider = await this.providerRegistry.getBestProvider()
+    const newProvider = await this.providerRegistry.getBestProvider()
+    this.setActiveProvider(newProvider)
   }
 
-  provider() {
-    
+  setActiveProvider(provider: DataDirectoryProvider) {
+    this.activeProvider = provider
+  }
+
+  async getActiveProvider() {
+    if (this.activeProvider === null) {
+      await this.chooseProvider()
+    }
+    return this.activeProvider!
+  }
+
+  async openDataDirectory() {
+    const provider = await this.getActiveProvider()
+    const directory = await provider.openDataDirectory()
+    this.currentDirectory = directory
+    return directory
   }
 }
