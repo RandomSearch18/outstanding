@@ -63,6 +63,10 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
         "outstanding.json",
         { create: true }
       )
+      // Initialise the file with an empty object, so that it's valid JSON
+      const writable = await metadataFile.createWritable()
+      await writable.write(JSON.stringify({}))
+      await writable.close()
       return metadataFile
     }
   }
@@ -72,7 +76,7 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     const metadataFile = await this.getMetadataFile()
     const metadata = await metadataFile.getFile()
     const metadataText = await metadata.text()
-    console.log(metadataText)
+    console.log(JSON.parse(metadataText))
     return this
   }
 }
