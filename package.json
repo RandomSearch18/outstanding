@@ -11,6 +11,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/wicg-file-system-access": "^2023.10.5",
     "typescript": "^5.3.3",
     "vite": "^5.1.4",
     "voby-vite": "^1.0.0"

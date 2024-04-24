@@ -23,14 +23,22 @@ export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
   }
 
   async openDataDirectory(): Promise<FilesystemDataDirectoryHandle> {
-    throw new Error("Method not implemented.")
+    // TODO: Error handling, obviously
+    const directoryHandle = await window.showDirectoryPicker({
+      // Makes the browser remember the last-selected directory, scoped only to our app
+      id: "outstanding_data_directory",
+      mode: "readwrite",
+      startIn: "documents",
+    })
+
+    return new FilesystemDataDirectoryHandle(directoryHandle).init()
   }
 }
 
 export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   directoryHandle
 
-  constructor(directoryHandle: FileSystemDirectoryHandle, priority: number) {
+  constructor(directoryHandle: FileSystemDirectoryHandle) {
     super()
     this.directoryHandle = directoryHandle
   }
