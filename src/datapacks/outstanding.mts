@@ -1,4 +1,5 @@
 import { DatapackExport } from "../datapack.mjs"
+import { FilesystemDataDirectoryProvider } from "./outstanding/filesystemDataDir.mjs"
 
 const outstandingDatapack: DatapackExport = {
   metadata: {
@@ -13,7 +14,10 @@ const outstandingDatapack: DatapackExport = {
     },
   },
   registryAdditions: {
-    // ""
+    "outstanding:data_directory_provider": {
+      "outstanding:filesystem_access_api": (app) =>
+        new FilesystemDataDirectoryProvider(app, 100),
+    },
   },
 }
 

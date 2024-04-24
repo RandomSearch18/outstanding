@@ -30,9 +30,10 @@ export interface DatapackExport {
 
 /** A map of new registry item IDs to new registry items that should be registered by the datapack */
 export interface RegistryAdditions {
-  [id: NamespacedId]: RegistryItem
+  [id: NamespacedId]: RegistryAddition
 }
 
+export type RegistryAddition = RegistryItem | ((app: App) => RegistryItem)
 export type RegistryContributions = Record<NamespacedId, RegistryAdditions>
 
 export class Datapack {
@@ -178,7 +179,8 @@ export class DatapackManager {
     // Load its registry contributions
     if (datapack.data.registryAdditions) {
       this.app.registries.loadRegistryContributions(
-        datapack.data.registryAdditions
+        datapack.data.registryAdditions,
+        app
       )
     }
 

@@ -61,11 +61,6 @@ export class App {
       .getBestProvider()
       .then((p) => p.init())
 
-    // Datapack manager
-    if (this.settings.get("useDatapacks")!) {
-      await this.initDatapacks()
-    }
-
     // Data directory manager
     const dataDirectoryProviderRegistry = this.registries.register(
       new ProviderRegistry<DataDirectoryProvider>(
@@ -76,6 +71,12 @@ export class App {
     this.dataDirectoryManager = new DataDirectoryManager(
       dataDirectoryProviderRegistry
     )
+
+    // Datapack manager
+    if (this.settings.get("useDatapacks")!) {
+      await this.initDatapacks()
+    }
+    // Filesystem Access API data directory provider
   }
 
   async initDatapacks() {

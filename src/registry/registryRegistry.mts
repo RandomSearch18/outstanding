@@ -1,4 +1,5 @@
-import { RegistryContributions } from "../datapack.mjs"
+import { App } from "../app.mjs"
+import { RegistryAddition, RegistryContributions } from "../datapack.mjs"
 import { toEntries } from "../utilities.mjs"
 import { NamespacedId, Registry, RegistryItem } from "./registry.mjs"
 
@@ -7,7 +8,7 @@ class RegistryRegistry extends Registry<Registry<any>> {
     super("outstanding:registry")
   }
 
-  loadRegistryContributions(contributions: RegistryContributions) {
+  loadRegistryContributions(contributions: RegistryContributions, app: App) {
     toEntries(contributions).forEach(([registryId, additions]) => {
       const registry = this.getItem(registryId)
       if (!registry) {
@@ -15,9 +16,16 @@ class RegistryRegistry extends Registry<Registry<any>> {
       }
       const registryEntries = Object.entries(additions) as [
         NamespacedId,
-        RegistryItem
+        RegistryAddition
       ][]
-      registry.registerEntries(registryEntries)
+      const resolvedEntries: [NamespacedId, RegistryItem][] =
+        registryEntries.map(([id, addition]) => {
+          if (typeof addition === "function") {
+            return [id, addition(app)]
+          }
+          return [id, addition]
+        })
+      registry.registerEntries(resolvedEntries)
     })
   }
 }
