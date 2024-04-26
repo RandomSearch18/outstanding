@@ -138,7 +138,7 @@ export class DatapackManager {
   }
 
   async registerBuiltInDatapacks() {
-    const builtInDatapacks = import.meta.glob("./datapacks/*.mts", {
+    const builtInDatapacks = import.meta.glob("./datapacks/*/index.mts", {
       import: "default",
     })
 

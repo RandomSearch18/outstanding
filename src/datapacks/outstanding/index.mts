@@ -1,5 +1,5 @@
-import { DatapackExport } from "../datapack.mjs"
-import { FilesystemDataDirectoryProvider } from "./outstanding/filesystemDataDir.mjs"
+import { DatapackExport } from "../../datapack.mjs"
+import { FilesystemDataDirectoryProvider } from "./filesystemDataDir.mjs"
 
 const outstandingDatapack: DatapackExport = {
   metadata: {
