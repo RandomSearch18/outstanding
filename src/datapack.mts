@@ -93,12 +93,13 @@ export class DatapackManager {
 
   constructor(
     app: App,
-    knownDatapacks: SettingAccessor<Record<NamespacedId, KnownDatapack>>
+    knownDatapacks: SettingAccessor<Record<NamespacedId, KnownDatapack>>,
+    datapackRegistry: DatapackRegistry
   ) {
     this.app = app
     this.knownDatapacks = knownDatapacks
     this.postLoadCallbacks = new Map()
-    this.registry = new DatapackRegistry()
+    this.registry = datapackRegistry
 
     this.events.on("postLoad", (event) => this.onPostDatapackLoad(event))
   }
@@ -180,7 +181,7 @@ export class DatapackManager {
     if (datapack.data.registryAdditions) {
       this.app.registries.loadRegistryContributions(
         datapack.data.registryAdditions,
-        app
+        this.app
       )
     }
 

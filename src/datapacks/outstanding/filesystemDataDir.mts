@@ -5,6 +5,10 @@ import {
   DataDirectoryProvider,
 } from "../../dataDirectory/dataDirProvider.mjs"
 
+/**
+ * Uses the web Filesystem Access API to provide access to a data directory in the local filesystem
+ * when the app is running in a modern browser environment.
+ */
 export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
   id: NamespacedId = "outstanding:filesystem_access_api"
   priority

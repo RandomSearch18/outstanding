@@ -14,7 +14,7 @@ export abstract class Provider {
 }
 
 export class ProviderRegistry<T extends Provider> extends Registry<T> {
-  constructor(app: App, id: NamespacedId) {
+  constructor(id: NamespacedId) {
     super(id)
   }
 

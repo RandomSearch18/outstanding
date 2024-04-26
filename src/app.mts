@@ -1,6 +1,7 @@
 import { DataDirectoryManager } from "./dataDirectory/dataDirManager.mjs"
 import { DataDirectoryProvider } from "./dataDirectory/dataDirProvider.mjs"
-import { DatapackManager, KnownDatapack } from "./datapack.mjs"
+import { DatapackManager } from "./datapack.mjs"
+import { DatapackRegistry } from "./registry/datapack.mjs"
 import { ProviderRegistry } from "./registry/provider.mjs"
 import RegistryRegistry from "./registry/registryRegistry.mjs"
 import {
@@ -34,7 +35,7 @@ export class App {
     })
 
     const settingsProviderRegistry = this.registries.register(
-      new ProviderRegistry<SettingsWithDefaults>(this, "outstanding:settings")
+      new ProviderRegistry<SettingsWithDefaults>("outstanding:settings")
     )
     settingsProviderRegistry.register(
       new SettingsWithDefaults(
@@ -49,10 +50,7 @@ export class App {
 
     // Persistant storage provider
     const storageProviderRegistry = this.registries.register(
-      new ProviderRegistry<SettingsProvider>(
-        this,
-        "outstanding:persistant_storage"
-      )
+      new ProviderRegistry<SettingsProvider>("outstanding:persistant_storage")
     )
     storageProviderRegistry.register(
       new LocalStorageSettingsProvider(this, "internal_data", 10)
@@ -64,7 +62,6 @@ export class App {
     // Data directory manager
     const dataDirectoryProviderRegistry = this.registries.register(
       new ProviderRegistry<DataDirectoryProvider>(
-        this,
         "outstanding:data_directory_provider"
       )
     )
@@ -76,24 +73,29 @@ export class App {
     if (this.settings.get("useDatapacks")!) {
       await this.initDatapacks()
     }
-    // Filesystem Access API data directory provider
   }
 
   async initDatapacks() {
+    const datapackRegistry = new DatapackRegistry("outstanding:datapacks")
+    this.registries.register(datapackRegistry)
     const knownDatapacks = this.storage.setIfNonexistent({
       key: "knownDatapacks",
       value: {},
       owner: new AppSettingOwner(),
     })
-    this.datapackManager = new DatapackManager(this, knownDatapacks)
-    await this.datapackManager.registerBuiltInDatapacks()
 
+    this.datapackManager = new DatapackManager(
+      this,
+      knownDatapacks,
+      datapackRegistry
+    )
+
+    await this.datapackManager.registerBuiltInDatapacks()
     this.datapackManager.handleNewDatapacks()
 
     const loadedPackIDs = this.datapackManager
       .loadDatapacks()
       .map((datapack) => datapack.id)
-
     const totalLoadedPacks = loadedPackIDs.length
     console.log(`Loaded ${totalLoadedPacks} datapack(s):`, loadedPackIDs)
   }
