@@ -4,6 +4,11 @@ import {
   DataDirectoryHandle,
   DataDirectoryProvider,
 } from "../../dataDirectory/dataDirProvider.mjs"
+import { SettingsProvider } from "../../registry/settingsProvider.mjs"
+
+function filesystemAccessAPIAvailable() {
+  return "showOpenFilePicker" in window
+}
 
 /**
  * Uses the web Filesystem Access API to provide access to a data directory in the local filesystem
@@ -14,7 +19,7 @@ export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
   priority
 
   async isAvailable(): Promise<boolean> {
-    return "showOpenFilePicker" in window
+    return filesystemAccessAPIAvailable()
   }
 
   async init(): Promise<this> {
@@ -83,4 +88,24 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     console.log(JSON.parse(metadataText))
     return this
   }
+}
+
+export class FilesystemSettingsProvider extends SettingsProvider {
+  id: NamespacedId = "outstanding:filesystem_settings"
+  priority
+
+  async isAvailable(): Promise<boolean> {
+    return filesystemAccessAPIAvailable()
+  }
+
+  async init(): Promise<this> {
+    return this
+  }
+
+  constructor(app: App, priority: number) {
+    super(app)
+    this.priority = priority
+  }
+
+  
 }
