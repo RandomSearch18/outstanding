@@ -217,22 +217,20 @@ interface BackendStorageChange {
   newState: SettingsFormattedForJSONBackend
 }
 
-// TODO this
 export abstract class FileLikeSettingsProvider extends SettingsProvider {
-  private readonly localStorageKey: string
   private readonly formatVersion = 1
-  private map: ObservableMap<SettingsKey, SettingsData<JSONSafe>>
-  id: NamespacedId = "outstanding:local_storage"
+  map: ObservableMap<SettingsKey, SettingsData<JSONSafe>>
+  backendIsDirty: boolean
   priority: number
 
-  constructor(app: App, localStorageKey: string, priority: number) {
+  constructor(app: App, priority: number) {
     super(app)
-    this.localStorageKey = localStorageKey
     this.priority = priority
     this.map = new ObservableMap()
+    this.backendIsDirty = false
   }
 
-  private generateSettingsObject(): SettingsFormattedForJSONBackend {
+  generateSettingsObject(): SettingsFormattedForJSONBackend {
     const settingsObject = this.map.toPlainObject()
     return {
       version: this.formatVersion,
@@ -240,16 +238,39 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
     }
   }
 
+  abstract readFromBackend(): Promise<SettingsFormattedForJSONBackend>
+
   /**
    * Reads the settings from a file-like backend and initialises this.map with the settings
    * @throws {Error} If the back-end storage is corrupt or unusable somehow
    */
-  abstract loadFromBackend(): Promise<void>
+  async loadSettingsFromBackend() {
+    const state = await this.readFromBackend()
+    try {
+      const parsedData = state as SettingsFormattedForJSONBackend
+      if (parsedData.version !== this.formatVersion)
+        throw new Error(
+          `Data from storage backend is from an incompatible version`
+        )
+
+      // Actually load the settings
+      this.map = new ObservableMap(Object.entries(parsedData.settings))
+      console.log("Successfully loaded settings from local storage", this.map)
+    } catch (e) {
+      throw e instanceof SyntaxError
+        ? new Error(`Data from storage backend is corrupt!`)
+        : e
+    }
+  }
 
   /**
    * Updates the settings stored in the back-end with the current settings in this.map
    */
-  abstract saveToBackend(): Promise<void>
+  async saveSettingsToBackend(): Promise<void> {
+    await this.writeToBackend(this.generateSettingsObject())
+  }
+
+  abstract writeToBackend(data: SettingsFormattedForJSONBackend): Promise<void>
 
   abstract isAvailable(): Promise<boolean>
 
@@ -293,11 +314,18 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
     return this.get<T>(key)!
   }
 
+  markDirty() {
+    this.backendIsDirty = true
+    this.saveSettingsToBackend().then(() => {
+      this.backendIsDirty = false
+    })
+  }
+
   set<T extends JSONSafe>(options: SetSettingOptions<T>): SettingAccessor<T> {
     const { key, value, owner } = options
     const data = { value, owner }
     this.map.set(key, data)
-    this.saveToBackend()
+    this.markDirty()
     return this.accessor<T>(key)
   }
 
@@ -311,14 +339,11 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
 
   remove(key: SettingsKey) {
     this.map.delete(key)
-    this.saveToBackend()
+    this.markDirty()
   }
 
-  private loadChangesFromLocalStorage(
-    newState: SettingsFormattedForJSONBackend
-  ) {
+  private loadChangesFromBackend(newState: SettingsFormattedForJSONBackend) {
     const currentState = this.generateSettingsObject()
-
     Object.entries(newState.settings).forEach(([key, data]) => {
       const currentData = currentState.settings[key]
       if (currentData === undefined) {
@@ -336,11 +361,8 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
   /**
    * Handles the stored data in the backend being changed while the app is running
    */
-  private onBackendChange(change: BackendStorageChange) {
-    if (event.key !== this.localStorageKey) return
-    if (!change.oldState || !change.newState) return
+  handleBackendChange(change: BackendStorageChange) {
     const { oldState, newState } = change
-
     const ourState = this.generateSettingsObject()
     const oldStateMatchesOurs = areDeeplyEqual(oldState, ourState)
     const newStateMatchesOurs = areDeeplyEqual(newState, ourState)
@@ -351,8 +373,8 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
       return
     }
     if (oldStateMatchesOurs && !newStateMatchesOurs) {
-      // The settings have been updated by another tab
-      this.loadChangesFromLocalStorage(newState)
+      // The settings have been updated by another process
+      this.loadChangesFromBackend(newState)
       return
     }
     if (!oldStateMatchesOurs && newStateMatchesOurs) {
@@ -365,7 +387,7 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
       "Settings stored in local storage were modified without our knowledge"
     )
     // Let's cut our losses and load the settings as if we were just starting up
-    this.loadFromLocalStorage()
+    this.loadSettingsFromBackend()
   }
 }
 
@@ -376,60 +398,42 @@ interface SettingsFormattedForJSONBackend {
   }
 }
 
-export class LocalStorageSettingsProvider extends SettingsProvider {
+export class LocalStorageSettingsProvider extends FileLikeSettingsProvider {
   private readonly localStorageKey: string
-  private readonly formatVersion = 1
-  private map: ObservableMap<SettingsKey, SettingsData<JSONSafe>>
   id: NamespacedId = "outstanding:local_storage"
-  priority: number
 
   constructor(app: App, localStorageKey: string, priority: number) {
-    super(app)
+    super(app, priority)
     this.localStorageKey = localStorageKey
-    this.priority = priority
-    this.map = new ObservableMap()
   }
 
-  private loadFromLocalStorage() {
-    const item = localStorage.getItem(this.localStorageKey)
-    if (item === null)
+  async readFromBackend() {
+    const data = localStorage.getItem(this.localStorageKey)
+    if (data === null) {
       throw new Error(
         `Key ${this.localStorageKey} not present in local storage`
       )
+    }
 
     try {
-      const parsedData = JSON.parse(item) as SettingsFormattedForJSONBackend
-
-      if (parsedData.version !== this.formatVersion)
-        throw new Error(
-          `Data from local storage (${this.localStorageKey}) is from an incompatible version`
-        )
-
-      // Actually load the settings
-      this.map = new ObservableMap(Object.entries(parsedData.settings))
-      console.log("Successfully loaded settings from local storage", this.map)
+      return JSON.parse(data)
     } catch (e) {
-      throw e instanceof SyntaxError
-        ? new Error(
-            `Data from local storage (${this.localStorageKey}) is corrupt!`
-          )
-        : e
+      throw new Error(
+        `Data in local storage (key ${this.localStorageKey}) is invalid JSON`
+      )
     }
   }
 
-  private generateSettingsObject(): SettingsFormattedForJSONBackend {
-    const settingsObject = this.map.toPlainObject()
-    return {
-      version: this.formatVersion,
-      settings: settingsObject,
-    }
+  async writeToBackend(data: SettingsFormattedForJSONBackend) {
+    localStorage.setItem(this.localStorageKey, JSON.stringify(data))
+  }
+
+  private writeToBackendSync(data: SettingsFormattedForJSONBackend) {
+    localStorage.setItem(this.localStorageKey, JSON.stringify(data))
   }
 
   private saveToLocalStorage() {
-    localStorage.setItem(
-      this.localStorageKey,
-      JSON.stringify(this.generateSettingsObject())
-    )
+    this.writeToBackendSync(this.generateSettingsObject())
   }
 
   async isAvailable() {
@@ -437,9 +441,9 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
     return isSupported
   }
 
-  private initialiseStorage(
+  private async initialiseStorage(
     importSettings?: Map<SettingsKey, SettingsData<JSONSafe>>
-  ) {
+  ): Promise<void> {
     // If we're importing settings, overwrite any existing settings from localstorage with the new ones
     if (importSettings) {
       importSettings.forEach((data, key) => {
@@ -451,129 +455,24 @@ export class LocalStorageSettingsProvider extends SettingsProvider {
 
     // Check if our key is already in local storage
     const existingEntry = localStorage.getItem(this.localStorageKey)
-    if (existingEntry !== null) return this.loadFromLocalStorage()
+    if (existingEntry !== null) return this.loadSettingsFromBackend()
 
     // If not, create a the key in local storage
     this.saveToLocalStorage()
   }
 
   async init(importSettings?: Map<SettingsKey, SettingsData<JSONSafe>>) {
-    this.initialiseStorage(importSettings)
-    window.addEventListener("storage", this.onStoredSettingsUpdate.bind(this))
+    await this.initialiseStorage(importSettings)
+    // Handle settings being changed by another open tab
+    window.addEventListener("storage", (event) => {
+      if (event.key !== this.localStorageKey) return
+      if (!event.oldValue || !event.newValue) return
+      this.handleBackendChange({
+        oldState: JSON.parse(event.oldValue),
+        newState: JSON.parse(event.newValue),
+      })
+    })
 
     return this
-  }
-
-  accessor<T extends JSONSafe>(key: SettingsKey): SettingAccessor<T> {
-    if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
-    return new SettingAccessor<T>(this, key)
-  }
-
-  has(key: SettingsKey) {
-    const keys = this.getKeys()
-    return keys.includes(key)
-  }
-
-  getKeys(): string[] {
-    return Array.from(this.map.keys())
-  }
-
-  get<T extends JSONSafe>(key: SettingsKey): SettingsData<T> | null {
-    const data = this.map.get(key)
-    if (data === undefined) return null
-    return data() as SettingsData<T>
-  }
-
-  getObservable<T extends JSONSafe>(
-    key: SettingsKey
-  ): Observable<SettingsData<T>> {
-    if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
-    const observable = this.map.get(key)!
-    return observable as unknown as Observable<SettingsData<T>>
-  }
-
-  getWithDefault<T extends JSONSafe>(
-    key: SettingsKey,
-    defaultValue: SetSettingOptionsWithoutKey<T>
-  ): SettingsData<T> {
-    if (!this.has(key)) return this.set({ ...defaultValue, key }).getData()
-    return this.get<T>(key)!
-  }
-
-  set<T extends JSONSafe>(options: SetSettingOptions<T>): SettingAccessor<T> {
-    const { key, value, owner } = options
-    const data = { value, owner }
-    this.map.set(key, data)
-    this.saveToLocalStorage()
-    return this.accessor<T>(key)
-  }
-
-  setIfNonexistent<T extends JSONSafe>(
-    options: SetSettingOptions<T>
-  ): SettingAccessor<T> {
-    const { key, value, owner } = options
-    if (this.has(key)) return this.accessor<T>(key)!
-    return this.set({ key, value, owner })
-  }
-
-  remove(key: SettingsKey) {
-    this.map.delete(key)
-    this.saveToLocalStorage()
-  }
-
-  private loadChangesFromLocalStorage(
-    newState: SettingsFormattedForJSONBackend
-  ) {
-    const currentState = this.generateSettingsObject()
-
-    Object.entries(newState.settings).forEach(([key, data]) => {
-      const currentData = currentState.settings[key]
-      if (currentData === undefined) {
-        // This is a newly-added setting
-        this.map.set(key, data)
-        return
-      }
-      if (!areDeeplyEqual(data, currentData)) {
-        // This setting has been modified
-        this.map.set(key, data)
-      }
-    })
-  }
-
-  private onStoredSettingsUpdate(event: StorageEvent) {
-    if (event.key !== this.localStorageKey) return
-    if (!event.oldValue || !event.newValue) return
-    const oldState = JSON.parse(
-      event.oldValue
-    ) as SettingsFormattedForJSONBackend
-    const newState = JSON.parse(
-      event.newValue
-    ) as SettingsFormattedForJSONBackend
-
-    const ourState = this.generateSettingsObject()
-    const oldStateMatchesOurs = areDeeplyEqual(oldState, ourState)
-    const newStateMatchesOurs = areDeeplyEqual(newState, ourState)
-
-    if (oldStateMatchesOurs && newStateMatchesOurs) {
-      // Both the old and new states are consistent with our internal state,
-      // so possibly some superficial change like whitespace was made
-      return
-    }
-    if (oldStateMatchesOurs && !newStateMatchesOurs) {
-      // The settings have been updated by another tab
-      this.loadChangesFromLocalStorage(newState)
-      return
-    }
-    if (!oldStateMatchesOurs && newStateMatchesOurs) {
-      // This shouldn't really happen but we can probably just ignore it
-      // since we're already in sync with the new state
-      return
-    }
-    // If we get here, we've managed to lose track of the localstorage state
-    console.warn(
-      "Settings stored in local storage were modified without our knowledge"
-    )
-    // Let's cut our losses and load the settings as if we were just starting up
-    this.loadFromLocalStorage()
   }
 }
