@@ -4,7 +4,7 @@ import {
   DataDirectoryHandle,
   DataDirectoryProvider,
 } from "../../dataDirectory/dataDirProvider.mjs"
-import { SettingsProvider } from "../../registry/settingsProvider.mjs"
+import { FileLikeSettingsProvider } from "../../registry/settingsProvider.mjs"
 
 function filesystemAccessAPIAvailable() {
   return "showOpenFilePicker" in window
@@ -90,9 +90,9 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   }
 }
 
-export class FilesystemSettingsProvider extends SettingsProvider {
+export class FilesystemSettingsProvider extends FileLikeSettingsProvider {
   id: NamespacedId = "outstanding:filesystem_settings"
-  priority
+  handle: FileSystemFileHandle
 
   async isAvailable(): Promise<boolean> {
     return filesystemAccessAPIAvailable()
@@ -102,10 +102,14 @@ export class FilesystemSettingsProvider extends SettingsProvider {
     return this
   }
 
-  constructor(app: App, priority: number) {
-    super(app)
-    this.priority = priority
+  async readFromBackend(): Promise<SettingsFormattedForJSONBackend> {
+    const file = await this.handle.getFile()
+    const text = await file.text()
+    return JSON.parse(text)
   }
 
-  
+  constructor(app: App, priority: number, settingsFile: FileSystemFileHandle) {
+    super(app, priority)
+    this.handle = settingsFile
+  }
 }
