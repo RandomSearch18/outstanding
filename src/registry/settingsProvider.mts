@@ -68,6 +68,7 @@ export interface SetSettingOptions<T> extends SetSettingOptionsWithoutKey<T> {
 
 /** Provides persistant storage of settings (key-value mappings) and associated metadata */
 export abstract class SettingsProvider extends Provider {
+  abstract init(importSettings?: SettingsMap): Promise<this>
   abstract accessor<T extends JSONSafe>(key: SettingsKey): SettingAccessor<T>
   abstract has(key: SettingsKey): boolean
   abstract set<T extends JSONSafe>(
@@ -166,8 +167,8 @@ export class SettingsWithDefaults extends SettingsProvider {
     return this.settings.remove(key)
   }
 
-  async init() {
-    this.settings.init()
+  async init(importSettings?: SettingsMap) {
+    this.settings.init(importSettings)
     return this
   }
 
@@ -217,8 +218,15 @@ interface BackendStorageChange {
   newState: SettingsFormattedForJSONBackend
 }
 
+export enum ImportSettingsResult {
+  Imported,
+  NotImported,
+}
+
+export type SettingsMap = Map<SettingsKey, SettingsData<JSONSafe>>
+
 export abstract class FileLikeSettingsProvider extends SettingsProvider {
-  private readonly formatVersion = 1
+  readonly formatVersion = 1
   map: ObservableMap<SettingsKey, SettingsData<JSONSafe>>
   backendIsDirty: boolean
   priority: number
@@ -228,6 +236,21 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
     this.priority = priority
     this.map = new ObservableMap()
     this.backendIsDirty = false
+  }
+
+  async importFromSettingsMap(settings: SettingsMap) {
+    settings.forEach((data, key) => {
+      this.map.set(key, data)
+    })
+    await this.saveSettingsToBackend()
+  }
+
+  async importSettings(
+    settingsMaybe: SettingsMap | undefined
+  ): Promise<ImportSettingsResult> {
+    if (!settingsMaybe) return ImportSettingsResult.NotImported
+    await this.importFromSettingsMap(settingsMaybe)
+    return ImportSettingsResult.Imported
   }
 
   generateSettingsObject(): SettingsFormattedForJSONBackend {
@@ -274,9 +297,7 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
 
   abstract isAvailable(): Promise<boolean>
 
-  abstract init(
-    importSettings?: Map<SettingsKey, SettingsData<JSONSafe>>
-  ): Promise<this>
+  abstract init(importSettings?: SettingsMap): Promise<this>
 
   accessor<T extends JSONSafe>(key: SettingsKey): SettingAccessor<T> {
     if (!this.has(key)) throw new Error(`Setting ${key} does not exist`)
@@ -391,7 +412,7 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
   }
 }
 
-interface SettingsFormattedForJSONBackend {
+export interface SettingsFormattedForJSONBackend {
   version: number
   settings: {
     [key: SettingsKey]: SettingsData<JSONSafe>
@@ -441,17 +462,10 @@ export class LocalStorageSettingsProvider extends FileLikeSettingsProvider {
     return isSupported
   }
 
-  private async initialiseStorage(
-    importSettings?: Map<SettingsKey, SettingsData<JSONSafe>>
-  ): Promise<void> {
+  private async initialiseStorage(importSettings?: SettingsMap): Promise<void> {
     // If we're importing settings, overwrite any existing settings from localstorage with the new ones
-    if (importSettings) {
-      importSettings.forEach((data, key) => {
-        this.map.set(key, data)
-      })
-      this.saveToLocalStorage()
-      return
-    }
+    const importResult = await this.importSettings(importSettings)
+    if (importResult === ImportSettingsResult.Imported) return
 
     // Check if our key is already in local storage
     const existingEntry = localStorage.getItem(this.localStorageKey)
@@ -461,7 +475,7 @@ export class LocalStorageSettingsProvider extends FileLikeSettingsProvider {
     this.saveToLocalStorage()
   }
 
-  async init(importSettings?: Map<SettingsKey, SettingsData<JSONSafe>>) {
+  async init(importSettings?: SettingsMap) {
     await this.initialiseStorage(importSettings)
     // Handle settings being changed by another open tab
     window.addEventListener("storage", (event) => {

@@ -4,7 +4,12 @@ import {
   DataDirectoryHandle,
   DataDirectoryProvider,
 } from "../../dataDirectory/dataDirProvider.mjs"
-import { FileLikeSettingsProvider } from "../../registry/settingsProvider.mjs"
+import {
+  FileLikeSettingsProvider,
+  ImportSettingsResult,
+  SettingsFormattedForJSONBackend,
+  SettingsMap,
+} from "../../registry/settingsProvider.mjs"
 
 function filesystemAccessAPIAvailable() {
   return "showOpenFilePicker" in window
@@ -92,24 +97,70 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
 
 export class FilesystemSettingsProvider extends FileLikeSettingsProvider {
   id: NamespacedId = "outstanding:filesystem_settings"
-  handle: FileSystemFileHandle
+  private fileHandle: FileSystemFileHandle | null
+  parentDirectory: FileSystemDirectoryHandle
+  settingsFilename: string
+
+  getHandle() {
+    if (!this.fileHandle) {
+      throw new Error("FilesystemSettingsProvider has not been initialized")
+    }
+    return this.fileHandle
+  }
 
   async isAvailable(): Promise<boolean> {
     return filesystemAccessAPIAvailable()
   }
 
-  async init(): Promise<this> {
+  async initializeFile(): Promise<FileSystemFileHandle> {
+    try {
+      return await this.parentDirectory.getFileHandle(this.settingsFilename)
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "NotFoundError"))
+        throw error
+      console.warn(
+        `Initializing new file for data storage: ${this.settingsFilename}`
+      )
+      return await this.parentDirectory.getFileHandle(this.settingsFilename, {
+        create: true,
+      })
+    }
+  }
+
+  async init(importSettings?: SettingsMap): Promise<this> {
+    if (importSettings) {
+      await this.importFromSettingsMap(importSettings)
+    }
+
+    this.fileHandle = await this.initializeFile()
+    this.saveSettingsToBackend()
+
     return this
   }
 
   async readFromBackend(): Promise<SettingsFormattedForJSONBackend> {
-    const file = await this.handle.getFile()
+    const file = await this.getHandle().getFile()
     const text = await file.text()
     return JSON.parse(text)
   }
 
-  constructor(app: App, priority: number, settingsFile: FileSystemFileHandle) {
+  async writeToBackend(
+    settings: SettingsFormattedForJSONBackend
+  ): Promise<void> {
+    const writable = await this.getHandle().createWritable()
+    await writable.write(JSON.stringify(settings))
+    await writable.close()
+  }
+
+  constructor(
+    app: App,
+    priority: number,
+    directory: FileSystemDirectoryHandle,
+    filename: string
+  ) {
     super(app, priority)
-    this.handle = settingsFile
+    this.fileHandle = null
+    this.parentDirectory = directory
+    this.settingsFilename = filename
   }
 }
