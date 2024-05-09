@@ -1,3 +1,4 @@
+import { $ } from "voby"
 import { ProviderRegistry } from "../registry/provider.mjs"
 import {
   DataDirectoryHandle,
@@ -8,6 +9,7 @@ export class DataDirectoryManager {
   providerRegistry: ProviderRegistry<DataDirectoryProvider>
   activeProvider: DataDirectoryProvider | null = null
   currentDirectory: DataDirectoryHandle | null = null
+  $directoryIsOpen = $(false)
 
   constructor(providerRegistry: ProviderRegistry<DataDirectoryProvider>) {
     this.providerRegistry = providerRegistry
@@ -33,6 +35,7 @@ export class DataDirectoryManager {
     const provider = await this.getActiveProvider()
     const directory = await provider.openDataDirectory()
     this.currentDirectory = directory
+    this.$directoryIsOpen(true)
     return directory
   }
 }
