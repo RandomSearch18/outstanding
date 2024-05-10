@@ -6,6 +6,20 @@ import { If } from "voby"
 function MainLayout({ app }: { app: App }): JSX.Element {
   return (
     <div class="main-layout">
+      <nav class="viewbar left">
+        <a>
+          <i>home</i>
+          <div>Home</div>
+        </a>
+        <a>
+          <i>search</i>
+          <div>Search</div>
+        </a>
+        <a>
+          <i>more_vert</i>
+          <div>More</div>
+        </a>
+      </nav>
       <div class="sidebar">Sidebar!</div>
       <main class="mainbar">
         <div class="get-started">
