@@ -6,7 +6,8 @@ import { If } from "voby"
 function MainLayout({ app }: { app: App }): JSX.Element {
   return (
     <div class="main-layout">
-      <main>
+      <div class="sidebar">Sidebar!</div>
+      <main class="mainbar">
         <div class="get-started">
           <p>Get started by opening a file</p>
           <p>Note: File opening has not been implemented yet</p>
