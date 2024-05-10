@@ -104,7 +104,7 @@ export class SettingsWithDefaults extends SettingsProvider {
     settingsProvider: SettingsProvider,
     defaults: Map<SettingsKey, unknown>
   ) {
-    super(settingsProvider.app)
+    super()
     this.id = settingsProvider.id
     this.priority = settingsProvider.priority
     this.settings = settingsProvider
@@ -231,8 +231,8 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
   backendIsDirty: boolean
   priority: number
 
-  constructor(app: App, priority: number) {
-    super(app)
+  constructor(priority: number) {
+    super()
     this.priority = priority
     this.map = new ObservableMap()
     this.backendIsDirty = false

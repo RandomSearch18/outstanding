@@ -32,7 +32,7 @@ export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
   }
 
   constructor(app: App, priority: number) {
-    super(app)
+    super()
     this.priority = priority
   }
 
@@ -51,10 +51,16 @@ export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
 
 export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   directoryHandle
+  metadataStore: FilesystemSettingsProvider
 
   constructor(directoryHandle: FileSystemDirectoryHandle) {
     super()
     this.directoryHandle = directoryHandle
+    this.metadataStore = new FilesystemSettingsProvider(
+      0,
+      this.directoryHandle,
+      "outstanding.json"
+    )
   }
 
   label() {
@@ -85,12 +91,9 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     }
   }
 
-  // TODO: reconsider this function
   async init(): Promise<this> {
-    const metadataFile = await this.getMetadataFile()
-    const metadata = await metadataFile.getFile()
-    const metadataText = await metadata.text()
-    console.log(JSON.parse(metadataText))
+    await this.metadataStore.init()
+    console.log(await this.metadataStore.readFromBackend())
     return this
   }
 }
@@ -153,12 +156,11 @@ export class FilesystemSettingsProvider extends FileLikeSettingsProvider {
   }
 
   constructor(
-    app: App,
     priority: number,
     directory: FileSystemDirectoryHandle,
     filename: string
   ) {
-    super(app, priority)
+    super(priority)
     this.fileHandle = null
     this.parentDirectory = directory
     this.settingsFilename = filename
