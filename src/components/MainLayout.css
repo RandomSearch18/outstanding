@@ -1,5 +1,6 @@
 .main-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: clamp(120px, 30%, 300px) auto;
   height: 100vh;
   width: 100vw;
 
@@ -8,11 +9,11 @@
 
 .mainbar {
   grid-area: mainbar;
+  /* width: 100%; */
 }
 
 .sidebar {
   grid-area: sidebar;
-  width: clamp(120px, 30%, 300px);
   background-color: #ffaaaa20;
 }
 
