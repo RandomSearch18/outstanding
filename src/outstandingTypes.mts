@@ -1,4 +1,5 @@
 import { DataDirectoryProvider } from "./dataDirectory/dataDirProvider.mjs"
+import { DataDrivenDecoder } from "./registry/dataDrivenRegistries.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { ProviderRegistry } from "./registry/provider.mjs"
 import {
@@ -18,6 +19,18 @@ export type OutstandingRegistries = {
 export type SettingsSomething =
   OutstandingRegistries["outstanding:settings"]["decoder"]
 
-export type DaataDrivenViewType = Parameters<
-  OutstandingRegistries["outstanding:ui_view"]["decoder"]["decode"]
->[0]
+// export type DataDrivenContributionFor<
+//   Registry extends keyof OutstandingRegistries
+// > = Parameters<OutstandingRegistries[Registry]["decoder"]["decode"]>[0]
+
+export type DataDrivenContributionFor<
+  Registry extends keyof OutstandingRegistries
+> = OutstandingRegistries[Registry]["decoder"] extends DataDrivenDecoder<
+  any,
+  any
+>
+  ? Parameters<OutstandingRegistries[Registry]["decoder"]["decode"]>[0]
+  : null
+
+type x = DataDrivenContributionFor<"outstanding:settings">
+type y = DataDrivenContributionFor<"outstanding:ui_view">
