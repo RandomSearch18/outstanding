@@ -14,21 +14,26 @@ function MainLayout({ app }: { app: App }): JSX.Element {
           item={ViewbarItem.Notes}
           label="Notes"
           icon="description"
+          sidebarElement="Notes sidebar content!"
         />
         <ViewbarItemButton
           app={app}
           item={ViewbarItem.Search}
           label="Search"
           icon="search"
+          sidebarElement="Search sidebar content!"
         />
         <ViewbarItemButton
           app={app}
           item={ViewbarItem.Settings}
           label="Settings"
           icon="settings"
+          sidebarElement="Settings sidebar content!"
         />
       </nav>
-      <div class="sidebar">Sidebar!</div>
+      <div class="sidebar">
+        <div id="sidebar-target"></div>
+      </div>
       <main class="mainbar">
         <div class="get-started">
           <p>Get started by opening a file</p>
