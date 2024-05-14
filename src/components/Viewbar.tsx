@@ -24,6 +24,7 @@ export function ViewbarItemButton({
         onClick={() => {
           app.state.viewbar.selectedItem = item
         }}
+        tabIndex={0}
       >
         <i>{icon}</i>
         <div>{label}</div>
