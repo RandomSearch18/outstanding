@@ -2,23 +2,31 @@ import "./MainLayout.css"
 import { App } from "../app.mjs"
 import Button from "./Button"
 import { If } from "voby"
+import { ViewbarItem } from "../appState.mjs"
+import { ViewbarItemButton } from "./Viewbar"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
   return (
     <div class="main-layout">
       <nav class="viewbar left">
-        <a>
-          <i>description</i>
-          <div>Notes</div>
-        </a>
-        <a>
-          <i>search</i>
-          <div>Search</div>
-        </a>
-        <a>
-          <i>settings</i>
-          <div>Settings</div>
-        </a>
+        <ViewbarItemButton
+          app={app}
+          item={ViewbarItem.Notes}
+          label="Notes"
+          icon="description"
+        />
+        <ViewbarItemButton
+          app={app}
+          item={ViewbarItem.Search}
+          label="Search"
+          icon="search"
+        />
+        <ViewbarItemButton
+          app={app}
+          item={ViewbarItem.Settings}
+          label="Settings"
+          icon="settings"
+        />
       </nav>
       <div class="sidebar">Sidebar!</div>
       <main class="mainbar">

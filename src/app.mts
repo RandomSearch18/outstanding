@@ -1,3 +1,5 @@
+import { store } from "voby"
+import { AppState, ViewbarItem } from "./appState.mjs"
 import { DataDirectoryManager } from "./dataDirectory/dataDirManager.mjs"
 import { DataDirectoryProvider } from "./dataDirectory/dataDirProvider.mjs"
 import { DatapackManager } from "./datapack.mjs"
@@ -16,6 +18,7 @@ export type AppEvents = {}
 
 export class App {
   // @ts-ignore - Living life on the edge
+  state: AppState // @ts-ignore
   registries: RegistryRegistry // @ts-ignore
   settings: SettingsWithDefaults // @ts-ignore
   storage: SettingsProvider // @ts-ignore
@@ -26,6 +29,12 @@ export class App {
 
   async init() {
     window.outstanding = this
+
+    this.state = store<AppState>({
+      viewbar: {
+        selectedItem: Object.values(ViewbarItem)[0],
+      },
+    })
 
     this.registries = new RegistryRegistry()
 
