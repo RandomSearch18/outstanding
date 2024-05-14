@@ -28,8 +28,12 @@ const outstandingDatapack: DatapackExport = {
       "outstanding:filesystem_access_api": (app) =>
         new FilesystemDataDirectoryProvider(app, 100),
     },
-    "outstanding:ui_view": {
-      "outstanding:git_manager": gitManagerView,
+  },
+  data: {
+    registryAdditions: {
+      "outstanding:ui_view": {
+        "outstanding:git_manager": gitManagerView,
+      },
     },
   },
 }

@@ -27,20 +27,25 @@ export interface DatapackExport {
   registryAdditions?: {
     [registry: NamespacedId]: RegistryAdditions
   }
-
   functions?: DatapackFunctions
+
+  data?: {
+    registryAdditions?: DataDrivenRegistryContributions
+  }
 }
 
 /** A map of new registry item IDs to new registry items that should be registered by the datapack */
 export interface RegistryAdditions {
   [id: NamespacedId]: RegistryAddition
 }
-
 export type DataDrivenRegistryAddition = AnyObject
-export type RegistryAddition =
-  | ((app: App) => RegistryItem)
-  | DataDrivenRegistryAddition
+export type RegistryAddition = (app: App) => RegistryItem
 export type RegistryContributions = Record<NamespacedId, RegistryAdditions>
+export type DataDrivenRegistryContributions = {
+  [registry: NamespacedId]: {
+    [id: NamespacedId]: DataDrivenRegistryAddition
+  }
+}
 
 export class Datapack {
   id: NamespacedId
@@ -49,9 +54,13 @@ export class Datapack {
     friendlyName?: string
     description?: string
   }
-  data: {
+  code: {
     registryAdditions?: RegistryContributions
+    // registryInclusions?: RegistryInclusions
     functions?: DatapackFunctions
+  }
+  data: {
+    registryAdditions?: DataDrivenRegistryContributions
   }
   exportedSource: DatapackExport
 
@@ -63,10 +72,11 @@ export class Datapack {
       friendlyName: exportedPack.metadata.friendlyName,
       description: exportedPack.metadata.description,
     }
-    this.data = {
+    this.code = {
       registryAdditions: exportedPack.registryAdditions,
       functions: exportedPack.functions,
     }
+    this.data = exportedPack.data || {}
   }
 }
 
@@ -184,21 +194,29 @@ export class DatapackManager {
 
   loadDatapack(datapack: Datapack) {
     // Load its registry contributions
-    if (datapack.data.registryAdditions) {
+    if (datapack.code.registryAdditions) {
       this.app.registries.loadRegistryContributions(
-        datapack.data.registryAdditions,
+        datapack.code.registryAdditions,
         this.app
       )
     }
 
     // Load its callback functions
-    if (datapack.data.functions) {
-      if (datapack.data.functions.postLoad) {
+    if (datapack.code.functions) {
+      if (datapack.code.functions.postLoad) {
         this.postLoadCallbacks.set(
           datapack.id,
-          datapack.data.functions.postLoad
+          datapack.code.functions.postLoad
         )
       }
+    }
+
+    // Load its data-driven registry contributions
+    if (datapack.data.registryAdditions) {
+      this.app.registries.loadRegistryContributions(
+        datapack.data.registryAdditions,
+        this.app
+      )
     }
 
     // Load is now complete

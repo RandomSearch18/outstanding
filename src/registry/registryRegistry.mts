@@ -1,5 +1,9 @@
 import { App } from "../app.mjs"
-import { RegistryAddition, RegistryContributions } from "../datapack.mjs"
+import {
+  DataDrivenRegistryContributions,
+  RegistryAddition,
+  RegistryContributions,
+} from "../datapack.mjs"
 import { toEntries } from "../utilities.mjs"
 import { NamespacedId, Registry, RegistryItem } from "./registry.mjs"
 import { isFunction, isPlainObject } from "is"
@@ -9,7 +13,10 @@ class RegistryRegistry extends Registry<Registry<any>> {
     super("outstanding:registry")
   }
 
-  loadRegistryContributions(contributions: RegistryContributions, app: App) {
+  loadRegistryContributions(
+    contributions: RegistryContributions | DataDrivenRegistryContributions,
+    app: App
+  ) {
     toEntries(contributions).forEach(([registryId, additions]) => {
       const registry = this.getItem(registryId)
       if (!registry) {
@@ -22,6 +29,7 @@ class RegistryRegistry extends Registry<Registry<any>> {
       const resolvedEntries: [NamespacedId, RegistryItem][] =
         registryEntries.map(([id, addition]) => {
           if (isFunction(addition)) {
+            // We assume it's an addition defined in code
             return [id, addition(app)]
           }
           if (isPlainObject(addition)) {
