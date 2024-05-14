@@ -1,4 +1,8 @@
 import { App } from "./app.mjs"
+import {
+  DataDrivenContributionFor,
+  OutstandingRegistries,
+} from "./outstandingTypes.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
 import {
@@ -42,8 +46,8 @@ export type DataDrivenRegistryAddition = AnyObject
 export type RegistryAddition = (app: App) => RegistryItem
 export type RegistryContributions = Record<NamespacedId, RegistryAdditions>
 export type DataDrivenRegistryContributions = {
-  [registry: NamespacedId]: {
-    [id: NamespacedId]: DataDrivenRegistryAddition
+  [registry in keyof OutstandingRegistries]?: {
+    [id: NamespacedId]: DataDrivenContributionFor<registry>
   }
 }
 
