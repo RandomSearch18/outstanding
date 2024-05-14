@@ -2,6 +2,7 @@ import { App } from "./app.mjs"
 import {
   DataDrivenContributionFor,
   OutstandingRegistries,
+  RegistryContributionFor,
 } from "./outstandingTypes.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
@@ -28,9 +29,7 @@ export interface DatapackExport {
   }
 
   /** A map of registry IDs to {@link RegistryAdditions} objects containing items to be added to the registry */
-  registryAdditions?: {
-    [registry: NamespacedId]: RegistryAdditions
-  }
+  registryAdditions?: RegistryContributions
   functions?: DatapackFunctions
 
   data?: {
@@ -38,13 +37,14 @@ export interface DatapackExport {
   }
 }
 
-/** A map of new registry item IDs to new registry items that should be registered by the datapack */
-export interface RegistryAdditions {
-  [id: NamespacedId]: RegistryAddition
-}
-export type DataDrivenRegistryAddition = AnyObject
 export type RegistryAddition = (app: App) => RegistryItem
-export type RegistryContributions = Record<NamespacedId, RegistryAdditions>
+/** A map of new registry item IDs to new registry items that should be registered by the datapack */
+export interface RegistryAdditions<R extends keyof OutstandingRegistries> {
+  [id: NamespacedId]: (app: App) => RegistryContributionFor<R>
+}
+export type RegistryContributions = {
+  [registry in keyof OutstandingRegistries]?: RegistryAdditions<registry>
+}
 export type DataDrivenRegistryContributions = {
   [registry in keyof OutstandingRegistries]?: {
     [id: NamespacedId]: DataDrivenContributionFor<registry>

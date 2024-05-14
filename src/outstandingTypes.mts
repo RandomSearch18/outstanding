@@ -16,13 +16,6 @@ export type OutstandingRegistries = {
   "outstanding:datapacks": DatapackRegistry
 }
 
-export type SettingsSomething =
-  OutstandingRegistries["outstanding:settings"]["decoder"]
-
-// export type DataDrivenContributionFor<
-//   Registry extends keyof OutstandingRegistries
-// > = Parameters<OutstandingRegistries[Registry]["decoder"]["decode"]>[0]
-
 export type DataDrivenContributionFor<
   Registry extends keyof OutstandingRegistries
 > = OutstandingRegistries[Registry]["decoder"] extends DataDrivenDecoder<
@@ -32,5 +25,6 @@ export type DataDrivenContributionFor<
   ? Parameters<OutstandingRegistries[Registry]["decoder"]["decode"]>[0]
   : never
 
-type x = DataDrivenContributionFor<"outstanding:settings">
-type y = DataDrivenContributionFor<"outstanding:ui_view">
+export type RegistryContributionFor<
+  Registry extends keyof OutstandingRegistries
+> = ReturnType<OutstandingRegistries[Registry]["getItems"]>[number]
