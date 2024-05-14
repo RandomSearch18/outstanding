@@ -5,7 +5,7 @@ import {
   JSONSafeObject,
   SettingAccessor,
 } from "./registry/settingsProvider.mjs"
-import { toEntries } from "./utilities.mjs"
+import { AnyObject, toEntries } from "./utilities.mjs"
 import { createNanoEvents } from "./utils/nanoEvents.mjs"
 
 export type DatapackCallback = (app: App) => unknown
@@ -36,9 +36,8 @@ export interface RegistryAdditions {
   [id: NamespacedId]: RegistryAddition
 }
 
-export type DataDrivenRegistryAddition = JSONSafeObject
+export type DataDrivenRegistryAddition = AnyObject
 export type RegistryAddition =
-  | RegistryItem
   | ((app: App) => RegistryItem)
   | DataDrivenRegistryAddition
 export type RegistryContributions = Record<NamespacedId, RegistryAdditions>

@@ -34,7 +34,9 @@ class RegistryRegistry extends Registry<Registry<any>> {
             }
             return [id, decoder.decode(addition)]
           }
-          return [id, addition]
+          throw new Error(
+            `Registry ${registryId} addition for ${id} is not a function or plain object`
+          )
         })
       registry.registerEntries(resolvedEntries)
     })
