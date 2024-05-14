@@ -141,10 +141,10 @@ export class FilesystemSettingsProvider extends FileLikeSettingsProvider {
     return this
   }
 
-  async readFromBackend(): Promise<SettingsFormattedForJSONBackend> {
+  async readFromBackend(): Promise<string> {
     const file = await this.getHandle().getFile()
     const text = await file.text()
-    return JSON.parse(text)
+    return text
   }
 
   async writeToBackend(

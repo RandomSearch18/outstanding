@@ -261,16 +261,24 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
     }
   }
 
-  abstract readFromBackend(): Promise<SettingsFormattedForJSONBackend>
+  abstract readFromBackend(): Promise<string>
 
   /**
    * Reads the settings from a file-like backend and initialises this.map with the settings
    * @throws {Error} If the back-end storage is corrupt or unusable somehow
    */
   async loadSettingsFromBackend() {
-    const state = await this.readFromBackend()
+    const jsonString = await this.readFromBackend()
+    let parsedData: SettingsFormattedForJSONBackend
     try {
-      const parsedData = state as SettingsFormattedForJSONBackend
+      parsedData = JSON.parse(jsonString)
+    } catch (error) {
+      if (!(error instanceof SyntaxError)) throw error
+      console.error("Unable to parse JSON", jsonString)
+      throw error
+    }
+
+    try {
       if (parsedData.version !== this.formatVersion)
         throw new Error(
           `Data from storage backend is from an incompatible version`
@@ -435,14 +443,7 @@ export class LocalStorageSettingsProvider extends FileLikeSettingsProvider {
         `Key ${this.localStorageKey} not present in local storage`
       )
     }
-
-    try {
-      return JSON.parse(data)
-    } catch (e) {
-      throw new Error(
-        `Data in local storage (key ${this.localStorageKey}) is invalid JSON`
-      )
-    }
+    return data
   }
 
   async writeToBackend(data: SettingsFormattedForJSONBackend) {
