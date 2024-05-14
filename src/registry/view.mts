@@ -1,5 +1,6 @@
 import { NamespacedId, Registry } from "./registry.mjs"
 import { toTitleCase } from "../utilities.mjs"
+import { DataDrivenDecoder } from "./dataDrivenRegistries.mjs"
 
 export type SidebarContent = JSX.Element
 
@@ -30,7 +31,15 @@ export class View {
   }
 }
 
+class ViewDecoder extends DataDrivenDecoder<ViewOptions, View> {
+  decode(data: ViewOptions): View {
+    return new View(data)
+  }
+}
+
 export class ViewRegistry extends Registry<View> {
+  decoder = new ViewDecoder()
+
   constructor(id: NamespacedId) {
     super(id)
   }

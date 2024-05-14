@@ -2,6 +2,7 @@ import { App } from "../app.mjs"
 import { RegistryAddition, RegistryContributions } from "../datapack.mjs"
 import { toEntries } from "../utilities.mjs"
 import { NamespacedId, Registry, RegistryItem } from "./registry.mjs"
+import { isFunction, isPlainObject } from "is"
 
 class RegistryRegistry extends Registry<Registry<any>> {
   constructor() {
@@ -20,8 +21,18 @@ class RegistryRegistry extends Registry<Registry<any>> {
       ][]
       const resolvedEntries: [NamespacedId, RegistryItem][] =
         registryEntries.map(([id, addition]) => {
-          if (typeof addition === "function") {
+          if (isFunction(addition)) {
             return [id, addition(app)]
+          }
+          if (isPlainObject(addition)) {
+            // We assume it's a data-driven addition, perhaps defined using plain JSON
+            const decoder = registry.decoder
+            if (!decoder) {
+              throw new Error(
+                `Registry ${registryId} does not have a decoder, so it cannot accept data-driven additions`
+              )
+            }
+            return [id, decoder.decode(addition)]
           }
           return [id, addition]
         })

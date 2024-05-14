@@ -1,7 +1,10 @@
 import { App } from "./app.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
-import { SettingAccessor } from "./registry/settingsProvider.mjs"
+import {
+  JSONSafeObject,
+  SettingAccessor,
+} from "./registry/settingsProvider.mjs"
 import { toEntries } from "./utilities.mjs"
 import { createNanoEvents } from "./utils/nanoEvents.mjs"
 
@@ -33,7 +36,11 @@ export interface RegistryAdditions {
   [id: NamespacedId]: RegistryAddition
 }
 
-export type RegistryAddition = RegistryItem | ((app: App) => RegistryItem)
+export type DataDrivenRegistryAddition = JSONSafeObject
+export type RegistryAddition =
+  | RegistryItem
+  | ((app: App) => RegistryItem)
+  | DataDrivenRegistryAddition
 export type RegistryContributions = Record<NamespacedId, RegistryAdditions>
 
 export class Datapack {

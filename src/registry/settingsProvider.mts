@@ -3,7 +3,7 @@ import { Provider } from "./provider.mjs"
 import areDeeplyEqual from "are-deeply-equal"
 import { NamespacedId } from "./registry.mjs"
 import { Observable } from "voby"
-import { ReactiveMap as ObservableMap, anyObject } from "../utilities.mjs"
+import { ReactiveMap as ObservableMap, AnyObject } from "../utilities.mjs"
 
 export type SettingsKey = string
 
@@ -14,7 +14,7 @@ export type JSONSafe =
   | boolean
   | null
   // | JSONSafeObject
-  | Record<string, anyObject>
+  | Record<string, AnyObject>
   | JSONSafe[]
 
 export type JSONSafeObject = {
