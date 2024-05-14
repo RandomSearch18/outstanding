@@ -48,7 +48,7 @@ export class App {
     )
     settingsProviderRegistry.register(
       new SettingsWithDefaults(
-        new LocalStorageSettingsProvider(this, "settings", 10),
+        new LocalStorageSettingsProvider("settings", 10),
         new Map(DEFAULT_SETTINGS)
       )
     )
@@ -62,7 +62,7 @@ export class App {
       new ProviderRegistry<SettingsProvider>("outstanding:persistant_storage")
     )
     storageProviderRegistry.register(
-      new LocalStorageSettingsProvider(this, "internal_data", 10)
+      new LocalStorageSettingsProvider("internal_data", 10)
     )
     this.storage = await storageProviderRegistry
       .getBestProvider()

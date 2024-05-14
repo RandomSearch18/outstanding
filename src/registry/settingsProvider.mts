@@ -423,8 +423,8 @@ export class LocalStorageSettingsProvider extends FileLikeSettingsProvider {
   private readonly localStorageKey: string
   id: NamespacedId = "outstanding:local_storage"
 
-  constructor(app: App, localStorageKey: string, priority: number) {
-    super(app, priority)
+  constructor(localStorageKey: string, priority: number) {
+    super(priority)
     this.localStorageKey = localStorageKey
   }
 
