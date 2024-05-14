@@ -32,7 +32,7 @@ export class App {
 
     this.state = store<AppState>({
       viewbar: {
-        selectedItem: Object.values(ViewbarItem)[0],
+        selectedItem: null,
       },
     })
 
