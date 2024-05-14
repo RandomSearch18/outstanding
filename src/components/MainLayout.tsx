@@ -1,13 +1,10 @@
 import "./MainLayout.css"
 import { App } from "../app.mjs"
 import Button from "./Button"
-import { $, If } from "voby"
+import { If } from "voby"
 import { Viewbar } from "./Viewbar"
-import { Snackbar } from "./Snackbar"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
-  const triggerSnackbar = $(false)
-
   return (
     <div class="main-layout">
       <Viewbar app={app} />
@@ -25,13 +22,6 @@ function MainLayout({ app }: { app: App }): JSX.Element {
               action={() => app.dataDirectoryManager.openDataDirectory()}
             />
           </If>
-          <Button
-            text="Toggle snackbar trigger"
-            action={() => triggerSnackbar(!triggerSnackbar())}
-          />
-          <Snackbar when={triggerSnackbar}>
-            Hello! Trigger is {() => `${triggerSnackbar()}`}
-          </Snackbar>
         </div>
       </main>
     </div>
