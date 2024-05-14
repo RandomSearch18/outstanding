@@ -1,3 +1,5 @@
+import { store } from "voby"
+
 export type Namespace = string
 export type NamespacedId = `${Namespace}:${string}`
 
@@ -12,11 +14,11 @@ type postRegisterCallback<T extends RegistryItem> = (
 
 export class Registry<T extends RegistryItem> {
   id: NamespacedId
-  private items: Map<NamespacedId, T>
+  private $items: Record<NamespacedId, T>
   private postRegister?: (registry: Registry<T>, item: T) => void
 
   registerWithId(id: NamespacedId, item: T): T {
-    this.items.set(id, item)
+    this.$items[id] = item
     this.postRegister?.(this, item)
     return item
   }
@@ -33,24 +35,24 @@ export class Registry<T extends RegistryItem> {
   }
 
   getKeys(): NamespacedId[] {
-    return Array.from(this.items.keys())
+    return Object.keys(this.$items) as NamespacedId[]
   }
 
   entries(): [NamespacedId, T][] {
-    return Array.from(this.items.entries())
+    return Object.entries(this.$items) as [NamespacedId, T][]
   }
 
   getItems(): T[] {
-    return Array.from(this.items.values())
+    return Object.values(this.$items)
   }
 
   getItem(id: NamespacedId): T | undefined {
-    return this.items.get(id)
+    return this.$items[id]
   }
 
   constructor(id: NamespacedId, postRegister?: postRegisterCallback<T>) {
     this.id = id
-    this.items = new Map()
+    this.$items = store({})
     this.postRegister = postRegister
   }
 }
