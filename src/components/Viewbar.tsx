@@ -1,6 +1,6 @@
 import { For, If, Portal } from "voby"
 import { App } from "../app.mjs"
-import { View } from "../views/view.mjs"
+import { View } from "../registry/view.mjs"
 
 export function Viewbar({ app }: { app: App }) {
   return (

@@ -1,4 +1,4 @@
-import { NamespacedId, Registry } from "../registry/registry.mjs"
+import { NamespacedId, Registry } from "./registry.mjs"
 import { toTitleCase } from "../utilities.mjs"
 
 export type SidebarContent = JSX.Element

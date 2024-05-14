@@ -13,7 +13,7 @@ import {
   SettingsWithDefaults,
 } from "./registry/settingsProvider.mjs"
 import { createNanoEvents } from "./utils/nanoEvents"
-import { ViewRegistry } from "./views/view.mjs"
+import { ViewRegistry } from "./registry/view.mjs"
 import { notesView, searchView, settingsView } from "./views/views"
 
 export type AppEvents = {}
@@ -75,7 +75,9 @@ export class App {
     this.views = this.registries.register(
       new ViewRegistry("outstanding:ui_view")
     )
-    ;[notesView, searchView, settingsView].forEach(view=>this.views.register(view))
+    ;[notesView, searchView, settingsView].forEach((view) =>
+      this.views.register(view)
+    )
 
     // Data directory manager
     const dataDirectoryProviderRegistry = this.registries.register(

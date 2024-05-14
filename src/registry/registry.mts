@@ -1,4 +1,5 @@
 import { store } from "voby"
+import { DataDrivenDecoder } from "./dataDrivenRegistries.mjs"
 
 export type Namespace = string
 export type NamespacedId = `${Namespace}:${string}`
@@ -16,6 +17,7 @@ export class Registry<T extends RegistryItem> {
   id: NamespacedId
   $items: Record<NamespacedId, T>
   private postRegister?: (registry: Registry<T>, item: T) => void
+  decoder?: DataDrivenDecoder<any, T>
 
   registerWithId(id: NamespacedId, item: T): T {
     this.$items[id] = item

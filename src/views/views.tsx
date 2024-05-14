@@ -1,4 +1,4 @@
-import { View } from "./view.mjs"
+import { View } from "../registry/view.mjs"
 
 export const notesView = new View({
   id: "outstanding:notes",
