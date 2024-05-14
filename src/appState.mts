@@ -1,14 +1,9 @@
 import { store } from "voby"
-
-export enum ViewbarItem {
-  Notes = "notes",
-  Search = "search",
-  Settings = "settings",
-}
+import { NamespacedId } from "./registry/registry.mjs"
 
 export type AppState = {
   viewbar: {
-    selectedItem: ViewbarItem | null
+    selectedItem: NamespacedId | null
   }
 }
 

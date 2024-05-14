@@ -74,3 +74,7 @@ export class ReactiveMap<K extends ReactiveMapKey, V> {
     this.map.delete(key)
   }
 }
+
+export function toTitleCase(string: string) {
+  return string.replace(/\b\w/g, (char) => char.toUpperCase())
+}

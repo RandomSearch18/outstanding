@@ -1,5 +1,5 @@
 import { store } from "voby"
-import { AppState, ViewbarItem } from "./appState.mjs"
+import { AppState } from "./appState.mjs"
 import { DataDirectoryManager } from "./dataDirectory/dataDirManager.mjs"
 import { DataDirectoryProvider } from "./dataDirectory/dataDirProvider.mjs"
 import { DatapackManager } from "./datapack.mjs"
@@ -13,6 +13,8 @@ import {
   SettingsWithDefaults,
 } from "./registry/settingsProvider.mjs"
 import { createNanoEvents } from "./utils/nanoEvents"
+import { ViewRegistry } from "./views/view.mjs"
+import { notesView, searchView, settingsView } from "./views/views"
 
 export type AppEvents = {}
 
@@ -24,6 +26,7 @@ export class App {
   storage: SettingsProvider // @ts-ignore
   datapackManager: DatapackManager // @ts-ignore
   dataDirectoryManager: DataDirectoryManager // @ts-ignore
+  views: ViewRegistry // @ts-ignore
 
   events = createNanoEvents<AppEvents>()
 
@@ -67,6 +70,12 @@ export class App {
     this.storage = await storageProviderRegistry
       .getBestProvider()
       .then((p) => p.init())
+
+    // UI views (i.e. viewbar items)
+    this.views = this.registries.register(
+      new ViewRegistry("outstanding:ui_view")
+    )
+    ;[notesView, searchView, settingsView].forEach(view=>this.views.register(view))
 
     // Data directory manager
     const dataDirectoryProviderRegistry = this.registries.register(

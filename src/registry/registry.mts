@@ -14,7 +14,7 @@ type postRegisterCallback<T extends RegistryItem> = (
 
 export class Registry<T extends RegistryItem> {
   id: NamespacedId
-  private $items: Record<NamespacedId, T>
+  $items: Record<NamespacedId, T>
   private postRegister?: (registry: Registry<T>, item: T) => void
 
   registerWithId(id: NamespacedId, item: T): T {

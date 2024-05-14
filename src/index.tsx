@@ -7,7 +7,6 @@ import MainLayout from "./components/MainLayout"
 import { App } from "./app.mjs"
 import "beercss"
 import "material-dynamic-colors"
-import { ViewbarItem } from "./appState.mjs"
 
 declare global {
   interface Window {
@@ -31,4 +30,4 @@ darkModeQuery.addEventListener("change", (e) => updateTheme(e.matches))
 render(<MainLayout app={app} />, document.getElementById("app"))
 
 // Set some initiial app state
-app.state.viewbar.selectedItem = Object.values(ViewbarItem)[0]
+app.state.viewbar.selectedItem = app.views.getInitialView()?.id ?? null
