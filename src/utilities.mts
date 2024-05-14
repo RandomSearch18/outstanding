@@ -3,7 +3,9 @@ import { Observable, Resource, ObservableReadonly } from "voby/dist/types"
 
 export type AnyObject = { [key: string]: any }
 
-export function toEntries<K extends string, V>(object: Record<K, V>): [K, V][] {
+export function toEntries<K extends string, V>(object: {
+  [key in K]?: V
+}): [K, V][] {
   return Object.entries(object) as [K, V][]
 }
 

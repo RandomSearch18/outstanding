@@ -217,9 +217,8 @@ export class DatapackManager {
 
     // Load its data-driven registry contributions
     if (datapack.data.registryAdditions) {
-      this.app.registries.loadRegistryContributions(
-        datapack.data.registryAdditions,
-        this.app
+      this.app.registries.loadDataDrivenRegistryContributions(
+        datapack.data.registryAdditions
       )
     }
 

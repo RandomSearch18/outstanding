@@ -30,7 +30,7 @@ export type DataDrivenContributionFor<
   any
 >
   ? Parameters<OutstandingRegistries[Registry]["decoder"]["decode"]>[0]
-  : null
+  : never
 
 type x = DataDrivenContributionFor<"outstanding:settings">
 type y = DataDrivenContributionFor<"outstanding:ui_view">

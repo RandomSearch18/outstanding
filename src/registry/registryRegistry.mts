@@ -13,10 +13,32 @@ class RegistryRegistry extends Registry<Registry<any>> {
     super("outstanding:registry")
   }
 
-  loadRegistryContributions(
-    contributions: RegistryContributions | DataDrivenRegistryContributions,
-    app: App
+  /** Loads "data-driven" registry additions, perhaps defined with plain JSON in a datapack */
+  loadDataDrivenRegistryContributions(
+    contributions: DataDrivenRegistryContributions
   ) {
+    toEntries(contributions).forEach(([registryId, additions]) => {
+      const registry = this.getItem(registryId)
+      if (!registry) {
+        throw new Error(`Registry ${registryId} does not exist`)
+      }
+      const registryEntries = toEntries(additions)
+      const resolvedEntries: [NamespacedId, RegistryItem][] =
+        registryEntries.map(([id, addition]) => {
+          const decoder = registry.decoder
+          if (!decoder) {
+            throw new Error(
+              `Registry ${registryId} does not have a decoder, so it cannot accept data-driven additions`
+            )
+          }
+          return [id, decoder.decode(addition)]
+        })
+      registry.registerEntries(resolvedEntries)
+    })
+  }
+
+  /** Loads registry contributions defined in JavaScript code */
+  loadRegistryContributions(contributions: RegistryContributions, app: App) {
     toEntries(contributions).forEach(([registryId, additions]) => {
       const registry = this.getItem(registryId)
       if (!registry) {
@@ -27,25 +49,7 @@ class RegistryRegistry extends Registry<Registry<any>> {
         RegistryAddition
       ][]
       const resolvedEntries: [NamespacedId, RegistryItem][] =
-        registryEntries.map(([id, addition]) => {
-          if (isFunction(addition)) {
-            // We assume it's an addition defined in code
-            return [id, addition(app)]
-          }
-          if (isPlainObject(addition)) {
-            // We assume it's a data-driven addition, perhaps defined using plain JSON
-            const decoder = registry.decoder
-            if (!decoder) {
-              throw new Error(
-                `Registry ${registryId} does not have a decoder, so it cannot accept data-driven additions`
-              )
-            }
-            return [id, decoder.decode(addition)]
-          }
-          throw new Error(
-            `Registry ${registryId} addition for ${id} is not a function or plain object`
-          )
-        })
+        registryEntries.map(([id, addition]) => [id, addition(app)])
       registry.registerEntries(resolvedEntries)
     })
   }
