@@ -136,7 +136,7 @@ export class FilesystemSettingsProvider extends FileLikeSettingsProvider {
     }
 
     this.fileHandle = await this.initializeFile()
-    this.saveSettingsToBackend()
+    await this.saveSettingsToBackend()
 
     return this
   }

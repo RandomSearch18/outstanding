@@ -298,7 +298,9 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
    * Updates the settings stored in the back-end with the current settings in this.map
    */
   async saveSettingsToBackend(): Promise<void> {
-    await this.writeToBackend(this.generateSettingsObject())
+    await this.writeToBackend(this.generateSettingsObject()).then(() =>
+      console.debug("Saved")
+    )
   }
 
   abstract writeToBackend(data: SettingsFormattedForJSONBackend): Promise<void>
