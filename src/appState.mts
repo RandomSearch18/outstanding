@@ -7,12 +7,12 @@ export type AppState = {
   }
   snackbar: {
     visible: Observable<boolean>
-    currentText: Observable<string>
     queue: {
       text: string
       id: string | null
       durationSeconds: number
       timer: number | null
+      isError: boolean
     }[]
   }
 }

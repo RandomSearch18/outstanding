@@ -46,7 +46,6 @@ export class App {
   showNextSnackbar() {
     const next = this.state.snackbar.queue.at(0)
     if (!next) return console.warn("No snackbars to show")
-    this.state.snackbar.currentText(next.text)
     this.state.snackbar.visible(true)
     next.timer = setTimeout(
       () => this.closeSnackbar(),
@@ -54,13 +53,24 @@ export class App {
     )
   }
 
-  pushSnackbar(text: string, id: string, durationSeconds = 5) {
+  pushSnackbar({
+    text,
+    id,
+    durationSeconds = 5,
+    isError = false,
+  }: {
+    text: string
+    id: string
+    durationSeconds?: number
+    isError?: boolean
+  }) {
     const snackbar = this.state.snackbar
     const queueItem = {
       text,
       id,
       durationSeconds,
       timer: null,
+      isError,
     }
     snackbar.queue.push(queueItem)
     // console.log("Updated snackbar Q", store.unwrap(snackbar.queue))
@@ -80,7 +90,6 @@ export class App {
       },
       snackbar: {
         visible: $(false),
-        currentText: $(""),
         queue: [],
       },
     })

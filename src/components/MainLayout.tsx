@@ -27,12 +27,12 @@ function MainLayout({ app }: { app: App }): JSX.Element {
             <Button
               text="Show snackbar"
               action={() => {
-                app.pushSnackbar(
-                  `Snackbar #${snackbarCount}`,
-                  // `${snackbarCount}`,
-                  "test",
-                  4
-                )
+                app.pushSnackbar({
+                  text: `Snackbar #${snackbarCount}`,
+                  id: "test",
+                  durationSeconds: 4,
+                  isError: snackbarCount % 2 === 1,
+                })
                 snackbarCount++
               }}
             />
@@ -43,13 +43,14 @@ function MainLayout({ app }: { app: App }): JSX.Element {
         class={{
           snackbar: true,
           active: () => app.state.snackbar.visible(),
+          error: () => app.state.snackbar.queue.at(0)?.isError,
         }}
         id="main-snackbar"
         onClick={() => {
           app.closeSnackbar()
         }}
       >
-        {() => app.state.snackbar.currentText()}
+        {() => app.state.snackbar.queue.at(0)?.text}
       </div>
     </>
   )
