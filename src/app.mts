@@ -30,6 +30,15 @@ export class App {
 
   events = createNanoEvents<AppEvents>()
 
+  pushErrorSnackbar(message: string, id: string) {
+    this.pushSnackbar({
+      text: message,
+      id,
+      durationSeconds: 6,
+      isError: true,
+    })
+  }
+
   closeSnackbar() {
     const snackbar = this.state.snackbar
     const currentItem = snackbar.queue.at(0)

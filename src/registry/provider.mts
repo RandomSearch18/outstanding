@@ -1,4 +1,4 @@
-import { NamespacedId, Registry, RegistryItem } from "./registry.mjs"
+import { NamespacedId, Registry } from "./registry.mjs"
 
 export abstract class Provider {
   constructor() {}
@@ -36,8 +36,15 @@ export class ProviderRegistry<T extends Provider> extends Registry<T> {
   async getBestProvider(): Promise<T> {
     const best = await this.findBestProvider()
     if (best === null) {
-      throw new Error("No available providers")
+      throw new NoProvidersError("No available providers")
     }
     return best
+  }
+}
+
+export class NoProvidersError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "NoProvidersError"
   }
 }

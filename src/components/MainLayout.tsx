@@ -3,8 +3,20 @@ import { App } from "../app.mjs"
 import Button from "./Button"
 import { If } from "voby"
 import { Viewbar } from "./Viewbar"
+import { NoProvidersError } from "../registry/provider.mjs"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
+  function openDataDirectory() {
+    app.dataDirectoryManager.openDataDirectory().catch((error) => {
+      if (error instanceof NoProvidersError) {
+        app.pushErrorSnackbar(
+          `No data directory providers are available`,
+          "no_data_directory_providers"
+        )
+      }
+    })
+  }
+
   let snackbarCount = 0
   return (
     <>
@@ -21,7 +33,7 @@ function MainLayout({ app }: { app: App }): JSX.Element {
             <If when={() => !app.dataDirectoryManager.$directoryIsOpen()}>
               <Button
                 text="Open a data directory"
-                action={() => app.dataDirectoryManager.openDataDirectory()}
+                action={() => openDataDirectory()}
               />
             </If>
             <Button
