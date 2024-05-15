@@ -49,7 +49,7 @@ export function ViewbarItemButton({
       <If when={() => app.state.viewbar.selectedItem === id}>
         {() => (
           <Portal mount={document.querySelector("#sidebar-target")}>
-            {sidebarContent}
+            {sidebarContent(app)}
           </Portal>
         )}
       </If>

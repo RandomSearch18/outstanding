@@ -1,6 +1,10 @@
 import { NamespacedId, Registry } from "./registry.mjs"
 import { ValueOf, toTitleCase } from "../utilities.mjs"
 import { DataDrivenDecoder } from "./dataDrivenRegistries.mjs"
+import { App } from "../app.mjs"
+import { isFunction } from "is"
+import { createElement } from "voby"
+import SidebarLayout from "../components/Sidebar"
 
 export type ViewbarButtonPosition = ValueOf<typeof ViewbarButtonPosition>
 export const ViewbarButtonPosition = {
@@ -8,7 +12,8 @@ export const ViewbarButtonPosition = {
   Bottom: "bottom",
 } as const
 
-export type SidebarContent = JSX.Element
+export type SidebarContent = (app: App) => JSX.Element
+export type DataDrivenSidebarContent = string
 
 export interface ViewOptions {
   id: NamespacedId
@@ -17,7 +22,7 @@ export interface ViewOptions {
     icon: string
     position?: ViewbarButtonPosition
   }
-  sidebarContent: SidebarContent
+  sidebarContent: SidebarContent | DataDrivenSidebarContent
 }
 
 export class View {
@@ -25,7 +30,7 @@ export class View {
   label
   icon
   viewbarPosition: ViewbarButtonPosition
-  sidebarContent
+  sidebarContent: SidebarContent
 
   constructor(options: ViewOptions) {
     this.id = options.id
@@ -33,7 +38,12 @@ export class View {
     this.icon = options.viewbarDisplay.icon
     this.viewbarPosition =
       options.viewbarDisplay.position || ViewbarButtonPosition.Top
-    this.sidebarContent = options.sidebarContent
+    this.sidebarContent = isFunction(options.sidebarContent)
+      ? options.sidebarContent
+      : () =>
+          createElement(SidebarLayout, {
+            children: `${options.sidebarContent}`,
+          })
   }
 
   toString() {
