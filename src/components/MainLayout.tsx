@@ -10,7 +10,7 @@ function MainLayout({ app }: { app: App }): JSX.Element {
     app.dataDirectoryManager.openDataDirectory().catch((error) => {
       if (error instanceof NoProvidersError) {
         app.pushErrorSnackbar(
-          `No data directory providers are available`,
+          `Can't open a data directory: No data directory providers are available`,
           "no_data_directory_providers"
         )
       }
