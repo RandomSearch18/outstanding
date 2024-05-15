@@ -1,0 +1,3 @@
+:is(nav, .row) > .spacer {
+  flex-grow: 1;
+}

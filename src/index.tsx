@@ -2,6 +2,7 @@
 import { render } from "voby"
 
 import "./global.css"
+import "./utility.css"
 import "beercss/dist/cdn/beer.min.css"
 import MainLayout from "./components/MainLayout"
 import { App } from "./app.mjs"

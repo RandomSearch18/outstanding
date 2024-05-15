@@ -1,11 +1,24 @@
 import { For, If, Portal } from "voby"
 import { App } from "../app.mjs"
-import { View } from "../registry/view.mjs"
+import { View, ViewbarButtonPosition } from "../registry/view.mjs"
 
 export function Viewbar({ app }: { app: App }) {
+  const topItems = () =>
+    app.views
+      .getItems()
+      .filter((item) => item.viewbarPosition === ViewbarButtonPosition.TOP)
+  const bottomItems = () =>
+    app.views
+      .getItems()
+      .filter((item) => item.viewbarPosition === ViewbarButtonPosition.BOTTOM)
+
   return (
     <nav class="viewbar left">
-      <For values={() => app.views.getItems()}>
+      <For values={topItems}>
+        {(view) => <ViewbarItemButton app={app} view={view} />}
+      </For>
+      <span class="spacer"></span>
+      <For values={bottomItems}>
         {(view) => <ViewbarItemButton app={app} view={view} />}
       </For>
     </nav>

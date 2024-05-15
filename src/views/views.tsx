@@ -1,4 +1,4 @@
-import { View } from "../registry/view.mjs"
+import { View, ViewbarButtonPosition } from "../registry/view.mjs"
 
 export const notesView = new View({
   id: "outstanding:notes",
@@ -23,6 +23,7 @@ export const settingsView = new View({
   label: "Settings",
   viewbarDisplay: {
     icon: "settings",
+    position: ViewbarButtonPosition.BOTTOM,
   },
   sidebarContent: <div>Settings sidebar content!</div>,
 })

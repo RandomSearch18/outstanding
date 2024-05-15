@@ -3,7 +3,9 @@ html {
   color-scheme: light dark;
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   box-sizing: inherit;
 }
 
@@ -15,6 +17,5 @@ body {
 }
 
 code {
-  font-family: Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: Monaco, Consolas, "Courier New", monospace;
 }
