@@ -30,34 +30,45 @@ export class App {
 
   events = createNanoEvents<AppEvents>()
 
-  showSnackbar(text: string, id: string, durationSeconds = 5) {
-    if (this.state.snackbar.visible()) {
-      if (this.state.snackbar.id === id) {
-        // Immediately update the current snackbar with our new one
-        this.state.snackbar.timer && clearTimeout(this.state.snackbar.timer)
-        this.state.snackbar.visible(false)
-      } else {
-        // "Queue up" the new snackbar to show after the current one
-        const dispose = useEffect(() => {
-          if (this.state.snackbar.visible()) return
-          console.debug("Showing next snackbar")
-          this.state.snackbar.text(text)
-          this.state.snackbar.visible(true)
-          this.state.snackbar.id = id
-          dispose()
-        })
-        return
-      }
-    }
-    this.state.snackbar.text(text)
+  closeSnackbar() {
+    const snackbar = this.state.snackbar
+    const currentItem = snackbar.queue.at(0)
+    if (!currentItem) return console.debug("No snackbars to close")
+    if (currentItem.timer) clearTimeout(currentItem.timer)
+    else console.warn("Snackbar doesn't have timer", currentItem)
+
+    snackbar.queue.shift()
+    this.state.snackbar.visible(false)
+    if (snackbar.queue.length === 0) return
+    this.showNextSnackbar()
+  }
+
+  showNextSnackbar() {
+    const next = this.state.snackbar.queue.at(0)
+    if (!next) return console.warn("No snackbars to show")
+    this.state.snackbar.currentText(next.text)
     this.state.snackbar.visible(true)
-    this.state.snackbar.id = id
-    setTimeout(() => {
-      if (this.state.snackbar.id === id) {
-        this.state.snackbar.visible(false)
-        this.state.snackbar.id = null
-      }
-    }, durationSeconds * 1000)
+    next.timer = setTimeout(
+      () => this.closeSnackbar(),
+      next.durationSeconds * 1000
+    )
+  }
+
+  pushSnackbar(text: string, id: string, durationSeconds = 5) {
+    const snackbar = this.state.snackbar
+    const queueItem = {
+      text,
+      id,
+      durationSeconds,
+      timer: null,
+    }
+    snackbar.queue.push(queueItem)
+    // console.log("Updated snackbar Q", store.unwrap(snackbar.queue))
+    if (snackbar.queue.length === 1) {
+      this.showNextSnackbar()
+    } else if (snackbar.queue[0].id === queueItem.id) {
+      this.closeSnackbar()
+    }
   }
 
   async init() {
@@ -68,10 +79,9 @@ export class App {
         selectedItem: null,
       },
       snackbar: {
-        text: $(""),
         visible: $(false),
-        id: null,
-        timer: null,
+        currentText: $(""),
+        queue: [],
       },
     })
 

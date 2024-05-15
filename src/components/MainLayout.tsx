@@ -26,7 +26,7 @@ function MainLayout({ app }: { app: App }): JSX.Element {
             <Button
               text="Show snackbar with current time"
               action={() =>
-                app.showSnackbar(`${new Date()}`, "current_time", 4)
+                app.pushSnackbar(`${new Date()}`, "current_time", 4)
               }
             />
           </div>
@@ -38,8 +38,11 @@ function MainLayout({ app }: { app: App }): JSX.Element {
           active: () => app.state.snackbar.visible(),
         }}
         id="main-snackbar"
+        onClick={() => {
+          app.closeSnackbar()
+        }}
       >
-        {() => app.state.snackbar.text()}
+        {() => app.state.snackbar.currentText()}
       </div>
     </>
   )
