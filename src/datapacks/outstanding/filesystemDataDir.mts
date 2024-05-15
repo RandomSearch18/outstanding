@@ -52,6 +52,7 @@ export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
 export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   directoryHandle
   metadataStore: FilesystemSettingsProvider
+  wasinitializedThisSession = false
 
   constructor(directoryHandle: FileSystemDirectoryHandle) {
     super()
@@ -67,33 +68,10 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     return this.directoryHandle.name
   }
 
-  private async getMetadataFile(): Promise<FileSystemFileHandle> {
-    // The outstanding.json file marks this folder as a Outstanding data directory, and stores metadata about the data directory
-    try {
-      const metadataFile = await this.directoryHandle.getFileHandle(
-        "outstanding.json"
-      )
-      return metadataFile
-    } catch (error) {
-      if (!(error instanceof DOMException && error.name === "NotFoundError"))
-        throw error
-      console.warn("Initializing new data directory")
-
-      const metadataFile = await this.directoryHandle.getFileHandle(
-        "outstanding.json",
-        { create: true }
-      )
-      // Initialise the file with an empty object, so that it's valid JSON
-      const writable = await metadataFile.createWritable()
-      await writable.write(JSON.stringify({}))
-      await writable.close()
-      return metadataFile
-    }
-  }
-
   async init(): Promise<this> {
     await this.metadataStore.init()
-    console.log(await this.metadataStore.readFromBackend())
+    this.metadataStore.readFromBackend().then(console.log)
+    this.wasinitializedThisSession = this.metadataStore.isNewFile
     return this
   }
 }
@@ -103,6 +81,8 @@ export class FilesystemSettingsProvider extends FileLikeSettingsProvider {
   private fileHandle: FileSystemFileHandle | null
   parentDirectory: FileSystemDirectoryHandle
   settingsFilename: string
+  /** Set to true if the file was created within the lifetime of this class instance */
+  isNewFile: boolean = false
 
   getHandle() {
     if (!this.fileHandle) {
@@ -124,9 +104,14 @@ export class FilesystemSettingsProvider extends FileLikeSettingsProvider {
       console.warn(
         `Initializing new file for data storage: ${this.settingsFilename}`
       )
-      return await this.parentDirectory.getFileHandle(this.settingsFilename, {
-        create: true,
-      })
+      return await this.parentDirectory
+        .getFileHandle(this.settingsFilename, {
+          create: true,
+        })
+        .then((fileHandle) => {
+          this.isNewFile = true
+          return fileHandle
+        })
     }
   }
 

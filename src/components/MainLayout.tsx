@@ -7,14 +7,24 @@ import { NoProvidersError } from "../registry/provider.mjs"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
   function openDataDirectory() {
-    app.dataDirectoryManager.openDataDirectory().catch((error) => {
-      if (error instanceof NoProvidersError) {
-        app.pushErrorSnackbar(
-          `Can't open a data directory: No data directory providers are available`,
-          "no_data_directory_providers"
-        )
-      }
-    })
+    app.dataDirectoryManager
+      .openDataDirectory()
+      .then((directory) => {
+        if (directory.wasinitializedThisSession) {
+          app.pushSnackbar({
+            text: `Initialised new data directory`,
+            id: "data_directory_initialized",
+          })
+        }
+      })
+      .catch((error) => {
+        if (error instanceof NoProvidersError) {
+          app.pushErrorSnackbar(
+            `Can't open a data directory: No data directory providers are available`,
+            "no_data_directory_providers"
+          )
+        }
+      })
   }
 
   let snackbarCount = 0

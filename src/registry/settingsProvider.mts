@@ -264,7 +264,7 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
   abstract readFromBackend(): Promise<string>
 
   /**
-   * Reads the settings from a file-like backend and initialises this.map with the settings
+   * Reads the settings from a file-like backend and initializes this.map with the settings
    * @throws {Error} If the back-end storage is corrupt or unusable somehow
    */
   async loadSettingsFromBackend() {
@@ -465,7 +465,7 @@ export class LocalStorageSettingsProvider extends FileLikeSettingsProvider {
     return isSupported
   }
 
-  private async initialiseStorage(importSettings?: SettingsMap): Promise<void> {
+  private async initializeStorage(importSettings?: SettingsMap): Promise<void> {
     // If we're importing settings, overwrite any existing settings from localstorage with the new ones
     const importResult = await this.importSettings(importSettings)
     if (importResult === ImportSettingsResult.Imported) return
@@ -479,7 +479,7 @@ export class LocalStorageSettingsProvider extends FileLikeSettingsProvider {
   }
 
   async init(importSettings?: SettingsMap) {
-    await this.initialiseStorage(importSettings)
+    await this.initializeStorage(importSettings)
     // Handle settings being changed by another open tab
     window.addEventListener("storage", (event) => {
       if (event.key !== this.localStorageKey) return

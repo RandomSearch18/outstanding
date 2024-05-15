@@ -6,4 +6,5 @@ export abstract class DataDirectoryProvider extends Provider {
 
 export abstract class DataDirectoryHandle {
   abstract label(): string
+  abstract wasinitializedThisSession: boolean
 }
