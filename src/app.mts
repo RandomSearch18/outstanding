@@ -1,4 +1,4 @@
-import { store } from "voby"
+import { $, store, useEffect } from "voby"
 import { AppState } from "./appState.mjs"
 import { DataDirectoryManager } from "./dataDirectory/dataDirManager.mjs"
 import { DataDirectoryProvider } from "./dataDirectory/dataDirProvider.mjs"
@@ -30,12 +30,48 @@ export class App {
 
   events = createNanoEvents<AppEvents>()
 
+  showSnackbar(text: string, id: string, durationSeconds = 5) {
+    if (this.state.snackbar.visible()) {
+      if (this.state.snackbar.id === id) {
+        // Immediately update the current snackbar with our new one
+        this.state.snackbar.timer && clearTimeout(this.state.snackbar.timer)
+        this.state.snackbar.visible(false)
+      } else {
+        // "Queue up" the new snackbar to show after the current one
+        const dispose = useEffect(() => {
+          if (this.state.snackbar.visible()) return
+          console.debug("Showing next snackbar")
+          this.state.snackbar.text(text)
+          this.state.snackbar.visible(true)
+          this.state.snackbar.id = id
+          dispose()
+        })
+        return
+      }
+    }
+    this.state.snackbar.text(text)
+    this.state.snackbar.visible(true)
+    this.state.snackbar.id = id
+    setTimeout(() => {
+      if (this.state.snackbar.id === id) {
+        this.state.snackbar.visible(false)
+        this.state.snackbar.id = null
+      }
+    }, durationSeconds * 1000)
+  }
+
   async init() {
     window.outstanding = this
 
     this.state = store<AppState>({
       viewbar: {
         selectedItem: null,
+      },
+      snackbar: {
+        text: $(""),
+        visible: $(false),
+        id: null,
+        timer: null,
       },
     })
 
