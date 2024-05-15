@@ -27,6 +27,7 @@ const outstandingDatapack: DatapackExport = {
           label: "Git",
           viewbarDisplay: {
             icon: "account_tree",
+            position: "top",
           },
           sidebarContent: "Git manager view content?!",
         },

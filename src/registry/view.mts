@@ -1,11 +1,12 @@
 import { NamespacedId, Registry } from "./registry.mjs"
-import { toTitleCase } from "../utilities.mjs"
+import { ValueOf, toTitleCase } from "../utilities.mjs"
 import { DataDrivenDecoder } from "./dataDrivenRegistries.mjs"
 
-export enum ViewbarButtonPosition {
-  TOP = "top",
-  BOTTOM = "bottom",
-}
+export type ViewbarButtonPosition = ValueOf<typeof ViewbarButtonPosition>
+export const ViewbarButtonPosition = {
+  Top: "top",
+  Bottom: "bottom",
+} as const
 
 export type SidebarContent = JSX.Element
 
@@ -23,7 +24,7 @@ export class View {
   id
   label
   icon
-  viewbarPosition
+  viewbarPosition: ViewbarButtonPosition
   sidebarContent
 
   constructor(options: ViewOptions) {
@@ -31,7 +32,7 @@ export class View {
     this.label = options.label
     this.icon = options.viewbarDisplay.icon
     this.viewbarPosition =
-      options.viewbarDisplay.position || ViewbarButtonPosition.TOP
+      options.viewbarDisplay.position || ViewbarButtonPosition.Top
     this.sidebarContent = options.sidebarContent
   }
 

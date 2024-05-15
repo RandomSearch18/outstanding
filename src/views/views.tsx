@@ -23,7 +23,7 @@ export const settingsView = new View({
   label: "Settings",
   viewbarDisplay: {
     icon: "settings",
-    position: ViewbarButtonPosition.BOTTOM,
+    position: ViewbarButtonPosition.Bottom,
   },
   sidebarContent: <div>Settings sidebar content!</div>,
 })

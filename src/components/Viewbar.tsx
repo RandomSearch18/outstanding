@@ -6,11 +6,11 @@ export function Viewbar({ app }: { app: App }) {
   const topItems = () =>
     app.views
       .getItems()
-      .filter((item) => item.viewbarPosition === ViewbarButtonPosition.TOP)
+      .filter((item) => item.viewbarPosition === ViewbarButtonPosition.Top)
   const bottomItems = () =>
     app.views
       .getItems()
-      .filter((item) => item.viewbarPosition === ViewbarButtonPosition.BOTTOM)
+      .filter((item) => item.viewbarPosition === ViewbarButtonPosition.Bottom)
 
   return (
     <nav class="viewbar left">
