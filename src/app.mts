@@ -40,7 +40,7 @@ export class App {
     snackbar.queue.shift()
     this.state.snackbar.visible(false)
     if (snackbar.queue.length === 0) return
-    this.showNextSnackbar()
+    setTimeout(() => this.showNextSnackbar(), 0)
   }
 
   showNextSnackbar() {

@@ -5,6 +5,7 @@ import { If } from "voby"
 import { Viewbar } from "./Viewbar"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
+  let snackbarCount = 0
   return (
     <>
       <div class="main-layout">
@@ -24,10 +25,16 @@ function MainLayout({ app }: { app: App }): JSX.Element {
               />
             </If>
             <Button
-              text="Show snackbar with current time"
-              action={() =>
-                app.pushSnackbar(`${new Date()}`, "current_time", 4)
-              }
+              text="Show snackbar"
+              action={() => {
+                app.pushSnackbar(
+                  `Snackbar #${snackbarCount}`,
+                  // `${snackbarCount}`,
+                  "test",
+                  4
+                )
+                snackbarCount++
+              }}
             />
           </div>
         </main>
