@@ -18,7 +18,12 @@
 
 .sidebar {
   grid-area: sidebar;
-  background-color: var(--surface-container);
+  /* background-color: var(--inverse-surface);
+  color: var(--inverse-on-surface); */
+  background-color: var(--surface-container-low);
+  color: var(--on-surface);
+  /* border-right: 1px solid var(--primary);
+  border-left: 1px solid var(--primary); */
 }
 
 .get-started {

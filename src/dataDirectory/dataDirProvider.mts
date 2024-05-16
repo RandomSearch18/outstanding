@@ -1,4 +1,6 @@
+import { Observable } from "voby"
 import { Provider } from "../registry/provider.mjs"
+import { Note } from "./note.mjs"
 
 export abstract class DataDirectoryProvider extends Provider {
   abstract openDataDirectory(): Promise<DataDirectoryHandle>
@@ -7,4 +9,8 @@ export abstract class DataDirectoryProvider extends Provider {
 export abstract class DataDirectoryHandle {
   abstract label(): string
   abstract wasinitializedThisSession: boolean
+  abstract $notes: Observable<string[]>
+
+  abstract getNotes(): Promise<Note[]>
+  abstract getNoteById(id: string): Promise<Note | null>
 }

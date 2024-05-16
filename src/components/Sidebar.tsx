@@ -1,7 +1,18 @@
 import "./Sidebar.css"
 
-function SidebarLayout({ children }: { children: JSX.Element }) {
-  return <div class="sidebar-layout">{children}</div>
+function SidebarLayout({
+  children,
+  title,
+}: {
+  children: JSX.Child
+  title: string
+}) {
+  return (
+    <div class="sidebar-layout">
+      <h2>{title}</h2>
+      {children}
+    </div>
+  )
 }
 
 export default SidebarLayout

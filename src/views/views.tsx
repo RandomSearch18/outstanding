@@ -1,4 +1,4 @@
-import { If, useMemo } from "voby"
+import { For, If, useMemo } from "voby"
 import SidebarLayout from "../components/Sidebar"
 import { View, ViewbarButtonPosition } from "../registry/view.mjs"
 
@@ -14,9 +14,19 @@ export const notesView = new View({
         app.dataDirectoryManager.$directoryIsOpen()
         const dataDirectory = app.dataDirectoryManager.currentDirectory
         return dataDirectory ? (
-          <SidebarLayout>Imagine a bunch of notes here</SidebarLayout>
+          <SidebarLayout title="Notes">
+            <ul>
+              <For values={dataDirectory.$notes}>
+                {(noteId) => (
+                  <li>
+                    <a href={`#/note/${noteId}`}>{noteId}</a>
+                  </li>
+                )}
+              </For>
+            </ul>
+          </SidebarLayout>
         ) : (
-          <SidebarLayout>
+          <SidebarLayout title="Notes">
             <div class="large-message">No data directory open</div>
             <div>Open a data directory first to start taking notes</div>
           </SidebarLayout>
@@ -32,7 +42,7 @@ export const searchView = new View({
     icon: "search",
   },
   sidebarContent: () => (
-    <SidebarLayout>
+    <SidebarLayout title="Search">
       <div>Search sidebar content!</div>
     </SidebarLayout>
   ),
@@ -46,7 +56,7 @@ export const settingsView = new View({
     position: ViewbarButtonPosition.Bottom,
   },
   sidebarContent: () => (
-    <SidebarLayout>
+    <SidebarLayout title="Settings">
       <div>Settings sidebar content!</div>
     </SidebarLayout>
   ),

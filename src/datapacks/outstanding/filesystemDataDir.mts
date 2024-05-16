@@ -10,6 +10,9 @@ import {
   SettingsFormattedForJSONBackend,
   SettingsMap,
 } from "../../registry/settingsProvider.mjs"
+import { Observable } from "voby"
+import $ from "oby"
+import { Note } from "../../dataDirectory/note.mjs"
 
 function filesystemAccessAPIAvailable() {
   return "showOpenFilePicker" in window
@@ -53,6 +56,7 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   directoryHandle
   metadataStore: FilesystemSettingsProvider
   wasinitializedThisSession = false
+  $notes = $([] as string[])
 
   constructor(directoryHandle: FileSystemDirectoryHandle) {
     super()
@@ -72,7 +76,51 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     await this.metadataStore.init()
     this.metadataStore.readFromBackend().then(console.log)
     this.wasinitializedThisSession = this.metadataStore.isNewFile
+    this.getNoteFiles().then((notes) => {
+      this.$notes(notes.map((note) => note.name))
+    })
     return this
+  }
+
+  private async getNoteFiles() {
+    // Find all *.md files in the directory
+    const entries = this.directoryHandle.values()
+    const notes = []
+    for await (const entry of entries) {
+      if (entry.kind === "file" && entry.name.endsWith(".md")) {
+        notes.push(entry)
+      }
+    }
+    return notes
+  }
+
+  async getNoteById(id: string) {
+    for await (const entry of this.directoryHandle.values()) {
+      if (entry.kind === "file" && entry.name === id) {
+        return new FilesystemNoteHandle(entry)
+      }
+    }
+    return null
+  }
+
+  async getNotes() {
+    const notes = await this.getNoteFiles()
+    return notes.map((entry) => new FilesystemNoteHandle(entry))
+  }
+}
+
+export class FilesystemNoteHandle extends Note {
+  id
+  fileHandle
+
+  constructor(fileHandle: FileSystemFileHandle) {
+    super()
+    this.id = fileHandle.name
+    this.fileHandle = fileHandle
+  }
+
+  label() {
+    return this.fileHandle.name
   }
 }
 
