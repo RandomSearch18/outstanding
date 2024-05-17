@@ -56,7 +56,7 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   directoryHandle
   metadataStore: FilesystemSettingsProvider
   wasinitializedThisSession = false
-  $notes = $([] as string[])
+  $notes = $([] as Note[])
 
   constructor(directoryHandle: FileSystemDirectoryHandle) {
     super()
@@ -76,8 +76,8 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     await this.metadataStore.init()
     this.metadataStore.readFromBackend().then(console.log)
     this.wasinitializedThisSession = this.metadataStore.isNewFile
-    this.getNoteFiles().then((notes) => {
-      this.$notes(notes.map((note) => note.name))
+    this.getNotes().then((notes) => {
+      this.$notes(notes)
     })
     return this
   }

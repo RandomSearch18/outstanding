@@ -9,7 +9,7 @@ export abstract class DataDirectoryProvider extends Provider {
 export abstract class DataDirectoryHandle {
   abstract label(): string
   abstract wasinitializedThisSession: boolean
-  abstract $notes: Observable<string[]>
+  abstract $notes: Observable<Note[]>
 
   abstract getNotes(): Promise<Note[]>
   abstract getNoteById(id: string): Promise<Note | null>

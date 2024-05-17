@@ -1,6 +1,7 @@
 import { For, If, useMemo } from "voby"
 import SidebarLayout from "../components/Sidebar"
 import { View, ViewbarButtonPosition } from "../registry/view.mjs"
+import NoteList from "../components/NoteList"
 
 export const notesView = new View({
   id: "outstanding:notes",
@@ -15,15 +16,13 @@ export const notesView = new View({
         const dataDirectory = app.dataDirectoryManager.currentDirectory
         return dataDirectory ? (
           <SidebarLayout title="Notes">
-            <ul>
-              <For values={dataDirectory.$notes}>
-                {(noteId) => (
-                  <li>
-                    <a href={`#/note/${noteId}`}>{noteId}</a>
-                  </li>
-                )}
-              </For>
-            </ul>
+            <NoteList
+              items={() =>
+                dataDirectory.$notes().map((note) => ({
+                  label: note.label(),
+                }))
+              }
+            />
           </SidebarLayout>
         ) : (
           <SidebarLayout title="Notes">

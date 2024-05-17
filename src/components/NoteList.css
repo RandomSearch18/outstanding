@@ -1,0 +1,27 @@
+.note-list li {
+  margin-block: 2px;
+  cursor: pointer;
+}
+
+.note-list li > * {
+  width: 100%;
+}
+
+.note-list li > * > * {
+  width: 100%;
+  margin-inline: 0.3rem;
+  padding-inline: 0.3rem;
+  padding-block: 0.2rem;
+  /* padding: 0 0.625rem; */
+  border-radius: 0.4em;
+}
+
+.note-list li > * > *:hover {
+  background-color: #ffffff0e;
+}
+
+.note-list li > *:focus-visible > * {
+  background-color: #ffffff0e;
+  outline: var(--primary) solid 2px;
+  outline-offset: 2px;
+}
