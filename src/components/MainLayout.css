@@ -7,6 +7,10 @@
   grid-template-areas: "navbar sidebar mainbar";
 }
 
+.main-layout > * {
+  max-height: 100vh;
+}
+
 .navbar {
   grid-area: navbar;
 }
