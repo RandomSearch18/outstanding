@@ -19,7 +19,12 @@
 }
 
 .note-list li > * > *:hover {
-  background-color: #ffffff0e;
+  /* background-color: rgb(from var(--inverse-primary) r g b / 0.3); */
+  background-color: rgb(from var(--primary) r g b / 0.2);
+  /* Glow hotpink */
+  /* background-color: hotpink;
+  box-shadow: 0 0 10px 5px hotpink;
+  transition: box-shadow 0.1s ease-in-out; */
 }
 
 .note-list li > *:focus-visible > * {
