@@ -15,6 +15,10 @@
   margin-bottom: 0.2em;
 }
 
+.sidebar-layout p {
+  margin: 0;
+}
+
 .sidebar-layout h2 {
   padding-block: 0.1em;
   font-size: 1rem;

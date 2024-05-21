@@ -24,6 +24,10 @@ code {
   font-family: Monaco, Consolas, "Courier New", monospace;
 }
 
+p {
+  font-size: 1rem;
+}
+
 *:focus-visible {
   z-index: 1000;
 }

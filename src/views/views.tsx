@@ -26,12 +26,19 @@ export const notesView = new View({
                   label: note.label(),
                 }))
               }
+              sortByLabel={true}
+              ifEmpty={
+                <>
+                  <p class="large-message">No notes</p>
+                  <p>Click the new note button below to start writing</p>
+                </>
+              }
             />
           </SidebarLayout>
         ) : (
           <SidebarLayout title="Notes">
-            <div class="large-message">No data directory open</div>
-            <div>Open a data directory first to start taking notes</div>
+            <p class="large-message">No data directory open</p>
+            <p>Open a data directory first to start taking notes</p>
           </SidebarLayout>
         )
       })

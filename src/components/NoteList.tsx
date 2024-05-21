@@ -9,9 +9,11 @@ export interface NoteListItem {
 function NoteList({
   items,
   sortByLabel = false,
+  ifEmpty = <></>,
 }: {
   items: () => NoteListItem[]
   sortByLabel?: boolean
+  ifEmpty?: JSX.Child
 }) {
   const sortedItems = useMemo(() =>
     sortByLabel
@@ -21,7 +23,10 @@ function NoteList({
 
   return (
     <ul class="note-list">
-      <For values={sortedItems}>
+      <For
+        values={sortedItems}
+        fallback={<div class="empty-list-fallback">{ifEmpty}</div>}
+      >
         {(item) => {
           return (
             <li onClick={item.onClick}>
