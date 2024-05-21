@@ -3,6 +3,10 @@ html {
   color-scheme: light dark;
 }
 
+body {
+  --focus-outline: var(--primary) solid 0.4em;
+}
+
 *,
 *:before,
 *:after {
@@ -22,4 +26,15 @@ code {
 
 *:focus-visible {
   z-index: 1000;
+}
+
+button:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 3px;
+}
+
+nav > a:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
