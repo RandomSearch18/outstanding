@@ -41,6 +41,7 @@ export function ViewbarItemButton({
           active: isActive(),
         })}
         onClick={() => {
+          console.log("Click")
           if (!isActive()) {
             app.state.sidebar.isOpen = true
             app.state.viewbar.selectedItem = id
@@ -48,7 +49,7 @@ export function ViewbarItemButton({
           }
           app.layout.toggleSidebar()
         }}
-        tabIndex={0}
+        href="#"
       >
         <i>{icon}</i>
         <div>{label}</div>
