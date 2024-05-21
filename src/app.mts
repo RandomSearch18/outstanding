@@ -90,12 +90,21 @@ export class App {
     }
   }
 
+  layout = {
+    toggleSidebar: () => {
+      this.state.sidebar.isOpen = !this.state.sidebar.isOpen
+    },
+  }
+
   async init() {
     window.outstanding = this
 
     this.state = store<AppState>({
       viewbar: {
         selectedItem: null,
+      },
+      sidebar: {
+        isOpen: true,
       },
       snackbar: {
         visible: $(false),

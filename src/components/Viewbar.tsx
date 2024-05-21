@@ -1,4 +1,4 @@
-import { For, If, Portal } from "voby"
+import { For, If, Portal, useMemo } from "voby"
 import { App } from "../app.mjs"
 import { View, ViewbarButtonPosition } from "../registry/view.mjs"
 
@@ -32,21 +32,28 @@ export function ViewbarItemButton({
   app: App
   view: View
 }) {
+  const isActive = useMemo(() => app.state.viewbar.selectedItem === id)
+
   return (
     <>
       <a
         class={() => ({
-          active: app.state.viewbar.selectedItem === id,
+          active: isActive(),
         })}
         onClick={() => {
-          app.state.viewbar.selectedItem = id
+          if (!isActive()) {
+            app.state.sidebar.isOpen = true
+            app.state.viewbar.selectedItem = id
+            return
+          }
+          app.layout.toggleSidebar()
         }}
         tabIndex={0}
       >
         <i>{icon}</i>
         <div>{label}</div>
       </a>
-      <If when={() => app.state.viewbar.selectedItem === id}>
+      <If when={() => isActive()}>
         {() => (
           <Portal mount={document.querySelector("#sidebar-target")}>
             {sidebarContent(app)}

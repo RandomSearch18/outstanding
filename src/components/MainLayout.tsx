@@ -30,7 +30,12 @@ function MainLayout({ app }: { app: App }): JSX.Element {
   let snackbarCount = 0
   return (
     <>
-      <div class="main-layout">
+      <div
+        class={{
+          "main-layout": true,
+          "no-sidebar": () => !app.state.sidebar.isOpen,
+        }}
+      >
         <Viewbar app={app} />
         <div class="sidebar">
           <div id="sidebar-target"></div>

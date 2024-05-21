@@ -62,7 +62,7 @@ class ViewDecoder extends DataDrivenDecoder<DataDrivenView, View> {
   decode(data: DataDrivenView): View {
     const sidebarContent = createElement(SidebarLayout, {
       title: data.sidebarContent.title,
-      children: createElement("div", {}, data.sidebarContent.plainTextContent),
+      children: createElement("p", {}, data.sidebarContent.plainTextContent),
     })
 
     return new View({

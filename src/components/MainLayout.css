@@ -1,10 +1,20 @@
 .main-layout {
   display: grid;
-  grid-template-columns: 5rem clamp(120px, 30%, 300px) auto;
+  grid-template-columns: 5rem var(--sidebar-width, clamp(120px, 30%, 300px)) auto;
+  transition: grid-template-columns 0.15s ease-out;
   height: 100vh;
   width: 100vw;
 
   grid-template-areas: "navbar sidebar mainbar";
+}
+
+.main-layout.no-sidebar {
+  --sidebar-width: 0;
+}
+
+.main-layout.no-sidebar .sidebar :is(p) {
+  opacity: 0;
+  /* transition: opacity 0.05s; */
 }
 
 .main-layout > * {

@@ -5,6 +5,9 @@ export type AppState = {
   viewbar: {
     selectedItem: NamespacedId | null
   }
+  sidebar: {
+    isOpen: boolean
+  }
   snackbar: {
     visible: Observable<boolean>
     queue: {
