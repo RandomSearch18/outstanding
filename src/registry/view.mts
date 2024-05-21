@@ -2,7 +2,6 @@ import { NamespacedId, Registry } from "./registry.mjs"
 import { ValueOf, toTitleCase } from "../utilities.mjs"
 import { DataDrivenDecoder } from "./dataDrivenRegistries.mjs"
 import { App } from "../app.mjs"
-import { isFunction } from "is"
 import { createElement } from "voby"
 import SidebarLayout from "../components/Sidebar"
 
@@ -13,7 +12,10 @@ export const ViewbarButtonPosition = {
 } as const
 
 export type SidebarContent = (app: App) => JSX.Element
-export type DataDrivenSidebarContent = string
+export type DataDrivenSidebarContent = {
+  title: string
+  plainTextContent: string
+}
 
 export interface ViewOptions {
   id: NamespacedId
@@ -22,7 +24,17 @@ export interface ViewOptions {
     icon: string
     position?: ViewbarButtonPosition
   }
-  sidebarContent: SidebarContent | DataDrivenSidebarContent
+  sidebarContent: SidebarContent
+}
+
+export interface DataDrivenView {
+  id: NamespacedId
+  label: string
+  viewbarDisplay: {
+    icon: string
+    position?: ViewbarButtonPosition
+  }
+  sidebarContent: DataDrivenSidebarContent
 }
 
 export class View {
@@ -38,12 +50,7 @@ export class View {
     this.icon = options.viewbarDisplay.icon
     this.viewbarPosition =
       options.viewbarDisplay.position || ViewbarButtonPosition.Top
-    this.sidebarContent = isFunction(options.sidebarContent)
-      ? options.sidebarContent
-      : () =>
-          createElement(SidebarLayout, {
-            children: `${options.sidebarContent}`,
-          })
+    this.sidebarContent = options.sidebarContent
   }
 
   toString() {
@@ -51,9 +58,19 @@ export class View {
   }
 }
 
-class ViewDecoder extends DataDrivenDecoder<ViewOptions, View> {
-  decode(data: ViewOptions): View {
-    return new View(data)
+class ViewDecoder extends DataDrivenDecoder<DataDrivenView, View> {
+  decode(data: DataDrivenView): View {
+    const sidebarContent = createElement(SidebarLayout, {
+      title: data.sidebarContent.title,
+      children: createElement("div", {}, data.sidebarContent.plainTextContent),
+    })
+
+    return new View({
+      id: data.id,
+      label: data.label,
+      viewbarDisplay: data.viewbarDisplay,
+      sidebarContent,
+    })
   }
 }
 

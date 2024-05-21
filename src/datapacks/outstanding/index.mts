@@ -29,7 +29,10 @@ const outstandingDatapack: DatapackExport = {
             icon: "account_tree",
             position: "top",
           },
-          sidebarContent: "Git manager view content?!",
+          sidebarContent: {
+            title: "Git version control",
+            plainTextContent: "Git manager view content?!",
+          },
         },
       },
     },
