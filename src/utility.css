@@ -1,3 +1,18 @@
 :is(nav, .row) > .spacer {
   flex-grow: 1;
 }
+
+button.expanded.expanded {
+  padding: 0 1.5rem;
+}
+
+button.expanded.expanded.extra {
+  min-block-size: 3.5rem;
+  min-inline-size: 3.5rem;
+  block-size: initial;
+  inline-size: initial;
+}
+
+button.expanded > span {
+  display: block;
+}

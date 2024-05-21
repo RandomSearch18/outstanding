@@ -17,6 +17,7 @@
     "voby-vite": "^1.0.0"
   },
   "dependencies": {
+    "@mdi/js": "^7.4.47",
     "are-deeply-equal": "^1.1.1",
     "beercss": "^3.5.1",
     "is": "npm:@fabiospampinato/is",

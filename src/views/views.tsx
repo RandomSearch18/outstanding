@@ -2,6 +2,8 @@ import { For, If, useMemo } from "voby"
 import SidebarLayout from "../components/Sidebar"
 import { View, ViewbarButtonPosition } from "../registry/view.mjs"
 import NoteList from "../components/NoteList"
+import Icon from "../components/Icon"
+import { mdiNotePlus } from "@mdi/js"
 
 export const notesView = new View({
   id: "outstanding:notes",
@@ -14,8 +16,14 @@ export const notesView = new View({
       useMemo(() => {
         app.dataDirectoryManager.$directoryIsOpen()
         const dataDirectory = app.dataDirectoryManager.currentDirectory
+        const addNoteFab = (
+          <>
+            <Icon>{mdiNotePlus}</Icon>
+            <span>New note</span>
+          </>
+        )
         return dataDirectory ? (
-          <SidebarLayout title="Notes">
+          <SidebarLayout title="Notes" fab={addNoteFab}>
             <NoteList
               items={() =>
                 dataDirectory.$notes().map((note) => ({

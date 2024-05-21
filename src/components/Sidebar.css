@@ -1,6 +1,8 @@
 .sidebar-layout {
+  height: 100vh;
   max-height: 100vh;
   overflow-y: auto;
+  position: relative; /* So that FABs stay within this container */
 }
 
 .sidebar-layout > * {
@@ -26,4 +28,16 @@
   position: sticky;
   top: 0;
   z-index: 1100;
+}
+
+.sidebar-fab {
+  position: absolute;
+  z-index: 2000;
+  bottom: 1em;
+  width: 100%;
+  display: flex;
+}
+
+.sidebar-fab > button {
+  margin-inline: auto;
 }
