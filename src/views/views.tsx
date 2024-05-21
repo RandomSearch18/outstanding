@@ -53,7 +53,7 @@ export const searchView = new View({
   },
   sidebarContent: () => (
     <SidebarLayout title="Search">
-      <div>Search sidebar content!</div>
+      <p>Search sidebar content!</p>
     </SidebarLayout>
   ),
 })
@@ -67,7 +67,7 @@ export const settingsView = new View({
   },
   sidebarContent: () => (
     <SidebarLayout title="Settings">
-      <div>Settings sidebar content!</div>
+      <p>Settings sidebar content!</p>
     </SidebarLayout>
   ),
 })
