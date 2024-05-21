@@ -4,6 +4,7 @@ import { View, ViewbarButtonPosition } from "../registry/view.mjs"
 import NoteList from "../components/NoteList"
 import Icon from "../components/Icon"
 import { mdiNotePlus } from "@mdi/js"
+import FAB from "../components/FAB"
 
 export const notesView = new View({
   id: "outstanding:notes",
@@ -16,14 +17,9 @@ export const notesView = new View({
       useMemo(() => {
         app.dataDirectoryManager.$directoryIsOpen()
         const dataDirectory = app.dataDirectoryManager.currentDirectory
-        const addNoteFab = (
-          <>
-            <Icon>{mdiNotePlus}</Icon>
-            <span>New note</span>
-          </>
-        )
+        const addNoteButton = <FAB icon={mdiNotePlus} label="New note" />
         return dataDirectory ? (
-          <SidebarLayout title="Notes" fab={addNoteFab}>
+          <SidebarLayout title="Notes" fab={addNoteButton}>
             <NoteList
               items={() =>
                 dataDirectory.$notes().map((note) => ({
