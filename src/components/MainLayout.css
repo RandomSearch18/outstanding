@@ -1,11 +1,29 @@
 .main-layout {
+  --mainbar-width: auto;
   display: grid;
-  grid-template-columns: 5rem var(--sidebar-width, clamp(120px, 30%, 300px)) auto;
+  grid-template-columns: 5rem var(--sidebar-width, clamp(180px, 30%, 300px)) var(
+      --mainbar-width
+    );
   transition: grid-template-columns 0.15s ease-out;
   height: 100vh;
   width: 100vw;
 
   grid-template-areas: "navbar sidebar mainbar";
+}
+
+@media screen and (max-width: 400px) {
+  .main-layout:not(.no-sidebar) {
+    --sidebar-width: auto;
+    --mainbar-width: 0;
+  }
+
+  .main-layout:not(.no-sidebar) .mainbar {
+    display: none;
+  }
+
+  .no-sidebar {
+    --mainbar-width: 1fr;
+  }
 }
 
 .main-layout.no-sidebar {
