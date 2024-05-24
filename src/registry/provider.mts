@@ -7,6 +7,10 @@ export abstract class Provider {
   abstract priority: number
   abstract isAvailable(): Promise<boolean>
   abstract init(...args: unknown[]): Promise<this>
+
+  toString() {
+    return this.id
+  }
 }
 
 export class ProviderRegistry<T extends Provider> extends Registry<T> {
@@ -28,7 +32,7 @@ export class ProviderRegistry<T extends Provider> extends Registry<T> {
     const availableProviders = await this.availableProviders()
     if (availableProviders.length === 0) return null
     const best = availableProviders
-      .sort((a, b) => a.priority - b.priority)
+      .sort((a, b) => b.priority - a.priority)
       .at(0)
     return best || null
   }
