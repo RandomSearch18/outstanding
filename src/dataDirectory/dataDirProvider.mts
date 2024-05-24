@@ -8,6 +8,7 @@ export abstract class DataDirectoryProvider extends Provider {
 
 export abstract class DataDirectoryHandle {
   abstract label(): string
+  abstract dataDirProvider: DataDirectoryProvider
   abstract wasinitializedThisSession: boolean
   abstract $notes: Observable<Note[]>
 

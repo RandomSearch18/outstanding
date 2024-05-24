@@ -41,7 +41,6 @@ export function ViewbarItemButton({
           active: isActive(),
         })}
         onClick={() => {
-          console.log("Click")
           if (!isActive()) {
             app.state.sidebar.isOpen = true
             app.state.viewbar.selectedItem = id

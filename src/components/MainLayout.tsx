@@ -12,7 +12,7 @@ function MainLayout({ app }: { app: App }): JSX.Element {
       .then((directory) => {
         if (directory.wasinitializedThisSession) {
           app.pushSnackbar({
-            text: `Initialised new data directory`,
+            text: `Initialised new data directory using ${directory.dataDirProvider}`,
             id: "data_directory_initialized",
           })
         }

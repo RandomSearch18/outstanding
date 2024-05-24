@@ -48,7 +48,7 @@ export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
       startIn: "documents",
     })
 
-    return new FilesystemDataDirectoryHandle(directoryHandle).init()
+    return new FilesystemDataDirectoryHandle(directoryHandle, this).init()
   }
 }
 
@@ -57,10 +57,15 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   metadataStore: FilesystemSettingsProvider
   wasinitializedThisSession = false
   $notes = $([] as Note[])
+  dataDirProvider
 
-  constructor(directoryHandle: FileSystemDirectoryHandle) {
+  constructor(
+    directoryHandle: FileSystemDirectoryHandle,
+    fromProvider: DataDirectoryProvider
+  ) {
     super()
     this.directoryHandle = directoryHandle
+    this.dataDirProvider = fromProvider
     this.metadataStore = new FilesystemSettingsProvider(
       0,
       this.directoryHandle,

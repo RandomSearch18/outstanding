@@ -1,4 +1,5 @@
 import { DatapackExport } from "../../datapack.mjs"
+import { OPFSDataDirectoryProvider } from "./OPFSDataDir.mjs"
 import { FilesystemDataDirectoryProvider } from "./filesystemDataDir.mjs"
 
 const outstandingDatapack: DatapackExport = {
@@ -17,6 +18,8 @@ const outstandingDatapack: DatapackExport = {
     "outstanding:data_directory_provider": {
       "outstanding:filesystem_access_api": (app) =>
         new FilesystemDataDirectoryProvider(app, 100),
+      "outstanding:origin_private_file_system": (app) =>
+        new OPFSDataDirectoryProvider("outstanding", 200),
     },
   },
   data: {
