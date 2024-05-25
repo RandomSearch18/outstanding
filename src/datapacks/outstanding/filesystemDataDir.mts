@@ -115,7 +115,7 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   }
 
   async createNote(options: CreateNoteOptions): Promise<Note> {
-    const { filename } = options
+    const filename = options.filename + ".md"
     const existingFile = await this.directoryHandle
       .getFileHandle(filename)
       .catch((e) => {
