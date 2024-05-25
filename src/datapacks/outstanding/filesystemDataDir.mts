@@ -115,7 +115,14 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   }
 
   async createNote({ filename }: CreateNoteOptions) {
-    const existingFile = await this.directoryHandle.getFileHandle(filename)
+    const existingFile = await this.directoryHandle
+      .getFileHandle(filename)
+      .catch((e) => {
+        if (e instanceof DOMException && e.name === "NotFoundError") {
+          return null
+        }
+        throw e
+      })
     if (existingFile) {
       throw new Error(
         "Filename conflicts when creating a note are not yet handled"
