@@ -137,7 +137,8 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     })
 
     const note = new FilesystemNoteHandle(fileHandle)
-    console.log("Created note", note, this.$notes())
+    this.$notes([...this.$notes(), note])
+    console.debug("Created note", note)
     return note
   }
 }
