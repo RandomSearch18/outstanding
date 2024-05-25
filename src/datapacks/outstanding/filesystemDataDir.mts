@@ -114,7 +114,8 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
     return notes.map((entry) => new FilesystemNoteHandle(entry))
   }
 
-  async createNote({ filename }: CreateNoteOptions) {
+  async createNote(options: CreateNoteOptions): Promise<Note> {
+    const { filename } = options
     const existingFile = await this.directoryHandle
       .getFileHandle(filename)
       .catch((e) => {
@@ -124,9 +125,11 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
         throw e
       })
     if (existingFile) {
-      throw new Error(
-        "Filename conflicts when creating a note are not yet handled"
-      )
+      const newFilename = `${filename} (1)`
+      return this.createNote({
+        ...options,
+        filename: newFilename,
+      })
     }
     const fileHandle = await this.directoryHandle.getFileHandle(filename, {
       create: true,
