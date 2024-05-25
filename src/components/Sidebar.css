@@ -2,7 +2,7 @@
   height: 100vh;
   max-height: 100vh;
   overflow-y: auto;
-  position: relative; /* So that FABs stay within this container */
+  position: initial; /* So that FABs stay in position when this container scrolls */
 }
 
 .sidebar-layout > * {
