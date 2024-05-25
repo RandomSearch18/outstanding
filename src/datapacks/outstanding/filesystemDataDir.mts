@@ -115,9 +115,10 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   }
 
   async createNote(options: CreateNoteOptions): Promise<Note> {
-    const filename = options.filename + ".md"
+    const { filename: basename } = options
+    const fullFilename = `${basename}.md`
     const existingFile = await this.directoryHandle
-      .getFileHandle(filename)
+      .getFileHandle(fullFilename)
       .catch((e) => {
         if (e instanceof DOMException && e.name === "NotFoundError") {
           return null
@@ -125,13 +126,13 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
         throw e
       })
     if (existingFile) {
-      const newFilename = `${filename} (1)`
+      const newFilename = `${basename} (1)`
       return this.createNote({
         ...options,
         filename: newFilename,
       })
     }
-    const fileHandle = await this.directoryHandle.getFileHandle(filename, {
+    const fileHandle = await this.directoryHandle.getFileHandle(fullFilename, {
       create: true,
     })
 
