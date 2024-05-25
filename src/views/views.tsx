@@ -17,7 +17,17 @@ export const notesView = new View({
       useMemo(() => {
         app.dataDirectoryManager.$directoryIsOpen()
         const dataDirectory = app.dataDirectoryManager.currentDirectory
-        const addNoteButton = <FAB icon={mdiNotePlus} label="New note" />
+        const addNoteButton = (
+          <FAB
+            icon={mdiNotePlus}
+            label="New note"
+            onClick={() => {
+              dataDirectory!.createNote({
+                filename: "Untitled note",
+              })
+            }}
+          />
+        )
         return dataDirectory ? (
           <SidebarLayout title="Notes" fab={addNoteButton}>
             <NoteList

@@ -1,6 +1,7 @@
 import { App } from "../../app.mjs"
 import { NamespacedId } from "../../registry/registry.mjs"
 import {
+  CreateNoteOptions,
   DataDirectoryHandle,
   DataDirectoryProvider,
 } from "../../dataDirectory/dataDirProvider.mjs"
@@ -111,6 +112,22 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   async getNotes() {
     const notes = await this.getNoteFiles()
     return notes.map((entry) => new FilesystemNoteHandle(entry))
+  }
+
+  async createNote({ filename }: CreateNoteOptions) {
+    const existingFile = await this.directoryHandle.getFileHandle(filename)
+    if (existingFile) {
+      throw new Error(
+        "Filename conflicts when creating a note are not yet handled"
+      )
+    }
+    const fileHandle = await this.directoryHandle.getFileHandle(filename, {
+      create: true,
+    })
+
+    const note = new FilesystemNoteHandle(fileHandle)
+    console.log("Created note", note, this.$notes())
+    return note
   }
 }
 
