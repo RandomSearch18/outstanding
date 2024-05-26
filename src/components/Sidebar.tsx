@@ -1,7 +1,5 @@
-import { mdiNotePlus } from "@mdi/js"
-import Icon from "./Icon"
 import "./Sidebar.css"
-import { If, useEffect } from "voby"
+import { If } from "voby"
 
 function SidebarLayout({
   children,

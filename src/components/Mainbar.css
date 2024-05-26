@@ -1,0 +1,15 @@
+.toolbar {
+  padding-inline: 1em;
+  padding-block: 0.5em;
+  /* background-color: var(--background); */
+  background-color: var(--surface-container-low);
+}
+
+.mainbar {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+/* .mainbar-content {
+  height: 100%;
+} */

@@ -4,6 +4,7 @@ import Button from "./Button"
 import { If } from "voby"
 import { Viewbar } from "./Viewbar"
 import { NoProvidersError } from "../registry/provider.mjs"
+import MainbarLayout from "./Mainbar"
 
 function MainLayout({ app }: { app: App }): JSX.Element {
   function openDataDirectory() {
@@ -41,29 +42,31 @@ function MainLayout({ app }: { app: App }): JSX.Element {
           <div id="sidebar-target"></div>
         </div>
         <main class="mainbar">
-          <div class="get-started">
-            <p>Get started by opening a file</p>
-            <p>Note: File opening has not been implemented yet</p>
-            <p>Settings: {app.settings.getKeys().join(", ")}</p>
-            <If when={() => !app.dataDirectoryManager.$directoryIsOpen()}>
+          <MainbarLayout>
+            <div class="get-started">
+              <p>Get started by opening a file</p>
+              <p>Note: File opening has not been implemented yet</p>
+              <p>Settings: {app.settings.getKeys().join(", ")}</p>
+              <If when={() => !app.dataDirectoryManager.$directoryIsOpen()}>
+                <Button
+                  text="Open a data directory"
+                  action={() => openDataDirectory()}
+                />
+              </If>
               <Button
-                text="Open a data directory"
-                action={() => openDataDirectory()}
+                text="Show snackbar"
+                action={() => {
+                  app.pushSnackbar({
+                    text: `Snackbar #${snackbarCount}`,
+                    id: "test",
+                    durationSeconds: 4,
+                    isError: snackbarCount % 2 === 1,
+                  })
+                  snackbarCount++
+                }}
               />
-            </If>
-            <Button
-              text="Show snackbar"
-              action={() => {
-                app.pushSnackbar({
-                  text: `Snackbar #${snackbarCount}`,
-                  id: "test",
-                  durationSeconds: 4,
-                  isError: snackbarCount % 2 === 1,
-                })
-                snackbarCount++
-              }}
-            />
-          </div>
+            </div>
+          </MainbarLayout>
         </main>
       </div>
       <div
