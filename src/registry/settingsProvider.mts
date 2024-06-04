@@ -289,7 +289,9 @@ export abstract class FileLikeSettingsProvider extends SettingsProvider {
       console.log("Successfully loaded settings from local storage", this.map)
     } catch (e) {
       throw e instanceof SyntaxError
-        ? new Error(`Data from storage backend is corrupt!`)
+        ? new Error(`Data from storage backend is corrupt!`, {
+            cause: e,
+          })
         : e
     }
   }
