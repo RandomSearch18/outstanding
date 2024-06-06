@@ -34,6 +34,11 @@ export const notesView = new View({
               items={() =>
                 dataDirectory.$notes().map((note) => ({
                   label: note.label(),
+                  onClick: () => {
+                    app.dataDirectoryManager.openNote(note.id)
+                  },
+                  isActive: () =>
+                    app.dataDirectoryManager.$currentNote()?.id === note.id,
                 }))
               }
               sortByLabel={true}

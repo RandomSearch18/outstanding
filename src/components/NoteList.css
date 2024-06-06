@@ -18,9 +18,13 @@
   text-overflow: ellipsis;
 }
 
+.note-list li a.active > * {
+  background-color: var(--secondary-container);
+}
+
 .note-list li > * > *:hover {
   /* background-color: rgb(from var(--inverse-primary) r g b / 0.3); */
-  background-color: rgb(from var(--primary) r g b / 0.2);
+  background-color: rgb(from var(--primary) r g b / 0.1);
   /* Glow hotpink */
   /* background-color: hotpink;
   box-shadow: 0 0 10px 5px hotpink;
@@ -28,7 +32,7 @@
 }
 
 .note-list li > *:focus-visible > * {
-  background-color: #ffffff0e;
+  background-color: rgb(from var(--primary) r g b / 0.1);
   outline: var(--primary) solid 2px;
   outline-offset: 2px;
 }

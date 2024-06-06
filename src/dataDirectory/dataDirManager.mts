@@ -1,14 +1,16 @@
-import { $ } from "voby"
+import { $, Observable } from "voby"
 import { ProviderRegistry } from "../registry/provider.mjs"
 import {
   DataDirectoryHandle,
   DataDirectoryProvider,
 } from "./dataDirProvider.mjs"
+import { Note } from "./note.mjs"
 
 export class DataDirectoryManager {
   providerRegistry: ProviderRegistry<DataDirectoryProvider>
   activeProvider: DataDirectoryProvider | null = null
   currentDirectory: DataDirectoryHandle | null = null
+  $currentNote: Observable<Note | null> = $<Note | null>(null)
   $directoryIsOpen = $(false)
 
   constructor(providerRegistry: ProviderRegistry<DataDirectoryProvider>) {
@@ -37,5 +39,17 @@ export class DataDirectoryManager {
     this.currentDirectory = directory
     this.$directoryIsOpen(true)
     return directory
+  }
+
+  /** Opens a note from the current data directory using a provided ID */
+  async openNote(noteId: string) {
+    if (!this.currentDirectory) {
+      throw new Error("No data directory open")
+    }
+    const note = await this.currentDirectory.getNoteById(noteId)
+    if (!note) {
+      throw new Error(`Note with id ${noteId} not found`)
+    }
+    this.$currentNote(note)
   }
 }
