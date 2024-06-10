@@ -4,6 +4,7 @@ import { DataDrivenDecoder } from "./dataDrivenRegistries.mjs"
 import { App } from "../app.mjs"
 import { createElement } from "voby"
 import SidebarLayout from "../components/Sidebar"
+import MainbarLayout from "../components/Mainbar"
 
 export type ViewbarButtonPosition = ValueOf<typeof ViewbarButtonPosition>
 export const ViewbarButtonPosition = {
@@ -17,6 +18,7 @@ export type DataDrivenSidebarContent = {
   title: string
   plainTextContent: string
 }
+export type DataDrivenMainbarContent = string
 
 export interface ViewOptions {
   id: NamespacedId
@@ -26,7 +28,7 @@ export interface ViewOptions {
     position?: ViewbarButtonPosition
   }
   sidebarContent: SidebarContent
-  mainbarContent?: MainbarContent
+  mainbarContent: MainbarContent
 }
 
 export interface DataDrivenView {
@@ -37,6 +39,7 @@ export interface DataDrivenView {
     position?: ViewbarButtonPosition
   }
   sidebarContent: DataDrivenSidebarContent
+  mainbarContent: DataDrivenMainbarContent
 }
 
 export class View {
@@ -69,11 +72,16 @@ class ViewDecoder extends DataDrivenDecoder<DataDrivenView, View> {
       children: createElement("p", {}, data.sidebarContent.plainTextContent),
     })
 
+    const mainbarContent = createElement(MainbarLayout, {
+      children: data.mainbarContent,
+    })
+
     return new View({
       id: data.id,
       label: data.label,
       viewbarDisplay: data.viewbarDisplay,
       sidebarContent,
+      mainbarContent,
     })
   }
 }
