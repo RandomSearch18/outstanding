@@ -5,11 +5,12 @@
   background-color: var(--surface-container-low);
 }
 
-.mainbar {
+#mainbar-target > * {
   display: grid;
   grid-template-rows: auto 1fr;
+  height: 100%;
 }
 
-/* .mainbar-content {
+#mainbar-target {
   height: 100%;
-} */
+}

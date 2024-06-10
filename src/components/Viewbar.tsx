@@ -1,6 +1,7 @@
 import { For, If, Portal, useMemo } from "voby"
 import { App } from "../app.mjs"
 import { View, ViewbarButtonPosition } from "../registry/view.mjs"
+import { isDefined } from "is"
 
 export function Viewbar({ app }: { app: App }) {
   const topItems = () =>
@@ -27,7 +28,7 @@ export function Viewbar({ app }: { app: App }) {
 
 export function ViewbarItemButton({
   app,
-  view: { id, icon, label, sidebarContent },
+  view: { id, icon, label, sidebarContent, mainbarContent },
 }: {
   app: App
   view: View
@@ -54,11 +55,16 @@ export function ViewbarItemButton({
         <div>{label}</div>
       </a>
       <If when={() => isActive()}>
-        {() => (
+        {() => [
           <Portal mount={document.querySelector("#sidebar-target")}>
             {sidebarContent(app)}
-          </Portal>
-        )}
+          </Portal>,
+          mainbarContent && (
+            <Portal mount={document.querySelector("#mainbar-target")}>
+              {mainbarContent(app)}
+            </Portal>
+          ),
+        ]}
       </If>
     </>
   )

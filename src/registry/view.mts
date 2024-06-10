@@ -12,6 +12,7 @@ export const ViewbarButtonPosition = {
 } as const
 
 export type SidebarContent = (app: App) => JSX.Element
+export type MainbarContent = (app: App) => JSX.Element
 export type DataDrivenSidebarContent = {
   title: string
   plainTextContent: string
@@ -25,6 +26,7 @@ export interface ViewOptions {
     position?: ViewbarButtonPosition
   }
   sidebarContent: SidebarContent
+  mainbarContent?: MainbarContent
 }
 
 export interface DataDrivenView {
@@ -43,6 +45,7 @@ export class View {
   icon
   viewbarPosition: ViewbarButtonPosition
   sidebarContent: SidebarContent
+  mainbarContent
 
   constructor(options: ViewOptions) {
     this.id = options.id
@@ -51,6 +54,7 @@ export class View {
     this.viewbarPosition =
       options.viewbarDisplay.position || ViewbarButtonPosition.Top
     this.sidebarContent = options.sidebarContent
+    this.mainbarContent = options.mainbarContent
   }
 
   toString() {

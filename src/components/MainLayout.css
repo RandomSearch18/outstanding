@@ -65,3 +65,7 @@
   align-items: center;
   flex-direction: column;
 }
+
+.mainbar-target {
+  height: 100vh;
+}

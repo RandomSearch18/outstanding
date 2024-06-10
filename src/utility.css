@@ -16,3 +16,7 @@ button.expanded.expanded.extra {
 button.expanded > span {
   display: block;
 }
+
+.height-full {
+  height: 100%;
+}
