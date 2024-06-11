@@ -16,7 +16,11 @@ declare global {
 }
 
 const app = new App()
-await app.init()
+app.init().then(() => {
+  render(<MainLayout app={app} />, document.getElementById("app"))
+  // Set some initiial app state:
+  app.state.viewbar.selectedItem = app.views.getInitialView()?.id ?? null
+})
 
 function updateTheme(useDarkMode: boolean) {
   const theme_color = "#C1694F"
@@ -27,8 +31,3 @@ function updateTheme(useDarkMode: boolean) {
 const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)")
 updateTheme(darkModeQuery.matches)
 darkModeQuery.addEventListener("change", (e) => updateTheme(e.matches))
-
-render(<MainLayout app={app} />, document.getElementById("app"))
-
-// Set some initiial app state
-app.state.viewbar.selectedItem = app.views.getInitialView()?.id ?? null
