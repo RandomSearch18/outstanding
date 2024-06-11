@@ -1,4 +1,5 @@
 import { For, FunctionMaybe, Observable } from "voby"
+import SegmentedButtons from "./SegmentedButtons"
 
 interface SegmentedButtonSwitcherButton {
   content: JSX.Child
@@ -12,24 +13,13 @@ function SegmentedButtonSwitcher<K extends string | number | symbol>({
   selected: Observable<K>
 }) {
   return (
-    <div class="row no-space">
-      <For values={Object.entries(buttons)}>
-        {([key, button], i) => (
-          <button
-            class={{
-              border: true,
-              small: true,
-              fill: () => key === selected(),
-              "left-round": i === 0,
-              "right-round": i === Object.keys(buttons).length - 1,
-            }}
-            onClick={() => selected(key as K)}
-          >
-            {button.content}
-          </button>
-        )}
-      </For>
-    </div>
+    <SegmentedButtons
+      buttons={Object.entries(buttons).map(([key, button], i) => ({
+        content: button.content,
+        onClick: () => selected(key as K),
+        class: { fill: () => key === selected() },
+      }))}
+    />
   )
 }
 

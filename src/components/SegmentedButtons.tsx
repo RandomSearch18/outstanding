@@ -3,6 +3,7 @@ import { For, createElement } from "voby"
 interface SegmentedButtonOptions {
   content: JSX.Child
   onClick?: (e: MouseEvent) => void
+  class?: JSX.ClassProperties
 }
 
 function SegmentedButtons({ buttons }: { buttons: SegmentedButtonOptions[] }) {
@@ -16,6 +17,7 @@ function SegmentedButtons({ buttons }: { buttons: SegmentedButtonOptions[] }) {
               small: true,
               "left-round": i === 0,
               "right-round": i === buttons.length - 1,
+              ...button.class,
             }}
             onClick={button.onClick}
           >
