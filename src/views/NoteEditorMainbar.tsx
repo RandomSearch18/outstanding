@@ -4,9 +4,10 @@ import Button from "../components/Button"
 import MainbarLayout from "../components/Mainbar"
 import { NoProvidersError } from "../registry/provider.mjs"
 import SegmentedButtonSwitcher from "../components/SegmentedButtonSwitcher"
-import { mdiEye, mdiLeadPencil } from "@mdi/js"
+import { mdiContentSave, mdiEye, mdiLeadPencil } from "@mdi/js"
 import Icon from "../components/Icon"
 import { ValueOf } from "../utilities.mjs"
+import SegmentedButtons from "../components/SegmentedButtons"
 
 export type EditMode = ValueOf<typeof EditMode>
 export const EditMode = {
@@ -49,6 +50,13 @@ function NoteEditorMainbar({ app }: { app: App }) {
             content: () => <Icon>{mdiEye}</Icon>,
           },
         }}
+      />
+      <SegmentedButtons
+        buttons={[
+          {
+            content: <Icon>{mdiContentSave}</Icon>,
+          },
+        ]}
       />
     </>
   )

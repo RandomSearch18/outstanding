@@ -14,3 +14,12 @@
 #mainbar-target {
   height: 100%;
 }
+
+.toolbar-items {
+  display: flex;
+  gap: 1em;
+}
+
+.toolbar-items > * {
+  margin: 0;
+}
