@@ -36,6 +36,7 @@ const outstandingDatapack: DatapackExport = {
             title: "Git version control",
             plainTextContent: "Git manager view content?!",
           },
+          mainbarContent: "Imagine some Git things here, I guess",
         },
       },
     },
