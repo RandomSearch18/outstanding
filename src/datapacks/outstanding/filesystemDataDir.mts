@@ -161,6 +161,12 @@ export class FilesystemNoteHandle extends Note {
     const file = await this.fileHandle.getFile()
     return await file.text()
   }
+
+  async overwriteContent(content: string) {
+    const writable = await this.fileHandle.createWritable()
+    await writable.write(content)
+    await writable.close()
+  }
 }
 
 export class FilesystemSettingsProvider extends FileLikeSettingsProvider {

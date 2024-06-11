@@ -5,12 +5,14 @@ import {
   DataDirectoryProvider,
 } from "./dataDirProvider.mjs"
 import { Note } from "./note.mjs"
+import { NoteEditorManager } from "../noteEditorManager.mjs"
 
 export class DataDirectoryManager {
   providerRegistry: ProviderRegistry<DataDirectoryProvider>
   activeProvider: DataDirectoryProvider | null = null
   currentDirectory: DataDirectoryHandle | null = null
-  $currentNote: Observable<Note | null> = $<Note | null>(null)
+  $currentNote: Observable<NoteEditorManager | null> =
+    $<NoteEditorManager | null>(null)
   $directoryIsOpen = $(false)
 
   constructor(providerRegistry: ProviderRegistry<DataDirectoryProvider>) {
@@ -50,6 +52,6 @@ export class DataDirectoryManager {
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`)
     }
-    this.$currentNote(note)
+    this.$currentNote(new NoteEditorManager(note))
   }
 }

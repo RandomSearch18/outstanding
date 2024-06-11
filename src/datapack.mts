@@ -1,11 +1,8 @@
 import { App } from "./app.mjs"
-import {
-  DataDrivenContributionFor,
-  OutstandingRegistries,
-  RegistryContributionFor,
-} from "./outstandingTypes.mjs"
+/// <reference path="./outstandingTypes.mts" />
+import { Outstanding } from "./outstandingTypes.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
-import { NamespacedId, RegistryItem } from "./registry/registry.mjs"
+import { NamespacedId, Registry, RegistryItem } from "./registry/registry.mjs"
 import {
   JSONSafeObject,
   SettingAccessor,
@@ -30,6 +27,7 @@ export interface DatapackExport {
 
   /** A map of registry IDs to {@link RegistryAdditions} objects containing items to be added to the registry */
   registryAdditions?: RegistryContributions
+  newRegistries?: NewRegistries
   functions?: DatapackFunctions
 
   data?: {
@@ -39,15 +37,18 @@ export interface DatapackExport {
 
 export type RegistryAddition = (app: App) => RegistryItem
 /** A map of new registry item IDs to new registry items that should be registered by the datapack */
-export interface RegistryAdditions<R extends keyof OutstandingRegistries> {
-  [id: NamespacedId]: (app: App) => RegistryContributionFor<R>
+export interface RegistryAdditions<R extends keyof Outstanding.Registries> {
+  [id: NamespacedId]: (app: App) => Outstanding.RegistryContributionFor<R>
+}
+export interface NewRegistries {
+  [registryId: NamespacedId]: Registry<RegistryItem>
 }
 export type RegistryContributions = {
-  [registry in keyof OutstandingRegistries]?: RegistryAdditions<registry>
+  [registry in keyof Outstanding.Registries]?: RegistryAdditions<registry>
 }
 export type DataDrivenRegistryContributions = {
-  [registry in keyof OutstandingRegistries]?: {
-    [id: NamespacedId]: DataDrivenContributionFor<registry>
+  [registry in keyof Outstanding.Registries]?: {
+    [id: NamespacedId]: Outstanding.DataDrivenContributionFor<registry>
   }
 }
 
@@ -60,7 +61,7 @@ export class Datapack {
   }
   code: {
     registryAdditions?: RegistryContributions
-    // registryInclusions?: RegistryInclusions
+    newRegistries?: NewRegistries
     functions?: DatapackFunctions
   }
   data: {
@@ -78,6 +79,7 @@ export class Datapack {
     }
     this.code = {
       registryAdditions: exportedPack.registryAdditions,
+      newRegistries: exportedPack.newRegistries,
       functions: exportedPack.functions,
     }
     this.data = exportedPack.data || {}
@@ -212,6 +214,13 @@ export class DatapackManager {
           datapack.id,
           datapack.code.functions.postLoad
         )
+      }
+    }
+
+    // Load its new registries
+    if (datapack.code.newRegistries) {
+      for (const [_, registry] of Object.entries(datapack.code.newRegistries)) {
+        this.app.registries.register(registry)
       }
     }
 
