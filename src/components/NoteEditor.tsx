@@ -1,3 +1,4 @@
+import "./NoteEditor.css"
 import { $ } from "voby"
 import { Note } from "../dataDirectory/note.mjs"
 
@@ -12,8 +13,11 @@ function NoteEditor({ note }: { note: Note }) {
   })
 
   return (
-    <div class="note-editor">
-      <textarea value={textAreaContent} alt={textAreaContent}></textarea>
+    <div class="note-editor height-full">
+      <textarea
+        class="height-full width-full"
+        value={textAreaContent}
+      ></textarea>
     </div>
   )
 }
