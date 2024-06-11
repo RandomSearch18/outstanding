@@ -61,19 +61,28 @@ function NoteEditorMainbar({ app }: { app: App }) {
     </>
   )
 
+  const getStartedSplash = (
+    <div class="get-started">
+      <p>Get started by opening a file</p>
+      <p>Note: File opening has not been implemented yet</p>
+      <p>Settings: {app.settings.getKeys().join(", ")}</p>
+      <If when={() => !app.dataDirectoryManager.$directoryIsOpen()}>
+        <Button
+          text="Open a data directory"
+          action={() => openDataDirectory()}
+        />
+      </If>
+    </div>
+  )
+
   return (
     <MainbarLayout toolbarContent={toolbar}>
-      <div class="get-started">
-        <p>Get started by opening a file</p>
-        <p>Note: File opening has not been implemented yet</p>
-        <p>Settings: {app.settings.getKeys().join(", ")}</p>
-        <If when={() => !app.dataDirectoryManager.$directoryIsOpen()}>
-          <Button
-            text="Open a data directory"
-            action={() => openDataDirectory()}
-          />
-        </If>
-      </div>
+      <If
+        when={() => app.dataDirectoryManager.$currentNote()}
+        fallback={getStartedSplash}
+      >
+        EDITOR HERE
+      </If>
     </MainbarLayout>
   )
 }
