@@ -1,6 +1,6 @@
 .sidebar-layout {
-  height: 100vh;
-  max-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   overflow-y: auto;
   position: initial; /* So that FABs stay in position when this container scrolls */
 }

@@ -5,7 +5,7 @@
       --mainbar-width
     );
   transition: grid-template-columns 0.15s ease-out;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
 
   grid-template-areas: "navbar sidebar mainbar";
@@ -36,7 +36,7 @@
 }
 
 .main-layout > * {
-  max-height: 100vh;
+  max-height: 100dvh;
 }
 
 .navbar {
@@ -67,5 +67,5 @@
 }
 
 .mainbar-target {
-  height: 100vh;
+  height: 100dvh;
 }
