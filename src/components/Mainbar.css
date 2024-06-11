@@ -23,3 +23,7 @@
 .toolbar-items > * {
   margin: 0;
 }
+
+.main-editor-wrapper {
+  height: 100%;
+}

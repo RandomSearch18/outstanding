@@ -78,19 +78,7 @@ function NoteEditorMainbar({ app }: { app: App }) {
 
   return (
     <MainbarLayout toolbarContent={toolbar}>
-      <If
-        when={() => app.dataDirectoryManager.$currentNote()}
-        fallback={getStartedSplash}
-      >
-        {() => {
-          const editorElement = <NoteEditor />
-          useEffect(() => {
-            app.dataDirectoryManager.$currentNote()?.attachEditor(editorElement)
-          })
-
-          return <NoteEditor note={app.dataDirectoryManager.$currentNote()!} />
-        }}
-      </If>
+      <div class="main-editor-wrapper">{getStartedSplash}</div>
     </MainbarLayout>
   )
 }

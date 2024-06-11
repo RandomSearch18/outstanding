@@ -1,4 +1,4 @@
-import { $, Observable } from "voby"
+import { $, Observable, createElement, render } from "voby"
 import { ProviderRegistry } from "../registry/provider.mjs"
 import {
   DataDirectoryHandle,
@@ -6,6 +6,7 @@ import {
 } from "./dataDirProvider.mjs"
 import { Note } from "./note.mjs"
 import { NoteEditorManager } from "../noteEditorManager.mjs"
+import NoteEditor from "../components/NoteEditor"
 
 export class DataDirectoryManager {
   providerRegistry: ProviderRegistry<DataDirectoryProvider>
@@ -52,6 +53,14 @@ export class DataDirectoryManager {
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`)
     }
-    this.$currentNote(new NoteEditorManager(note))
+    const editorManager = new NoteEditorManager(note)
+    this.$currentNote(editorManager)
+    const editorElement = createElement(NoteEditor, {
+      note: note,
+    })
+    render(editorElement, document.querySelector(".main-editor-wrapper")!)
+    editorManager.attachEditor(
+      document.querySelector(".main-editor-wrapper > *") as HTMLTextAreaElement
+    )
   }
 }
