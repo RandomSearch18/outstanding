@@ -156,6 +156,11 @@ export class FilesystemNoteHandle extends Note {
   label() {
     return this.fileHandle.name
   }
+
+  async getContent() {
+    const file = await this.fileHandle.getFile()
+    return await file.text()
+  }
 }
 
 export class FilesystemSettingsProvider extends FileLikeSettingsProvider {

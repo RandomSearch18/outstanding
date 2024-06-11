@@ -1,4 +1,4 @@
-import { $, If, Observable } from "voby"
+import { $, If, Observable, useEffect } from "voby"
 import { App } from "../app.mjs"
 import Button from "../components/Button"
 import MainbarLayout from "../components/Mainbar"
@@ -8,6 +8,7 @@ import { mdiContentSave, mdiEye, mdiLeadPencil } from "@mdi/js"
 import Icon from "../components/Icon"
 import { ValueOf } from "../utilities.mjs"
 import SegmentedButtons from "../components/SegmentedButtons"
+import NoteEditor from "../components/NoteEditor"
 
 export type EditMode = ValueOf<typeof EditMode>
 export const EditMode = {
@@ -81,7 +82,7 @@ function NoteEditorMainbar({ app }: { app: App }) {
         when={() => app.dataDirectoryManager.$currentNote()}
         fallback={getStartedSplash}
       >
-        EDITOR HERE
+        {() => <NoteEditor note={app.dataDirectoryManager.$currentNote()!} />}
       </If>
     </MainbarLayout>
   )
