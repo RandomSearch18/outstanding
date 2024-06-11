@@ -7,7 +7,7 @@
   padding-inline: 0.7rem;
   padding-block: 0.7rem;
   font-family: Consolas, "Courier New", monospace;
-  background-color: var(--surface-bright);
+  background-color: var(--surface);
   /* background-color: var(--background);
   border-top: 1px solid var(--outline);
   border-left: 1px solid var(--outline); */

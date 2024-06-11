@@ -1,5 +1,5 @@
 import "./NoteEditor.css"
-import { $ } from "voby"
+import { $, useEffect } from "voby"
 import { Note } from "../dataDirectory/note.mjs"
 
 function NoteEditor({ note }: { note: Note }) {
@@ -7,16 +7,20 @@ function NoteEditor({ note }: { note: Note }) {
   //   return <div class="note-editor">No note :(</div>
   // }
 
-  const textAreaContent = $("Loading...")
+  const initialContent = $("Loading...")
   note.getContent().then((content) => {
-    textAreaContent(content)
+    initialContent(content)
   })
 
   return (
     <div class="note-editor height-full">
       <textarea
         class="height-full width-full"
-        value={textAreaContent}
+        value={initialContent}
+        placeholder="Click here to start writing..."
+        autoCapitalize="sentences"
+        spellCheck="true"
+        onInput={console.log}
       ></textarea>
     </div>
   )
