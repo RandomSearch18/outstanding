@@ -74,6 +74,7 @@ class ViewDecoder extends DataDrivenDecoder<DataDrivenView, View> {
 
     const mainbarContent = createElement(MainbarLayout, {
       children: data.mainbarContent,
+      toolbarContent: () => [],
     })
 
     return new View({

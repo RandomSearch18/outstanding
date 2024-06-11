@@ -1,8 +1,18 @@
-import { If } from "voby"
+import { $, If, Observable } from "voby"
 import { App } from "../app.mjs"
 import Button from "../components/Button"
 import MainbarLayout from "../components/Mainbar"
 import { NoProvidersError } from "../registry/provider.mjs"
+import SegmentedButtonSwitcher from "../components/SegmentedButtonSwitcher"
+import { mdiEye, mdiLeadPencil } from "@mdi/js"
+import Icon from "../components/Icon"
+import { ValueOf } from "../utilities.mjs"
+
+export type EditMode = ValueOf<typeof EditMode>
+export const EditMode = {
+  Edit: "edit",
+  Preview: "preview",
+} as const
 
 function NoteEditorMainbar({ app }: { app: App }) {
   function openDataDirectory() {
@@ -26,8 +36,25 @@ function NoteEditorMainbar({ app }: { app: App }) {
       })
   }
 
+  const editMode: Observable<EditMode> = $<EditMode>(EditMode.Edit)
+  const toolbar = (
+    <>
+      <SegmentedButtonSwitcher
+        selected={editMode}
+        buttons={{
+          edit: {
+            content: () => <Icon>{mdiLeadPencil}</Icon>,
+          },
+          preview: {
+            content: () => <Icon>{mdiEye}</Icon>,
+          },
+        }}
+      />
+    </>
+  )
+
   return (
-    <MainbarLayout>
+    <MainbarLayout toolbarContent={toolbar}>
       <div class="get-started">
         <p>Get started by opening a file</p>
         <p>Note: File opening has not been implemented yet</p>
