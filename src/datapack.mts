@@ -1,13 +1,10 @@
 import { App } from "./app.mjs"
-/// <reference path="./outstandingTypes.mts" />
 import { Outstanding } from "./outstandingTypes.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, Registry, RegistryItem } from "./registry/registry.mjs"
-import {
-  JSONSafeObject,
-  SettingAccessor,
-} from "./registry/settingsProvider.mjs"
-import { AnyObject, toEntries } from "./utilities.mjs"
+import { SettingAccessor } from "./registry/settingsProvider.mjs"
+import { ShortcutOptions } from "./shortcutManager.mjs"
+import { toEntries } from "./utilities.mjs"
 import { createNanoEvents } from "./utils/nanoEvents.mjs"
 
 export type DatapackCallback = (app: App) => unknown
@@ -32,6 +29,7 @@ export interface DatapackExport {
 
   data?: {
     registryAdditions?: DataDrivenRegistryContributions
+    shortcuts?: ShortcutOptions[]
   }
 }
 
@@ -68,6 +66,7 @@ export class Datapack {
   }
   data: {
     registryAdditions?: DataDrivenRegistryContributions
+    shortcuts?: ShortcutOptions[]
   }
   exportedSource: DatapackExport
 
@@ -231,6 +230,13 @@ export class DatapackManager {
       this.app.registries.loadDataDrivenRegistryContributions(
         datapack.data.registryAdditions
       )
+    }
+
+    // Load the shortcuts that it wants to add
+    if (datapack.data.shortcuts) {
+      datapack.data.shortcuts.forEach((shortcut) => {
+        this.app.shortcuts.add(shortcut)
+      })
     }
 
     // Load is now complete
