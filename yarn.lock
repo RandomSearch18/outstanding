@@ -200,6 +200,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fabiospampinato/is@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "@fabiospampinato/is@npm:2.8.0"
+  checksum: 10c0/b60fd20412f09dfadd2bf59bfcde40672225a70ddad9cf0eb5a5afda73b7af70009797c6d2ec8e21e57410928fec2c69a344c2b08f861c704da8c1b438903719
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -1186,13 +1193,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm:@fabiospampinato/is":
-  version: 2.8.0
-  resolution: "npm:@https://github.com/fabiospampinato/is.git#commit=6564a194ae7829cad33fe9d8bb7143311583db5f"
-  checksum: 10c0/c49e4aae1c17374d4761402b78cbaaa6466f98fe8da4ac550eb1734ad648892c0097930e29877028606f49bf6053ef46a70cf62e368a4b5eaa067cb7d76afd22
-  languageName: node
-  linkType: hard
-
 "oby@npm:^15.0.0":
   version: 15.1.0
   resolution: "oby@npm:15.1.0"
@@ -1204,13 +1204,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "outstanding@workspace:."
   dependencies:
+    "@fabiospampinato/is": "npm:^2.8.0"
     "@mdi/js": "npm:^7.4.47"
     "@types/wicg-file-system-access": "npm:^2023.10.5"
     are-deeply-equal: "npm:^1.1.1"
     beercss: "npm:^3.5.1"
     context-keys: "npm:^5.2.3"
     material-dynamic-colors: "npm:^1.1.0"
-    "npm:": fabiospampinato/is
     typescript: "npm:^5.3.3"
     vite: "npm:^5.1.4"
     voby: "npm:*"

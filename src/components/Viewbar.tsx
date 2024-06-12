@@ -1,7 +1,6 @@
 import { For, If, Portal, useMemo } from "voby"
 import { App } from "../app.mjs"
 import { View, ViewbarButtonPosition } from "../registry/view.mjs"
-import { isDefined } from "is"
 
 export function Viewbar({ app }: { app: App }) {
   const topItems = () =>

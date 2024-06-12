@@ -6,7 +6,6 @@ import {
 } from "../datapack.mjs"
 import { toEntries } from "../utilities.mjs"
 import { NamespacedId, Registry, RegistryItem } from "./registry.mjs"
-import { isFunction, isPlainObject } from "is"
 
 class RegistryRegistry extends Registry<Registry<any>> {
   constructor() {
