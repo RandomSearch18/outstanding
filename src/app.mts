@@ -15,12 +15,14 @@ import {
 import { createNanoEvents } from "./utils/nanoEvents"
 import { ViewRegistry } from "./registry/view.mjs"
 import { notesView, searchView, settingsView } from "./views/views"
+import ContextKeys from "context-keys"
 
 export type AppEvents = {}
 
 export class App {
   // @ts-ignore - Living life on the edge
   state: AppState // @ts-ignore
+  contextKeys: ContextKeys // @ts-ignore
   registries: RegistryRegistry // @ts-ignore
   settings: SettingsWithDefaults // @ts-ignore
   storage: SettingsProvider // @ts-ignore
@@ -112,6 +114,8 @@ export class App {
       },
     })
 
+    this.contextKeys = new ContextKeys({})
+
     this.registries = new RegistryRegistry()
 
     // Settings provider
@@ -159,7 +163,8 @@ export class App {
       )
     )
     this.dataDirectoryManager = new DataDirectoryManager(
-      this, dataDirectoryProviderRegistry
+      this,
+      dataDirectoryProviderRegistry
     )
 
     // Datapack manager

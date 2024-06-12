@@ -1,8 +1,12 @@
-import { For, If, Portal, useMemo } from "voby"
+import { For, If, Portal, useEffect, useMemo } from "voby"
 import { App } from "../app.mjs"
 import { View, ViewbarButtonPosition } from "../registry/view.mjs"
 
 export function Viewbar({ app }: { app: App }) {
+  useEffect(() => {
+    app.contextKeys.set("currentView", app.state.viewbar.selectedItem)
+  })
+
   const topItems = () =>
     app.views
       .getItems()

@@ -1,4 +1,4 @@
-import { $, Observable } from "voby"
+import { $, Observable, useEffect } from "voby"
 import { ProviderRegistry } from "../registry/provider.mjs"
 import {
   DataDirectoryHandle,
@@ -24,6 +24,11 @@ export class DataDirectoryManager {
   ) {
     this.providerRegistry = providerRegistry
     this.app = app
+
+    useEffect(() => {
+      app.contextKeys.set("dataDirectoryOpen", this.$directoryIsOpen())
+      app.contextKeys.set("editorOpen", !!this.$currentEditor())
+    })
   }
 
   async chooseProvider() {
