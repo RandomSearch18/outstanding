@@ -1,23 +1,29 @@
-import { $, Observable, createElement, render } from "voby"
+import { $, Observable } from "voby"
 import { ProviderRegistry } from "../registry/provider.mjs"
 import {
   DataDirectoryHandle,
   DataDirectoryProvider,
 } from "./dataDirProvider.mjs"
-import { Note } from "./note.mjs"
-import { NoteEditorManager } from "../noteEditorManager.mjs"
-import NoteEditor from "../components/NoteEditor"
+import { App } from "../app.mjs"
+import {
+  Editor,
+  EditorProvider,
+} from "../datapacks/outstanding/editorProvider.mjs"
 
 export class DataDirectoryManager {
+  app
   providerRegistry: ProviderRegistry<DataDirectoryProvider>
   activeProvider: DataDirectoryProvider | null = null
   currentDirectory: DataDirectoryHandle | null = null
-  $currentNote: Observable<NoteEditorManager | null> =
-    $<NoteEditorManager | null>(null)
+  $currentEditor: Observable<Editor | null> = $<Editor | null>(null)
   $directoryIsOpen = $(false)
 
-  constructor(providerRegistry: ProviderRegistry<DataDirectoryProvider>) {
+  constructor(
+    app: App,
+    providerRegistry: ProviderRegistry<DataDirectoryProvider>
+  ) {
     this.providerRegistry = providerRegistry
+    this.app = app
   }
 
   async chooseProvider() {
@@ -53,14 +59,18 @@ export class DataDirectoryManager {
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`)
     }
-    const editorManager = new NoteEditorManager(note)
-    this.$currentNote(editorManager)
-    const editorElement = createElement(NoteEditor, {
-      note: note,
-    })
-    render(editorElement, document.querySelector(".main-editor-wrapper")!)
-    editorManager.attachEditor(
-      document.querySelector(".main-editor-wrapper > *") as HTMLTextAreaElement
-    )
+    const editorProviders = this.app.registries.getItem(
+      "outstanding:editor"
+    ) as ProviderRegistry<EditorProvider<Editor>> | undefined
+    if (!editorProviders) {
+      throw new Error("Editor provider registry is not present!")
+    }
+    const editorProvider = await editorProviders.getBestProvider()
+    const editor = editorProvider.createEditor(note)
+    const targetElement = document.querySelector(".main-editor-wrapper")
+    if (!targetElement) throw new Error("Main editor wrapper is missing")
+    editor.addToDOM(targetElement)
+    editor.loadContent()
+    this.$currentEditor(editor)
   }
 }

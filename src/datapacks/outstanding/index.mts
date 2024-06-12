@@ -1,7 +1,6 @@
 import { DatapackExport } from "../../datapack.mjs"
-import { Provider, ProviderRegistry } from "../../registry/provider.mjs"
+import { ProviderRegistry } from "../../registry/provider.mjs"
 import { Registry, RegistryItem } from "../../registry/registry.mjs"
-import { SettingsProvider } from "../../registry/settingsProvider.mjs"
 import { OPFSDataDirectoryProvider } from "./OPFSDataDir.mjs"
 import {
   Editor,

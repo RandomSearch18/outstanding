@@ -1,4 +1,6 @@
-.note-editor textarea {
+/* TODO: Add support for CSS in datapacks and move this to the Outstanding datapack */
+
+.text-area-editor textarea {
   width: 100%;
   height: 100%;
   border: none;

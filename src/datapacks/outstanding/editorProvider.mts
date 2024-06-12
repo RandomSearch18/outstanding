@@ -1,3 +1,4 @@
+import { createElement } from "voby"
 import { Note } from "../../dataDirectory/note.mjs"
 import { Provider } from "../../registry/provider.mjs"
 import { NamespacedId } from "../../registry/registry.mjs"
@@ -9,7 +10,7 @@ export abstract class Editor {
     this.note = note
   }
 
-  abstract addToDOM(parent: HTMLElement): void
+  abstract addToDOM(parent: Element): void
   abstract loadContent(): void
   abstract saveContent(): void
 }
@@ -43,11 +44,25 @@ export class TextAreaEditor extends Editor {
     super(note)
   }
 
-  addToDOM(parent: HTMLElement) {
-    const element = document.createElement("textarea")
-    element.value = "Loading..."
-    parent.appendChild(element)
-    this.element = element
+  addToDOM(parent: Element) {
+    import("./TextAreaEditor.css") // FIXME: Add a proper way to include CSS files in datapacks
+    const textarea = createElement("textarea", {
+      class: "height-full width-full",
+      placeholder: "Click here to start writing...",
+      autoCapitalize: "sentences",
+      spellCheck: true,
+      oninput: console.log,
+      value: "Loading...",
+    })()
+    const wrapper = createElement(
+      "div",
+      { class: "text-area-editor note-editor height-full" },
+      textarea
+    )() as Element
+    if (!(textarea instanceof HTMLTextAreaElement))
+      throw new Error("Voby createElement did not work as expected :O")
+    parent.replaceChildren(wrapper)
+    this.element = textarea
   }
 
   async loadContent() {

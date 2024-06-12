@@ -159,7 +159,7 @@ export class App {
       )
     )
     this.dataDirectoryManager = new DataDirectoryManager(
-      dataDirectoryProviderRegistry
+      this, dataDirectoryProviderRegistry
     )
 
     // Datapack manager
