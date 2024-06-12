@@ -3,6 +3,7 @@
   padding-block: 0.5em;
   /* background-color: var(--background); */
   background-color: var(--surface-container-low);
+  overflow-y: auto;
 }
 
 #mainbar-target > * {
