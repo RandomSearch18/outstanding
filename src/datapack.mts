@@ -1,9 +1,9 @@
+import { Expression, Key } from "context-keys/dist/types"
 import { App } from "./app.mjs"
 import { Outstanding } from "./outstandingTypes.mjs"
 import { DatapackRegistry } from "./registry/datapack.mjs"
 import { NamespacedId, Registry, RegistryItem } from "./registry/registry.mjs"
 import { SettingAccessor } from "./registry/settingsProvider.mjs"
-import { ShortcutOptions } from "./shortcutManager.mjs"
 import { toEntries } from "./utilities.mjs"
 import { createNanoEvents } from "./utils/nanoEvents.mjs"
 
@@ -11,6 +11,12 @@ export type DatapackCallback = (app: App) => unknown
 
 export interface DatapackFunctions {
   postLoad?: DatapackCallback
+}
+
+export interface DatapackShortcut {
+  callback: (app: App) => void
+  shortcut: Key
+  when: Expression
 }
 
 /** An object like this should be the default export of a datapack source file */
@@ -26,7 +32,7 @@ export interface DatapackExport {
   registryAdditions?: RegistryContributions
   newRegistries?: NewRegistries
   functions?: DatapackFunctions
-  shortcuts?: ShortcutOptions[]
+  shortcuts?: DatapackShortcut[]
 
   data?: {
     registryAdditions?: DataDrivenRegistryContributions
@@ -63,7 +69,7 @@ export class Datapack {
     registryAdditions?: RegistryContributions
     newRegistries?: NewRegistries
     functions?: DatapackFunctions
-    shortcuts?: ShortcutOptions[]
+    shortcuts?: DatapackShortcut[]
   }
   data: {
     registryAdditions?: DataDrivenRegistryContributions
@@ -229,7 +235,12 @@ export class DatapackManager {
     // Load the shortcuts that it wants to add
     if (datapack.code.shortcuts) {
       datapack.code.shortcuts.forEach((shortcut) => {
-        this.app.shortcuts.add(shortcut)
+        this.app.shortcuts.add({
+          ...shortcut,
+          callback: () => {
+            shortcut.callback(this.app)
+          },
+        })
       })
     }
 

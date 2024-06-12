@@ -32,6 +32,10 @@ p {
   z-index: 1000;
 }
 
+.snackbar.snackbar {
+  z-index: 3000;
+}
+
 button:focus-visible {
   outline: var(--focus-outline);
   outline-offset: 3px;

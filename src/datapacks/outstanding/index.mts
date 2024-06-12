@@ -41,7 +41,24 @@ const outstandingDatapack: DatapackExport = {
     {
       shortcut: "Ctrl+S",
       when: "editorOpen",
-      callback: () => console.log("Saving..."),
+      callback: (app) => {
+        const editor = app.dataDirectoryManager.$currentEditor()
+        if (editor) {
+          // TODO: This should be a command
+          editor.saveContent().then(() => {
+            app.pushSnackbar({
+              text: "Saved",
+              durationSeconds: 0.7,
+              id: "editor_saved",
+            })
+          })
+          return
+        }
+        app.pushErrorSnackbar(
+          "Failed to save file: No open editor",
+          "no_editor_open"
+        )
+      },
     },
   ],
   data: {
