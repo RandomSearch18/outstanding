@@ -37,6 +37,13 @@ const outstandingDatapack: DatapackExport = {
       "outstanding:text_area": () => new TextAreaEditorProvider(),
     },
   },
+  shortcuts: [
+    {
+      shortcut: "Ctrl+S",
+      when: "editorOpen",
+      callback: () => console.log("Saving..."),
+    },
+  ],
   data: {
     registryAdditions: {
       "outstanding:ui_view": {

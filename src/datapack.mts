@@ -26,10 +26,10 @@ export interface DatapackExport {
   registryAdditions?: RegistryContributions
   newRegistries?: NewRegistries
   functions?: DatapackFunctions
+  shortcuts?: ShortcutOptions[]
 
   data?: {
     registryAdditions?: DataDrivenRegistryContributions
-    shortcuts?: ShortcutOptions[]
   }
 }
 
@@ -63,10 +63,10 @@ export class Datapack {
     registryAdditions?: RegistryContributions
     newRegistries?: NewRegistries
     functions?: DatapackFunctions
+    shortcuts?: ShortcutOptions[]
   }
   data: {
     registryAdditions?: DataDrivenRegistryContributions
-    shortcuts?: ShortcutOptions[]
   }
   exportedSource: DatapackExport
 
@@ -82,6 +82,7 @@ export class Datapack {
       registryAdditions: exportedPack.registryAdditions,
       newRegistries: exportedPack.newRegistries,
       functions: exportedPack.functions,
+      shortcuts: exportedPack.shortcuts,
     }
     this.data = exportedPack.data || {}
   }
@@ -225,18 +226,18 @@ export class DatapackManager {
       }
     }
 
+    // Load the shortcuts that it wants to add
+    if (datapack.code.shortcuts) {
+      datapack.code.shortcuts.forEach((shortcut) => {
+        this.app.shortcuts.add(shortcut)
+      })
+    }
+
     // Load its data-driven registry contributions
     if (datapack.data.registryAdditions) {
       this.app.registries.loadDataDrivenRegistryContributions(
         datapack.data.registryAdditions
       )
-    }
-
-    // Load the shortcuts that it wants to add
-    if (datapack.data.shortcuts) {
-      datapack.data.shortcuts.forEach((shortcut) => {
-        this.app.shortcuts.add(shortcut)
-      })
     }
 
     // Load is now complete
