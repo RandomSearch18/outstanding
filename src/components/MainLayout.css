@@ -1,17 +1,18 @@
 .main-layout {
   --mainbar-width: auto;
+  --viewbar-width: 5rem;
   display: grid;
-  grid-template-columns: 5rem var(--sidebar-width, clamp(180px, 30%, 300px)) var(
-      --mainbar-width
-    );
+  grid-template-columns:
+    var(--viewbar-width) var(--sidebar-width, clamp(180px, 30%, 300px))
+    var(--mainbar-width);
   transition: grid-template-columns 0.15s ease-out;
   height: 100dvh;
   width: 100vw;
 
-  grid-template-areas: "navbar sidebar mainbar";
+  grid-template-areas: "viewbar sidebar mainbar";
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 490px) {
   .main-layout:not(.no-sidebar) {
     --sidebar-width: auto;
     --mainbar-width: 0;
@@ -24,10 +25,28 @@
   .no-sidebar {
     --mainbar-width: 1fr;
   }
+
+  .main-layout {
+    --viewbar-width: 3.5rem;
+  }
+
+  .viewbar.viewbar.viewbar
+    > a:not(.button, .chip):is(:hover, :focus, .active)
+    > i {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .viewbar > a > div {
+    line-break: anywhere;
+  }
 }
 
 .main-layout.no-sidebar {
   --sidebar-width: 0;
+}
+
+.main-layout.no-sidebar .sidebar-fab {
+  display: none;
 }
 
 .main-layout.no-sidebar .sidebar :is(p) {
@@ -39,8 +58,9 @@
   max-height: 100dvh;
 }
 
-.navbar {
-  grid-area: navbar;
+.viewbar.viewbar {
+  grid-area: viewbar;
+  inline-size: var(--viewbar-width);
 }
 
 .mainbar {
