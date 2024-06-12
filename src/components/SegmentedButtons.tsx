@@ -1,7 +1,9 @@
-import { For, createElement } from "voby"
+import { For, If, createElement } from "voby"
 
-interface SegmentedButtonOptions {
+export interface SegmentedButtonOptions {
   content: JSX.Child
+  label?: string
+  showLabel?: boolean
   onClick?: (e: MouseEvent) => void
   class?: JSX.ClassProperties
 }
@@ -20,8 +22,18 @@ function SegmentedButtons({ buttons }: { buttons: SegmentedButtonOptions[] }) {
               ...button.class,
             }}
             onClick={button.onClick}
+            title={button.label}
           >
             {button.content}
+            <If when={button.label}>
+              <span
+                class={{
+                  "visually-hidden": button.showLabel === false,
+                }}
+              >
+                {button.label}
+              </span>
+            </If>
           </button>
         )}
       </For>

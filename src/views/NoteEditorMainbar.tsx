@@ -45,9 +45,13 @@ function NoteEditorMainbar({ app }: { app: App }) {
         buttons={{
           edit: {
             content: () => <Icon>{mdiLeadPencil}</Icon>,
+            label: "Edit",
+            showLabel: false,
           },
           preview: {
             content: () => <Icon>{mdiEye}</Icon>,
+            label: "Preview",
+            showLabel: false,
           },
         }}
       />
@@ -55,6 +59,8 @@ function NoteEditorMainbar({ app }: { app: App }) {
         buttons={[
           {
             content: <Icon>{mdiContentSave}</Icon>,
+            label: "Save",
+            // showLabel: false,
             onClick: () => {
               app.dataDirectoryManager.$currentEditor()?.saveContent()
             },
