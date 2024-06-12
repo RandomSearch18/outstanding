@@ -45,6 +45,8 @@ export interface NewRegistries {
 }
 export type RegistryContributions = {
   [registry in keyof Outstanding.Registries]?: RegistryAdditions<registry>
+} & {
+  [otherRegistry: NamespacedId]: RegistryAdditions<any>
 }
 export type DataDrivenRegistryContributions = {
   [registry in keyof Outstanding.Registries]?: {
@@ -199,6 +201,13 @@ export class DatapackManager {
   }
 
   loadDatapack(datapack: Datapack) {
+    // Load its new registries
+    if (datapack.code.newRegistries) {
+      for (const [_, registry] of Object.entries(datapack.code.newRegistries)) {
+        this.app.registries.register(registry)
+      }
+    }
+
     // Load its registry contributions
     if (datapack.code.registryAdditions) {
       this.app.registries.loadRegistryContributions(
@@ -214,13 +223,6 @@ export class DatapackManager {
           datapack.id,
           datapack.code.functions.postLoad
         )
-      }
-    }
-
-    // Load its new registries
-    if (datapack.code.newRegistries) {
-      for (const [_, registry] of Object.entries(datapack.code.newRegistries)) {
-        this.app.registries.register(registry)
       }
     }
 

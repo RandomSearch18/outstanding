@@ -1,0 +1,72 @@
+import { Note } from "../../dataDirectory/note.mjs"
+import { Provider } from "../../registry/provider.mjs"
+import { NamespacedId } from "../../registry/registry.mjs"
+
+export abstract class Editor {
+  readonly note
+
+  constructor(note: Note) {
+    this.note = note
+  }
+
+  abstract addToDOM(parent: HTMLElement): void
+  abstract loadContent(): void
+  abstract saveContent(): void
+}
+
+export abstract class EditorProvider<T extends Editor> extends Provider {
+  abstract createEditor(note: Note): T
+}
+
+export class TextAreaEditorProvider extends EditorProvider<TextAreaEditor> {
+  id: NamespacedId = "outstanding:textarea"
+  priority = 0
+
+  async isAvailable() {
+    return true
+  }
+
+  async init() {
+    return this
+  }
+
+  createEditor(note: Note) {
+    return new TextAreaEditor(note)
+  }
+}
+
+export class TextAreaEditor extends Editor {
+  element: HTMLTextAreaElement | null = null
+  private contentInMemory: string | null = null
+
+  constructor(note: Note) {
+    super(note)
+  }
+
+  addToDOM(parent: HTMLElement) {
+    const element = document.createElement("textarea")
+    element.value = "Loading..."
+    parent.appendChild(element)
+    this.element = element
+  }
+
+  async loadContent() {
+    this.contentInMemory = await this.note.getContent()
+    if (!this.element) return
+    this.element.value = this.contentInMemory
+    this.element.addEventListener("input", () => {
+      if (!this.element) return
+      this.contentInMemory = this.element?.value
+    })
+  }
+
+  async saveContent() {
+    if (this.contentInMemory === null) {
+      return console.warn(
+        "Tried to save content for note without an editor",
+        this.note
+      )
+    }
+    await this.note.overwriteContent(this.contentInMemory)
+  }
+}

@@ -1,5 +1,13 @@
 import { DatapackExport } from "../../datapack.mjs"
+import { Provider, ProviderRegistry } from "../../registry/provider.mjs"
+import { Registry, RegistryItem } from "../../registry/registry.mjs"
+import { SettingsProvider } from "../../registry/settingsProvider.mjs"
 import { OPFSDataDirectoryProvider } from "./OPFSDataDir.mjs"
+import {
+  Editor,
+  EditorProvider,
+  TextAreaEditorProvider,
+} from "./editorProvider.mjs"
 import { FilesystemDataDirectoryProvider } from "./filesystemDataDir.mjs"
 
 const outstandingDatapack: DatapackExport = {
@@ -14,12 +22,20 @@ const outstandingDatapack: DatapackExport = {
       console.log("Outstanding datapack loaded, yay!")
     },
   },
+  newRegistries: {
+    "outstanding:editor": new ProviderRegistry<EditorProvider<Editor>>(
+      "outstanding:editor"
+    ) as Registry<RegistryItem>, // FIXME: Why does Typescript complain when we remove the `as`?
+  },
   registryAdditions: {
     "outstanding:data_directory_provider": {
       "outstanding:filesystem_access_api": (app) =>
         new FilesystemDataDirectoryProvider(app, 100),
       "outstanding:origin_private_file_system": (app) =>
         new OPFSDataDirectoryProvider("outstanding", 200),
+    },
+    "outstanding:editor": {
+      "outstanding:text_area": () => new TextAreaEditorProvider(),
     },
   },
   data: {
