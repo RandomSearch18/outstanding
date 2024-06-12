@@ -16,6 +16,7 @@ import { createNanoEvents } from "./utils/nanoEvents"
 import { ViewRegistry } from "./registry/view.mjs"
 import { notesView, searchView, settingsView } from "./views/views"
 import ContextKeys from "context-keys"
+import ShoSho from "shosho"
 
 export type AppEvents = {}
 
@@ -23,6 +24,7 @@ export class App {
   // @ts-ignore - Living life on the edge
   state: AppState // @ts-ignore
   contextKeys: ContextKeys // @ts-ignore
+  shortcuts: ShoSho // @ts-ignore
   registries: RegistryRegistry // @ts-ignore
   settings: SettingsWithDefaults // @ts-ignore
   storage: SettingsProvider // @ts-ignore
@@ -115,6 +117,10 @@ export class App {
     })
 
     this.contextKeys = new ContextKeys({})
+    this.shortcuts = new ShoSho({
+      capture: true,
+      target: document,
+    })
 
     this.registries = new RegistryRegistry()
 

@@ -1211,6 +1211,7 @@ __metadata:
     beercss: "npm:^3.5.1"
     context-keys: "npm:^5.2.3"
     material-dynamic-colors: "npm:^1.1.0"
+    shosho: "npm:^1.4.3"
     typescript: "npm:^5.3.3"
     vite: "npm:^5.1.4"
     voby: "npm:*"
@@ -1385,6 +1386,13 @@ __metadata:
   version: 3.0.0
   resolution: "shebang-regex@npm:3.0.0"
   checksum: 10c0/1dbed0726dd0e1152a92696c76c7f06084eb32a90f0528d11acd764043aacf76994b2fb30aa1291a21bd019d6699164d048286309a278855ee7bec06cf6fb690
+  languageName: node
+  linkType: hard
+
+"shosho@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "shosho@npm:1.4.3"
+  checksum: 10c0/da19be2a93ffc979fa54555beafd82e67c7100a9beb287b4db8ae8f9b45581455d08c488611d0625038d5b77309d0069fc9c07adbf16f438a7b6097ac0913c28
   languageName: node
   linkType: hard
 
