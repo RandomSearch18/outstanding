@@ -22,17 +22,14 @@
   background-color: var(--secondary-container);
 }
 
-.note-list li > * > *:hover {
-  /* background-color: rgb(from var(--inverse-primary) r g b / 0.3); */
-  background-color: rgb(from var(--primary) r g b / 0.1);
-  /* Glow hotpink */
-  /* background-color: hotpink;
-  box-shadow: 0 0 10px 5px hotpink;
-  transition: box-shadow 0.1s ease-in-out; */
+/* This is needed becuase the focusable element !== the one we apply the wave effect to */
+.note-list a:is(:focus-visible, :hover) .wave::after {
+  background-size: 15000%;
+  opacity: 1;
+  transition: var(--speed2) background-size linear;
 }
 
 .note-list li > *:focus-visible > * {
-  background-color: rgb(from var(--primary) r g b / 0.1);
   outline: var(--primary) solid 2px;
   outline-offset: 2px;
 }

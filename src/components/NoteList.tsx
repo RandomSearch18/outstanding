@@ -37,7 +37,7 @@ function NoteList({
                   active: () => item.isActive?.() ?? false,
                 }}
               >
-                <div>{item.label}</div>
+                <div class="wave">{item.label}</div>
               </a>
             </li>
           )
