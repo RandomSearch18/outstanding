@@ -20,9 +20,11 @@
     "@mdi/js": "^7.4.47",
     "are-deeply-equal": "^1.1.1",
     "beercss": "^3.5.1",
-    "is": "npm:@fabiospampinato/is",
+    "context-keys": "^5.2.3",
     "material-dynamic-colors": "^1.1.0",
+    "npm:": "fabiospampinato/is",
     "voby": "*"
   },
-  "private": true
+  "private": true,
+  "packageManager": "yarn@4.3.0"
 }
