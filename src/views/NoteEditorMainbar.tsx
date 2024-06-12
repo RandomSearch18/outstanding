@@ -87,10 +87,14 @@ function NoteEditorMainbar({ app }: { app: App }) {
 
   const getStartedSplash = (
     <div class="get-started">
-      <p>Get started by opening a file</p>
-      <p>Note: File opening has not been implemented yet</p>
-      <p>Settings: {app.settings.getKeys().join(", ")}</p>
-      <If when={() => !app.dataDirectoryManager.$directoryIsOpen()}>
+      <If
+        when={() => !app.dataDirectoryManager.$directoryIsOpen()}
+        fallback={<p>No note open</p>}
+      >
+        <p>
+          Get started by opening or creating a data directory (i.e. a folder to
+          store your notes) using the button below
+        </p>
         <Button
           text="Open a data directory"
           action={() => openDataDirectory()}
