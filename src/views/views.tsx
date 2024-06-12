@@ -42,7 +42,8 @@ export const notesView = new View({
                     app.dataDirectoryManager.openNote(note.id)
                   },
                   isActive: () =>
-                    app.dataDirectoryManager.$currentNote()?.id === note.id,
+                    app.dataDirectoryManager.$currentEditor()?.note.id ===
+                    note.id,
                 }))
               }
               sortByLabel={true}

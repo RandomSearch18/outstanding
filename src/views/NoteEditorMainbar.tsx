@@ -8,7 +8,6 @@ import { mdiContentSave, mdiEye, mdiLeadPencil } from "@mdi/js"
 import Icon from "../components/Icon"
 import { ValueOf } from "../utilities.mjs"
 import SegmentedButtons from "../components/SegmentedButtons"
-import NoteEditor from "../components/NoteEditor"
 
 export type EditMode = ValueOf<typeof EditMode>
 export const EditMode = {
@@ -56,6 +55,9 @@ function NoteEditorMainbar({ app }: { app: App }) {
         buttons={[
           {
             content: <Icon>{mdiContentSave}</Icon>,
+            onClick: () => {
+              app.dataDirectoryManager.$currentEditor()?.saveContent()
+            },
           },
         ]}
       />
