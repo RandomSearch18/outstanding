@@ -8,6 +8,7 @@ import { mdiContentSave, mdiEye, mdiLeadPencil } from "@mdi/js"
 import Icon from "../components/Icon"
 import { ValueOf } from "../utilities.mjs"
 import SegmentedButtons from "../components/SegmentedButtons"
+import { DataDirectoryProvider } from "../dataDirectory/dataDirProvider.mjs"
 
 export type EditMode = ValueOf<typeof EditMode>
 export const EditMode = {
@@ -16,9 +17,9 @@ export const EditMode = {
 } as const
 
 function NoteEditorMainbar({ app }: { app: App }) {
-  function openDataDirectory() {
+  function openDataDirectory(provider?: DataDirectoryProvider) {
     app.dataDirectoryManager
-      .openDataDirectory()
+      .openDataDirectory(provider)
       .then((directory) => {
         if (directory.wasinitializedThisSession) {
           app.pushSnackbar({
@@ -98,6 +99,15 @@ function NoteEditorMainbar({ app }: { app: App }) {
         <Button
           text="Open a data directory"
           action={() => openDataDirectory()}
+        />
+        <Button
+          text="Open a local folder"
+          action={() => {
+            const provider = app.dataDirectoryManager.providerRegistry.getItem(
+              "outstanding:filesystem_access_api"
+            )
+            openDataDirectory(provider)
+          }}
         />
       </If>
     </div>

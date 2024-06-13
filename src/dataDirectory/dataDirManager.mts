@@ -47,8 +47,8 @@ export class DataDirectoryManager {
     return this.activeProvider!
   }
 
-  async openDataDirectory() {
-    const provider = await this.getActiveProvider()
+  async openDataDirectory(providedProvider?: DataDirectoryProvider) {
+    const provider = providedProvider || (await this.getActiveProvider())
     const directory = await provider.openDataDirectory()
     this.currentDirectory = directory
     this.$directoryIsOpen(true)
