@@ -32,7 +32,9 @@ export class DataDirectoryManager {
   }
 
   async chooseProvider() {
-    const newProvider = await this.providerRegistry.getBestProvider()
+    const newProvider = await this.providerRegistry
+      .getBestProvider()
+      .then((provider) => provider.init())
     this.setActiveProvider(newProvider)
   }
 
@@ -64,13 +66,19 @@ export class DataDirectoryManager {
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`)
     }
+    const existingEditor = this.$currentEditor()
+    if (existingEditor) {
+      existingEditor.dispose()
+    }
     const editorProviders = this.app.registries.getItem(
       "outstanding:editor"
     ) as ProviderRegistry<EditorProvider<Editor>> | undefined
     if (!editorProviders) {
       throw new Error("Editor provider registry is not present!")
     }
-    const editorProvider = await editorProviders.getBestProvider()
+    const editorProvider = await editorProviders
+      .getBestProvider()
+      .then((provider) => provider.init())
     const editor = editorProvider.createEditor(note)
     const targetElement = document.querySelector(".main-editor-wrapper")
     if (!targetElement) throw new Error("Main editor wrapper is missing")

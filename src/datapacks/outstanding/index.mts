@@ -8,6 +8,7 @@ import {
   TextAreaEditorProvider,
 } from "./editorProvider.mjs"
 import { FilesystemDataDirectoryProvider } from "./filesystemDataDir.mjs"
+import { MonacoEditorProvider } from "./monacoEditor.mjs"
 
 const outstandingDatapack: DatapackExport = {
   metadata: {
@@ -35,6 +36,7 @@ const outstandingDatapack: DatapackExport = {
     },
     "outstanding:editor": {
       "outstanding:text_area": () => new TextAreaEditorProvider(),
+      "outstanding:monaco_editor": () => new MonacoEditorProvider(100),
     },
   },
   shortcuts: [

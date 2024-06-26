@@ -23,6 +23,7 @@
     "beercss": "^3.5.1",
     "context-keys": "^5.2.3",
     "material-dynamic-colors": "^1.1.0",
+    "monaco-editor": "^0.50.0",
     "shosho": "^1.4.3",
     "voby": "*"
   },

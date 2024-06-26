@@ -13,6 +13,7 @@ export abstract class Editor {
   abstract addToDOM(parent: Element): void
   abstract loadContent(): Promise<void>
   abstract saveContent(): Promise<void>
+  abstract dispose(): void
 }
 
 export abstract class EditorProvider<T extends Editor> extends Provider {
