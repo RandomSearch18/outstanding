@@ -16,6 +16,7 @@ export class MonacoEditorEditor extends Editor {
       theme: document.body.matches(".dark") ? "vs-dark" : "vs",
       language: "markdown",
       renderLineHighlightOnlyWhenFocus: true,
+      automaticLayout: true,
     })
     this.editorInstance.focus()
   }
@@ -56,6 +57,7 @@ export class MonacoEditorProvider extends EditorProvider<MonacoEditorEditor> {
   }
 
   async init() {
+    import("./MonacoEditor.css")
     ;(window as any).MonacoEnvironment = {
       getWorker: async function (_: string, label: string) {
         return label === "editorWorkerService" ? getWorker() : getWorker(label)
