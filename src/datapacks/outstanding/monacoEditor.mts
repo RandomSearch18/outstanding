@@ -34,8 +34,10 @@ export class MonacoEditorEditor extends Editor {
   }
 
   currentModel() {
-    const currentModel = this.editorInstance?.getModel()
-    if (!currentModel) throw new Error("No editor instance/model is present")
+    if (!this.editorInstance)
+      throw new Error("No editor instance has been defined")
+    const currentModel = this.editorInstance.getModel()
+    if (!currentModel) throw new Error("No model present on the editor")
     return currentModel
   }
 
