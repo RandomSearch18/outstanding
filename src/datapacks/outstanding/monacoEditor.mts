@@ -43,6 +43,7 @@ export class MonacoEditorEditor extends Editor {
     const text = await this.note.getContent()
     this.currentModel().setValue(text)
     this.editorPlaceholder?.hide()
+    console.log("Loaded content", this.editorPlaceholder)
   }
 
   async saveContent() {
@@ -102,12 +103,12 @@ class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
     private readonly editor: theMonacoEditor.ICodeEditor
   ) {
     // register a listener for editor code changes
-    editor.onDidChangeModelContent(() => this.onDidChangeModelContent())
+    editor.onDidChangeModelContent(() => this.update())
     // ensure that on initial load the placeholder is shown
-    this.onDidChangeModelContent()
+    this.update()
   }
 
-  private onDidChangeModelContent(): void {
+  private update(): void {
     if (this.editor.getValue() === "" && this.shouldShow) {
       this.editor.addContentWidget(this)
     } else {
@@ -121,10 +122,12 @@ class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
 
   hide() {
     this.shouldShow = false
+    this.update()
   }
 
   show() {
     this.shouldShow = true
+    this.update()
   }
 
   getDomNode(): HTMLElement {
