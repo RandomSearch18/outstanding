@@ -9,6 +9,7 @@ import { editor as theMonacoEditor } from "monaco-editor"
 
 export class MonacoEditorEditor extends Editor {
   editorInstance: theMonacoEditor.IStandaloneCodeEditor | null = null
+  editorPlaceholder: PlaceholderContentWidget | null = null
 
   addToDOM(parent: HTMLElement) {
     parent.innerHTML = ""
@@ -20,7 +21,10 @@ export class MonacoEditorEditor extends Editor {
       automaticLayout: true,
     })
     this.editorInstance.focus()
-    new PlaceholderContentWidget("Loading...", this.editorInstance)
+    this.editorPlaceholder = new PlaceholderContentWidget(
+      "Loading...",
+      this.editorInstance
+    )
   }
 
   dispose() {
@@ -37,6 +41,7 @@ export class MonacoEditorEditor extends Editor {
   async loadContent() {
     const text = await this.note.getContent()
     this.currentModel().setValue(text)
+    this.editorPlaceholder?.hide()
   }
 
   async saveContent() {
@@ -111,6 +116,16 @@ class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
 
   getId(): string {
     return PlaceholderContentWidget.ID
+  }
+
+  hide() {
+    if (!this.domNode) return
+    this.domNode.style.display = "none"
+  }
+
+  show() {
+    if (!this.domNode) throw new Error("DOM node is not present")
+    this.domNode.style.display = "block"
   }
 
   getDomNode(): HTMLElement {
