@@ -22,7 +22,7 @@
   background-color: var(--secondary-container);
 }
 
-/* This is needed becuase the focusable element !== the one we apply the wave effect to */
+/* This is needed because the focusable element !== the one we apply the wave effect to */
 .note-list a:focus-visible .wave::after {
   background-size: 15000%;
   opacity: 1;
