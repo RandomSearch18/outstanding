@@ -19,6 +19,7 @@ export class MonacoEditorEditor extends Editor {
       language: "markdown",
       renderLineHighlightOnlyWhenFocus: true,
       automaticLayout: true,
+      minimap: { enabled: false },
     })
     this.editorInstance.focus()
     this.editorPlaceholder = new PlaceholderContentWidget(
