@@ -38,13 +38,8 @@ async function getWorker(language?: string) {
   const importTarget = language
     ? `/node_modules/monaco-editor/esm/vs/language/${language}/${language}.worker?worker`
     : `/node_modules/monaco-editor/esm/vs/editor/editor.worker?worker`
-
-  // if (loadedMonacoWorkers.has(importTarget))
-  //   return loadedMonacoWorkers.get(importTarget)
-
   const { default: worker } = await import(importTarget)
-  // loadedMonacoWorkers.set(importTarget, worker)
-  return new worker()
+  return new worker() /* @vite-ignore */
 }
 
 export class MonacoEditorProvider extends EditorProvider<MonacoEditorEditor> {
