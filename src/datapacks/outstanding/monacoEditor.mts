@@ -19,6 +19,7 @@ export class MonacoEditorEditor extends Editor {
       automaticLayout: true,
     })
     this.editorInstance.focus()
+    new PlaceholderContentWidget("Loading...", this.editorInstance)
   }
 
   dispose() {
@@ -76,5 +77,62 @@ export class MonacoEditorProvider extends EditorProvider<MonacoEditorEditor> {
 
   async isAvailable() {
     return true
+  }
+}
+
+/**
+ * Represents an placeholder renderer for monaco editor
+ * - Roughly based on https://github.com/microsoft/vscode/blob/main/src/vs/workbench/contrib/codeEditor/browser/untitledTextEditorHint/untitledTextEditorHint.ts
+ * - Source: https://github.com/microsoft/monaco-editor/issues/568#issuecomment-1499966160
+ */
+class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
+  private static readonly ID = "editor.widget.placeholderHint"
+
+  private domNode: HTMLElement | undefined
+
+  constructor(
+    private readonly placeholder: string,
+    private readonly editor: theMonacoEditor.ICodeEditor
+  ) {
+    // register a listener for editor code changes
+    editor.onDidChangeModelContent(() => this.onDidChangeModelContent())
+    // ensure that on initial load the placeholder is shown
+    this.onDidChangeModelContent()
+  }
+
+  private onDidChangeModelContent(): void {
+    if (this.editor.getValue() === "") {
+      this.editor.addContentWidget(this)
+    } else {
+      this.editor.removeContentWidget(this)
+    }
+  }
+
+  getId(): string {
+    return PlaceholderContentWidget.ID
+  }
+
+  getDomNode(): HTMLElement {
+    if (!this.domNode) {
+      this.domNode = document.createElement("div")
+      this.domNode.style.width = "max-content"
+      this.domNode.style.pointerEvents = "none"
+      this.domNode.textContent = this.placeholder
+      this.domNode.style.fontStyle = "italic"
+      this.editor.applyFontInfo(this.domNode)
+    }
+
+    return this.domNode
+  }
+
+  getPosition(): theMonacoEditor.IContentWidgetPosition | null {
+    return {
+      position: { lineNumber: 1, column: 1 },
+      preference: [theMonacoEditor.ContentWidgetPositionPreference.EXACT],
+    }
+  }
+
+  dispose(): void {
+    this.editor.removeContentWidget(this)
   }
 }
