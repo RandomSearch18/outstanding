@@ -85,4 +85,9 @@ export class TextAreaEditor extends Editor {
     }
     await this.note.overwriteContent(this.contentInMemory)
   }
+
+  dispose() {
+    if (!this.element) return
+    this.element.remove()
+  }
 }
