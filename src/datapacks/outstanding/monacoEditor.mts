@@ -93,7 +93,7 @@ export class MonacoEditorProvider extends EditorProvider<MonacoEditorEditor> {
  */
 class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
   private static readonly ID = "editor.widget.placeholderHint"
-
+  private shouldShow = true
   private domNode: HTMLElement | undefined
 
   constructor(
@@ -107,7 +107,7 @@ class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
   }
 
   private onDidChangeModelContent(): void {
-    if (this.editor.getValue() === "") {
+    if (this.editor.getValue() === "" && this.shouldShow) {
       this.editor.addContentWidget(this)
     } else {
       this.editor.removeContentWidget(this)
@@ -119,13 +119,11 @@ class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
   }
 
   hide() {
-    if (!this.domNode) return
-    this.domNode.style.display = "none"
+    this.shouldShow = false
   }
 
   show() {
-    if (!this.domNode) throw new Error("DOM node is not present")
-    this.domNode.style.display = "block"
+    this.shouldShow = true
   }
 
   getDomNode(): HTMLElement {
