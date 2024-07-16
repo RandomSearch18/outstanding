@@ -1,3 +1,4 @@
+import { createElement, h } from "voby"
 import { Note } from "../../dataDirectory/note.mjs"
 import { NamespacedId } from "../../registry/registry.mjs"
 import { Editor, EditorProvider } from "./editorProvider.mjs"
@@ -114,11 +115,19 @@ class PlaceholderContentWidget implements theMonacoEditor.IContentWidget {
 
   getDomNode(): HTMLElement {
     if (!this.domNode) {
-      this.domNode = document.createElement("div")
-      this.domNode.style.width = "max-content"
-      this.domNode.style.pointerEvents = "none"
-      this.domNode.textContent = this.placeholder
-      this.domNode.style.fontStyle = "italic"
+      this.domNode = createElement(
+        "div",
+        {
+          class: "monaco-placeholder",
+          style: {
+            width: "max-content",
+            pointerEvents: "none",
+            fontStyle: "italic",
+            opacity: 0.6,
+          },
+        },
+        this.placeholder
+      )() as HTMLElement
       this.editor.applyFontInfo(this.domNode)
     }
 
