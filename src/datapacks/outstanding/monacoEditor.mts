@@ -26,12 +26,20 @@ export class MonacoEditorEditor extends Editor {
     this.editorInstance.dispose()
   }
 
+  currentModel() {
+    const currentModel = this.editorInstance?.getModel()
+    if (!currentModel) throw new Error("No editor instance/model is present")
+    return currentModel
+  }
+
   async loadContent() {
-    // TODO
+    const text = await this.note.getContent()
+    this.currentModel().setValue(text)
   }
 
   async saveContent() {
-    //TODO
+    const text = this.currentModel().getValue()
+    await this.note.overwriteContent(text)
   }
 }
 
