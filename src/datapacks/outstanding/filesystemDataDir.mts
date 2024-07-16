@@ -56,7 +56,7 @@ export class FilesystemDataDirectoryProvider extends DataDirectoryProvider {
 export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
   directoryHandle
   metadataStore: FilesystemSettingsProvider
-  wasinitializedThisSession = false
+  wasInitializedThisSession = false
   $notes = $([] as Note[])
   dataDirProvider
 
@@ -80,8 +80,10 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
 
   async init(): Promise<this> {
     await this.metadataStore.init()
-    this.metadataStore.readFromBackend().then(console.log)
-    this.wasinitializedThisSession = this.metadataStore.isNewFile
+    this.metadataStore
+      .readFromBackend()
+      .then((data) => console.debug("Loaded metadata store", data))
+    this.wasInitializedThisSession = this.metadataStore.isNewFile
     this.getNotes().then((notes) => {
       this.$notes(notes)
     })

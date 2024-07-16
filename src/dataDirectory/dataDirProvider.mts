@@ -13,7 +13,7 @@ export interface CreateNoteOptions {
 export abstract class DataDirectoryHandle {
   abstract label(): string
   abstract dataDirProvider: DataDirectoryProvider
-  abstract wasinitializedThisSession: boolean
+  abstract wasInitializedThisSession: boolean
   abstract $notes: Observable<Note[]>
 
   abstract getNotes(): Promise<Note[]>

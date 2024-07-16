@@ -21,7 +21,7 @@ function NoteEditorMainbar({ app }: { app: App }) {
     app.dataDirectoryManager
       .openDataDirectory(provider)
       .then((directory) => {
-        if (directory.wasinitializedThisSession) {
+        if (directory.wasInitializedThisSession) {
           app.pushSnackbar({
             text: `Initialised new data directory using ${directory.dataDirProvider}`,
             id: "data_directory_initialized",
