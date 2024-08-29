@@ -7,8 +7,6 @@
 }
 
 #mainbar-target > * {
-  display: grid;
-  grid-template-rows: 3.3em 1fr;
   height: 100%;
 }
 
@@ -23,6 +21,10 @@
 
 .toolbar-items > * {
   margin: 0;
+}
+
+.mainbar-content {
+  height: calc(100% - 46px);
 }
 
 .main-editor-wrapper {
