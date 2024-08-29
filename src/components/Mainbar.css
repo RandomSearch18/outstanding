@@ -8,7 +8,7 @@
 
 #mainbar-target > * {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 3.3em 1fr;
   height: 100%;
 }
 
