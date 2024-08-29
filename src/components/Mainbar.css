@@ -24,7 +24,7 @@
 }
 
 .mainbar-content {
-  height: calc(100% - 46px);
+  height: calc(100% - 2rem - 0.5rem * 2);
 }
 
 .main-editor-wrapper {
