@@ -39,7 +39,6 @@ export class TextAreaEditorProvider extends EditorProvider<TextAreaEditor> {
 
 export class TextAreaEditor extends Editor {
   element: HTMLTextAreaElement | null = null
-  private contentInMemory: string | null = null
 
   constructor(note: Note) {
     super(note)
@@ -67,23 +66,24 @@ export class TextAreaEditor extends Editor {
   }
 
   async loadContent() {
-    this.contentInMemory = await this.note.getContent()
+    this.note.liveContent(await this.note.getContent())
     if (!this.element) return
-    this.element.value = this.contentInMemory
+    this.element.value = this.note.liveContent()!
     this.element.addEventListener("input", () => {
       if (!this.element) return
-      this.contentInMemory = this.element?.value
+      this.note.liveContent(this.element.value)
     })
   }
 
   async saveContent() {
-    if (this.contentInMemory === null) {
+    const content = this.note.liveContent()
+    if (content === null) {
       return console.warn(
         "Tried to save content for note without an editor",
         this.note
       )
     }
-    await this.note.overwriteContent(this.contentInMemory)
+    await this.note.overwriteContent(content)
   }
 
   dispose() {

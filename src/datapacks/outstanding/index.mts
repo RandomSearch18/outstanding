@@ -9,6 +9,7 @@ import {
 } from "./editorProvider.mjs"
 import { FilesystemDataDirectoryProvider } from "./filesystemDataDir.mjs"
 import { MonacoEditorProvider } from "./monacoEditor.mjs"
+import { NotePreviewerProvider } from "./notePreviewer.mjs"
 
 const outstandingDatapack: DatapackExport = {
   metadata: {
@@ -26,6 +27,9 @@ const outstandingDatapack: DatapackExport = {
     "outstanding:editor": new ProviderRegistry<EditorProvider<Editor>>(
       "outstanding:editor"
     ) as Registry<RegistryItem>, // FIXME: Why does Typescript complain when we remove the `as`?
+    "outstanding:note_previewer": new ProviderRegistry<NotePreviewerProvider>(
+      "outstanding:note_previewer"
+    ) as Registry<RegistryItem>,
   },
   registryAdditions: {
     "outstanding:data_directory_provider": {

@@ -1026,6 +1026,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"marked@npm:^14.1.0":
+  version: 14.1.0
+  resolution: "marked@npm:14.1.0"
+  bin:
+    marked: bin/marked.js
+  checksum: 10c0/85bb74e5514975093b2772e6844503b373f422edd4e8a5382549b7c06808c5fb7422d3314846f48d30acffdc2f935196ab8f44b47c24ce0d18a62b0376e6e3f0
+  languageName: node
+  linkType: hard
+
 "material-dynamic-colors@npm:^1.1.0":
   version: 1.1.0
   resolution: "material-dynamic-colors@npm:1.1.0"
@@ -1217,6 +1226,7 @@ __metadata:
     are-deeply-equal: "npm:^1.1.1"
     beercss: "npm:^3.5.1"
     context-keys: "npm:^5.2.3"
+    marked: "npm:^14.1.0"
     material-dynamic-colors: "npm:^1.1.0"
     monaco-editor: "npm:^0.50.0"
     shosho: "npm:^1.4.3"

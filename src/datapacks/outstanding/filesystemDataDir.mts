@@ -148,6 +148,7 @@ export class FilesystemDataDirectoryHandle extends DataDirectoryHandle {
 export class FilesystemNoteHandle extends Note {
   id
   fileHandle
+  liveContent = $<string | null>(null)
 
   constructor(fileHandle: FileSystemFileHandle) {
     super()

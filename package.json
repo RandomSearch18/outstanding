@@ -22,6 +22,7 @@
     "are-deeply-equal": "^1.1.1",
     "beercss": "^3.5.1",
     "context-keys": "^5.2.3",
+    "marked": "^14.1.0",
     "material-dynamic-colors": "^1.1.0",
     "monaco-editor": "^0.50.0",
     "shosho": "^1.4.3",
