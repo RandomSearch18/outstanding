@@ -98,7 +98,7 @@ export class MonacoEditorProvider extends EditorProvider<MonacoEditorEditor> {
 }
 
 /**
- * Represents an placeholder renderer for monaco editor
+ * Represents a renderer for placeholders (greyed out text in an empty editor) for Monaco editor
  * - Roughly based on https://github.com/microsoft/vscode/blob/main/src/vs/workbench/contrib/codeEditor/browser/untitledTextEditorHint/untitledTextEditorHint.ts
  * - Source: https://github.com/microsoft/monaco-editor/issues/568#issuecomment-1499966160
  */
