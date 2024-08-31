@@ -44,7 +44,6 @@ function NoteEditorMainbar({ app }: { app: App }) {
       })
   }
 
-  // TODO: Use these!
   const buttons: Observable<Record<string, SegmentedButtonOptions>> = useMemo(
     () => {
       const paneRegistry = app.registries.getItem("outstanding:note_pane")
@@ -54,7 +53,6 @@ function NoteEditorMainbar({ app }: { app: App }) {
         )
         return {}
       }
-      // console.log("Panes", paneRegistry.$items)
       const panes: Record<
         string,
         NotePaneProvider<NotePane>
