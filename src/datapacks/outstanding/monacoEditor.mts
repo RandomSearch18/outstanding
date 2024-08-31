@@ -11,7 +11,14 @@ export class MonacoEditorEditor extends Editor {
   editorInstance: theMonacoEditor.IStandaloneCodeEditor | null = null
   editorPlaceholder: PlaceholderContentWidget | null = null
 
-  addToDOM(parent: HTMLElement) {
+  constructor(note: Note, parent: Element) {
+    super(note, parent)
+  }
+
+  async render() {
+    const parent = this.element
+    if (!(parent instanceof HTMLElement))
+      throw new Error("Parent element isn't a HTMLElement")
     parent.innerHTML = ""
     this.editorInstance = theMonacoEditor.create(parent, {
       value: "Loading...",
@@ -71,8 +78,8 @@ export class MonacoEditorProvider extends EditorProvider<MonacoEditorEditor> {
     this.priority = priority
   }
 
-  createEditor(note: Note) {
-    return new MonacoEditorEditor(note)
+  createEditor(note: Note, parent: Element) {
+    return new MonacoEditorEditor(note, parent)
   }
 
   async init() {
