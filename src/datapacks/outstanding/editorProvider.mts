@@ -44,7 +44,6 @@ export abstract class Editor extends NotePane {
 
   abstract render(): Promise<void>
   abstract loadContent(): Promise<void>
-  abstract saveContent(): Promise<void>
   abstract dispose(): void
 }
 
@@ -105,17 +104,6 @@ export class TextAreaEditor extends Editor {
       if (!this.textArea) return
       this.note.liveContent(this.textArea.value)
     })
-  }
-
-  async saveContent() {
-    const content = this.note.liveContent()
-    if (content === null) {
-      return console.warn(
-        "Tried to save content for note without an editor",
-        this.note
-      )
-    }
-    await this.note.overwriteContent(content)
   }
 
   dispose() {

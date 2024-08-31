@@ -51,7 +51,11 @@ export class MonacoEditorEditor extends Editor {
 
   async loadContent() {
     const text = await this.note.getContent()
-    this.currentModel().setValue(text)
+    const model = this.currentModel()
+    model.setValue(text)
+    model.onDidChangeContent(() => {
+      this.note.liveContent(model.getValue())
+    })
     this.editorPlaceholder?.hide()
     console.debug(`Loaded content for editor: ${this.note.id}`)
   }

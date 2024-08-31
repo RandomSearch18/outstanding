@@ -84,22 +84,21 @@ function NoteEditorMainbar({ app }: { app: App }) {
             label: "Save",
             // showLabel: false,
             onClick: () => {
-              const editor = app.dataDirectoryManager.$currentEditor()
-              if (editor) {
-                // TODO: This should be a command
-                editor.saveContent().then(() => {
-                  app.pushSnackbar({
-                    text: "Saved",
-                    durationSeconds: 0.7,
-                    id: "editor_saved",
-                  })
+              // TODO: This should be a command
+              const note = app.dataDirectoryManager.$currentNote()
+              if (!note)
+                return app.pushErrorSnackbar(
+                  "Failed to save file: No open editor",
+                  "no_editor_open"
+                )
+              note.saveContent().then(() => {
+                app.pushSnackbar({
+                  text: "Saved",
+                  durationSeconds: 0.7,
+                  id: "editor_saved",
                 })
-                return
-              }
-              app.pushErrorSnackbar(
-                "Failed to save file: No open editor",
-                "no_editor_open"
-              )
+              })
+              return
             },
           },
         ]}
