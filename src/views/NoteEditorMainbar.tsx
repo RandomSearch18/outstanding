@@ -1,4 +1,4 @@
-import { $, If, Observable, useEffect } from "voby"
+import { $, If, Observable, useEffect, useMemo } from "voby"
 import { App } from "../app.mjs"
 import Button from "../components/Button"
 import MainbarLayout from "../components/Mainbar"
@@ -7,8 +7,14 @@ import SegmentedButtonSwitcher from "../components/SegmentedButtonSwitcher"
 import { mdiContentSave, mdiEye, mdiLeadPencil } from "@mdi/js"
 import Icon from "../components/Icon"
 import { ValueOf } from "../utilities.mjs"
-import SegmentedButtons from "../components/SegmentedButtons"
+import SegmentedButtons, {
+  SegmentedButtonOptions,
+} from "../components/SegmentedButtons"
 import { DataDirectoryProvider } from "../dataDirectory/dataDirProvider.mjs"
+import {
+  NotePane,
+  NotePaneProvider,
+} from "../datapacks/outstanding/notePane.mjs"
 
 export type EditMode = ValueOf<typeof EditMode>
 export const EditMode = {
@@ -37,6 +43,42 @@ function NoteEditorMainbar({ app }: { app: App }) {
         }
       })
   }
+
+  const buttons: Observable<Record<string, SegmentedButtonOptions>> = useMemo(
+    () => {
+      const paneRegistry = app.registries.getItem("outstanding:note_pane")
+      if (!paneRegistry) {
+        console.warn(
+          "Not showing any pane buttons because the pane registry isn't available"
+        )
+        return {}
+      }
+      const panes: Record<
+        string,
+        NotePaneProvider<NotePane>
+      > = paneRegistry.$items
+      const buttons: Record<string, SegmentedButtonOptions> = {}
+      for (const [id, paneProvider] of Object.entries(panes)) {
+        buttons[id] = {
+          content: () => <Icon>{mdiLeadPencil}</Icon>,
+          label: paneProvider.id,
+          showLabel: false,
+          onClick: () => {
+            const note = app.dataDirectoryManager.$currentNote
+            if (!note) return console.warn("Not opening pane: no note open!")
+            const targetElement = document.querySelector(".main-editor-wrapper")
+            if (!targetElement)
+              throw new Error("Main editor wrapper is missing")
+            const pane = paneProvider.createNotePane(note, targetElement)
+            $currentPane().dispose()
+            pane.render()
+            $currentPane(pane)
+          },
+        }
+      }
+      return buttons
+    }
+  )
 
   const editMode: Observable<EditMode> = $<EditMode>(EditMode.Edit)
   const toolbar = (
