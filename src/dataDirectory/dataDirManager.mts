@@ -36,7 +36,7 @@ export class DataDirectoryManager {
 
     useEffect(() => {
       app.contextKeys.set("dataDirectoryOpen", this.$directoryIsOpen())
-      app.contextKeys.set("editorOpen", !!this.$currentEditor())
+      app.contextKeys.set("noteOpen", !!this.$currentNote())
     })
   }
 

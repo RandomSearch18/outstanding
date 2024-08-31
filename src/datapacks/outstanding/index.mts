@@ -64,7 +64,7 @@ const outstandingDatapack: DatapackExport = {
   shortcuts: [
     {
       shortcut: "Ctrl+S",
-      when: "editorOpen",
+      when: "noteOpen",
       callback: (app) => {
         // TODO: This should be a command
         const note = app.dataDirectoryManager.$currentNote()
