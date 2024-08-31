@@ -24,7 +24,9 @@ export class EditorPaneProvider extends NotePaneProvider<Editor> {
     const registry = this.app.registries.getItem(
       "outstanding:editor"
     ) as ProviderRegistry<EditorProvider<Editor>>
-    this.selectedProvider = await registry.getBestProvider()
+    this.selectedProvider = await registry
+      .getBestProvider()
+      .then((p) => p.init())
     return this
   }
 
