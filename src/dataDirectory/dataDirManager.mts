@@ -9,8 +9,12 @@ import {
   Editor,
   EditorProvider,
 } from "../datapacks/outstanding/editorProvider.mjs"
-import { NotePane } from "../datapacks/outstanding/notePane.mjs"
+import {
+  NotePane,
+  NotePaneProvider,
+} from "../datapacks/outstanding/notePane.mjs"
 import { Note } from "./note.mjs"
+import { NotePaneRegistry } from "../datapacks/outstanding/index.mjs"
 
 export class DataDirectoryManager {
   app
@@ -62,6 +66,17 @@ export class DataDirectoryManager {
     return directory
   }
 
+  activatePane(paneProvider: NotePaneProvider<NotePane>) {
+    const note = this.$currentNote()
+    if (!note) return console.warn("Not opening pane: no note open!")
+    const targetElement = document.querySelector(".main-editor-wrapper")
+    if (!targetElement) throw new Error("Main editor wrapper is missing")
+    const pane = paneProvider.createNotePane(note, targetElement)
+    this.$currentPane()?.dispose()
+    pane.render()
+    this.$currentPane(pane)
+  }
+
   /** Opens a note from the current data directory using a provided ID */
   async openNote(noteId: string) {
     if (!this.currentDirectory) {
@@ -71,24 +86,14 @@ export class DataDirectoryManager {
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`)
     }
-    const existingEditor = this.$currentEditor()
-    if (existingEditor) {
-      existingEditor.dispose()
+    const paneRegistry = this.app.registries.getItem(
+      "outstanding:note_pane"
+    ) as NotePaneRegistry | undefined
+    if (!paneRegistry) {
+      throw new Error("No note pane registry available")
     }
-    const editorProviders = this.app.registries.getItem(
-      "outstanding:editor"
-    ) as ProviderRegistry<EditorProvider<Editor>> | undefined
-    if (!editorProviders) {
-      throw new Error("Editor provider registry is not present!")
-    }
-    const editorProvider = await editorProviders
-      .getBestProvider()
-      .then((provider) => provider.init())
-    const editor = editorProvider.createEditor(note)
-    const targetElement = document.querySelector(".main-editor-wrapper")
-    if (!targetElement) throw new Error("Main editor wrapper is missing")
-    editor.addToDOM(targetElement)
-    editor.loadContent()
-    this.$currentEditor(editor)
+    const defaultPaneProvider = await paneRegistry.getBestProvider()
+    this.activatePane(defaultPaneProvider)
+    this.$currentNote(note)
   }
 }

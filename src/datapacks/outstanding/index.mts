@@ -13,6 +13,8 @@ import { MonacoEditorProvider } from "./monacoEditor.mjs"
 import { NotePane, NotePaneProvider } from "./notePane.mjs"
 import { NotePreviewerProvider, PreviewPaneProvider } from "./notePreviewer.mjs"
 
+export type NotePaneRegistry = ProviderRegistry<NotePaneProvider<NotePane>>
+
 const outstandingDatapack: DatapackExport = {
   metadata: {
     id: "outstanding:outstanding",
