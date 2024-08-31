@@ -7,7 +7,7 @@ import { App } from "../../app.mjs"
 
 export class EditorPaneProvider extends NotePaneProvider<Editor> {
   id: NamespacedId = "outstanding:editor"
-  priority = 0
+  priority = 100
   selectedProvider: EditorProvider<Editor> | null = null
   app
 

@@ -11,7 +11,11 @@ import {
 import { FilesystemDataDirectoryProvider } from "./filesystemDataDir.mjs"
 import { MonacoEditorProvider } from "./monacoEditor.mjs"
 import { NotePane, NotePaneProvider } from "./notePane.mjs"
-import { NotePreviewerProvider, PreviewPaneProvider } from "./notePreviewer.mjs"
+import {
+  MarkedNotePreviewerProvider,
+  NotePreviewerProvider,
+  PreviewPaneProvider,
+} from "./notePreviewer.mjs"
 
 export type NotePaneRegistry = ProviderRegistry<NotePaneProvider<NotePane>>
 
@@ -52,6 +56,9 @@ const outstandingDatapack: DatapackExport = {
     "outstanding:note_pane": {
       "outstanding:preview": (app) => new PreviewPaneProvider(app),
       "outstanding:editor": (app) => new EditorPaneProvider(app),
+    },
+    "outstanding:note_previewer": {
+      "outstanding:marked": () => new MarkedNotePreviewerProvider(),
     },
   },
   shortcuts: [
