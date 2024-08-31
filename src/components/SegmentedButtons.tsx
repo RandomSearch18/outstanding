@@ -1,5 +1,6 @@
 import { isFunction } from "@fabiospampinato/is"
 import { For, FunctionMaybe, If, createElement } from "voby"
+import { unfun } from "../utils/reactivity"
 
 export interface SegmentedButtonOptions {
   content: JSX.Child
@@ -16,14 +17,14 @@ function SegmentedButtons({
 }) {
   return (
     <div class="row no-space">
-      <For values={() => (isFunction(buttons) ? buttons() : buttons)}>
+      <For values={() => unfun(buttons)}>
         {(button, i) => (
           <button
             class={{
               border: true,
               small: true,
-              "left-round": i === 0,
-              "right-round": i === buttons.length - 1,
+              "left-round": () => unfun(i) === 0,
+              "right-round": () => unfun(i) === unfun(buttons).length - 1,
               ...button.class,
             }}
             onClick={button.onClick}
