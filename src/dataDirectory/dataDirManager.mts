@@ -94,6 +94,6 @@ export class DataDirectoryManager {
       throw new Error("No note pane registry available")
     }
     const defaultPaneProvider = await paneRegistry.getBestProvider()
-    this.activatePane(defaultPaneProvider)
+    this.activatePane(await defaultPaneProvider.init())
   }
 }
