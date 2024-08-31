@@ -9,13 +9,18 @@ import {
   Editor,
   EditorProvider,
 } from "../datapacks/outstanding/editorProvider.mjs"
+import { NotePane } from "../datapacks/outstanding/notePane.mjs"
+import { Note } from "./note.mjs"
 
 export class DataDirectoryManager {
   app
   providerRegistry: ProviderRegistry<DataDirectoryProvider>
   activeProvider: DataDirectoryProvider | null = null
   currentDirectory: DataDirectoryHandle | null = null
+  /** @deprecated */
   $currentEditor: Observable<Editor | null> = $<Editor | null>(null)
+  $currentPane: Observable<NotePane | null> = $<NotePane | null>(null)
+  $currentNote: Observable<Note | null> = $<Note | null>(null)
   $directoryIsOpen = $(false)
 
   constructor(
