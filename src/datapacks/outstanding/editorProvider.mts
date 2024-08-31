@@ -4,9 +4,12 @@ import { Provider, ProviderRegistry } from "../../registry/provider.mjs"
 import { NamespacedId } from "../../registry/registry.mjs"
 import { NotePane, NotePaneProvider } from "./notePane.mjs"
 import { App } from "../../app.mjs"
+import { mdiLeadPencil } from "@mdi/js"
 
 export class EditorPaneProvider extends NotePaneProvider<Editor> {
   id: NamespacedId = "outstanding:editor"
+  friendlyName = "Edit"
+  icon = mdiLeadPencil
   priority = 100
   selectedProvider: EditorProvider<Editor> | null = null
   app

@@ -4,9 +4,12 @@ import { Note } from "../../dataDirectory/note.mjs"
 import { Provider, ProviderRegistry } from "../../registry/provider.mjs"
 import { NamespacedId } from "../../registry/registry.mjs"
 import { NotePane, NotePaneProvider } from "./notePane.mjs"
+import { mdiEye } from "@mdi/js"
 
 export class PreviewPaneProvider extends NotePaneProvider<NotePreviewer> {
   id: NamespacedId = "outstanding:preview"
+  friendlyName = "Preview"
+  icon = mdiEye
   priority = 0
   selectedProvider: NotePreviewerProvider | null = null
   app
