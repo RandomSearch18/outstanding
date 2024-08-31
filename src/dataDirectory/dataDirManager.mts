@@ -86,6 +86,7 @@ export class DataDirectoryManager {
     if (!note) {
       throw new Error(`Note with id ${noteId} not found`)
     }
+    this.$currentNote(note)
     const paneRegistry = this.app.registries.getItem(
       "outstanding:note_pane"
     ) as NotePaneRegistry | undefined
@@ -94,6 +95,5 @@ export class DataDirectoryManager {
     }
     const defaultPaneProvider = await paneRegistry.getBestProvider()
     this.activatePane(defaultPaneProvider)
-    this.$currentNote(note)
   }
 }
