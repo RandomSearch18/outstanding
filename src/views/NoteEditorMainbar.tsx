@@ -76,21 +76,7 @@ function NoteEditorMainbar({ app }: { app: App }) {
   const editMode: Observable<EditMode> = $<EditMode>(EditMode.Edit)
   const toolbar = (
     <>
-      <SegmentedButtonSwitcher
-        selected={editMode}
-        buttons={{
-          edit: {
-            content: () => <Icon>{mdiLeadPencil}</Icon>,
-            label: "Edit",
-            showLabel: false,
-          },
-          preview: {
-            content: () => <Icon>{mdiEye}</Icon>,
-            label: "Preview",
-            showLabel: false,
-          },
-        }}
-      />
+      <SegmentedButtonSwitcher selected={editMode} buttons={() => buttons()} />
       <SegmentedButtons
         buttons={[
           {
