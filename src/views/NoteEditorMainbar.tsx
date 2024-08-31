@@ -64,15 +64,7 @@ function NoteEditorMainbar({ app }: { app: App }) {
           label: paneProvider.id,
           showLabel: false,
           onClick: () => {
-            const note = app.dataDirectoryManager.$currentNote
-            if (!note) return console.warn("Not opening pane: no note open!")
-            const targetElement = document.querySelector(".main-editor-wrapper")
-            if (!targetElement)
-              throw new Error("Main editor wrapper is missing")
-            const pane = paneProvider.createNotePane(note, targetElement)
-            $currentPane().dispose()
-            pane.render()
-            $currentPane(pane)
+            app.dataDirectoryManager.activatePane(paneProvider)
           },
         }
       }
