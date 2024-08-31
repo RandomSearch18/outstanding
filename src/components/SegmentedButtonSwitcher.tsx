@@ -1,4 +1,4 @@
-import {  FunctionMaybe, Observable } from "voby"
+import { FunctionMaybe, Observable, useMemo } from "voby"
 import SegmentedButtons, { SegmentedButtonOptions } from "./SegmentedButtons"
 
 function SegmentedButtonSwitcher<K extends string | number | symbol>({
@@ -10,14 +10,16 @@ function SegmentedButtonSwitcher<K extends string | number | symbol>({
 }) {
   return (
     <SegmentedButtons
-      buttons={Object.entries(buttons).map(([key, button], i) => ({
-        onClick: () => {
-          selected(key as K)
-          button.onClick?.()
-        },
-        class: { fill: () => key === selected(), ...button.class },
-        ...button,
-      }))}
+      buttons={useMemo(() =>
+        Object.entries(buttons).map(([key, button], i) => ({
+          onClick: () => {
+            selected(key as K)
+            button.onClick?.()
+          },
+          class: { fill: () => key === selected(), ...button.class },
+          ...button,
+        }))
+      )}
     />
   )
 }

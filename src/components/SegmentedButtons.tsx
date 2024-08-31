@@ -1,4 +1,5 @@
-import { For, If, createElement } from "voby"
+import { isFunction } from "@fabiospampinato/is"
+import { For, FunctionMaybe, If, createElement } from "voby"
 
 export interface SegmentedButtonOptions {
   content: JSX.Child
@@ -8,10 +9,14 @@ export interface SegmentedButtonOptions {
   class?: JSX.ClassProperties
 }
 
-function SegmentedButtons({ buttons }: { buttons: SegmentedButtonOptions[] }) {
+function SegmentedButtons({
+  buttons,
+}: {
+  buttons: FunctionMaybe<SegmentedButtonOptions[]>
+}) {
   return (
     <div class="row no-space">
-      <For values={buttons}>
+      <For values={() => (isFunction(buttons) ? buttons() : buttons)}>
         {(button, i) => (
           <button
             class={{
