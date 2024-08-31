@@ -4,13 +4,14 @@ import { Registry, RegistryItem } from "../../registry/registry.mjs"
 import { OPFSDataDirectoryProvider } from "./OPFSDataDir.mjs"
 import {
   Editor,
+  EditorPaneProvider,
   EditorProvider,
   TextAreaEditorProvider,
 } from "./editorProvider.mjs"
 import { FilesystemDataDirectoryProvider } from "./filesystemDataDir.mjs"
 import { MonacoEditorProvider } from "./monacoEditor.mjs"
 import { NotePane, NotePaneProvider } from "./notePane.mjs"
-import { NotePreviewer, NotePreviewerProvider } from "./notePreviewer.mjs"
+import { NotePreviewerProvider, PreviewPaneProvider } from "./notePreviewer.mjs"
 
 const outstandingDatapack: DatapackExport = {
   metadata: {
@@ -45,6 +46,10 @@ const outstandingDatapack: DatapackExport = {
     "outstanding:editor": {
       "outstanding:text_area": () => new TextAreaEditorProvider(),
       "outstanding:monaco_editor": () => new MonacoEditorProvider(100),
+    },
+    "outstanding:note_pane": {
+      "outstanding:preview": (app) => new PreviewPaneProvider(app),
+      "outstanding:editor": (app) => new EditorPaneProvider(app),
     },
   },
   shortcuts: [

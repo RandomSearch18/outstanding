@@ -57,6 +57,11 @@ export type DataDrivenRegistryContributions = {
     [id: NamespacedId]: Outstanding.DataDrivenContributionFor<registry>
   }
 }
+// & {
+//   [otherRegistry: NamespacedId]: {
+//     [id: NamespacedId]: RegistryItem
+//   }
+// }
 
 export class Datapack {
   id: NamespacedId
