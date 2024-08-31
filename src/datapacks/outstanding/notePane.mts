@@ -3,7 +3,7 @@ import { Provider } from "../../registry/provider.mjs"
 
 export abstract class NotePaneProvider<T extends NotePane> extends Provider {
   abstract createNotePane(note: Note, parent: Element): T
-  icon: HTMLElement | null = null
+  icon: string | null = null
   friendlyName: string | null = null
 }
 

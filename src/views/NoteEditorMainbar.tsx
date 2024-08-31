@@ -61,7 +61,11 @@ function NoteEditorMainbar({ app }: { app: App }) {
       for (const [id, paneProvider] of Object.entries(panes)) {
         buttons[id] = {
           content: () =>
-            paneProvider.icon || paneProvider.friendlyName || paneProvider.id,
+            paneProvider.icon ? (
+              <Icon>{paneProvider.icon}</Icon>
+            ) : (
+              paneProvider.friendlyName || paneProvider.id
+            ),
           label: paneProvider.friendlyName || paneProvider.id,
           showLabel: false,
           onClick: () => {
