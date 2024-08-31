@@ -54,6 +54,7 @@ function NoteEditorMainbar({ app }: { app: App }) {
         )
         return {}
       }
+      // console.log("Panes", paneRegistry.$items)
       const panes: Record<
         string,
         NotePaneProvider<NotePane>
@@ -72,11 +73,10 @@ function NoteEditorMainbar({ app }: { app: App }) {
       return buttons
     }
   )
-
   const editMode: Observable<EditMode> = $<EditMode>(EditMode.Edit)
   const toolbar = (
     <>
-      <SegmentedButtonSwitcher selected={editMode} buttons={() => buttons()} />
+      <SegmentedButtonSwitcher selected={editMode} buttons={buttons} />
       <SegmentedButtons
         buttons={[
           {
