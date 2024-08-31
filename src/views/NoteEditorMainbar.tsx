@@ -4,7 +4,7 @@ import Button from "../components/Button"
 import MainbarLayout from "../components/Mainbar"
 import { NoProvidersError } from "../registry/provider.mjs"
 import SegmentedButtonSwitcher from "../components/SegmentedButtonSwitcher"
-import { mdiContentSave, mdiEye, mdiLeadPencil } from "@mdi/js"
+import { mdiContentSave } from "@mdi/js"
 import Icon from "../components/Icon"
 import { ValueOf } from "../utilities.mjs"
 import SegmentedButtons, {
@@ -60,8 +60,9 @@ function NoteEditorMainbar({ app }: { app: App }) {
       const buttons: Record<string, SegmentedButtonOptions> = {}
       for (const [id, paneProvider] of Object.entries(panes)) {
         buttons[id] = {
-          content: () => <Icon>{mdiLeadPencil}</Icon>,
-          label: paneProvider.id,
+          content: () =>
+            paneProvider.icon || paneProvider.friendlyName || paneProvider.id,
+          label: paneProvider.friendlyName || paneProvider.id,
           showLabel: false,
           onClick: () => {
             app.dataDirectoryManager.activatePane(paneProvider)
