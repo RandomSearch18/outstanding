@@ -33,6 +33,7 @@ export class MonacoEditorEditor extends Editor {
       "Loading...",
       this.editorInstance
     )
+    this.loadContent()
   }
 
   dispose() {
