@@ -17,5 +17,5 @@
   - Outstanding should not just be mobile-friendly, but also Smart TV friendly, VR friendly, whatever
 - **Compatible with other Markdown apps** (because no one's perfect)
   - Using Markdown as a text format gives Notability a great deal of interoperability for free, and we'll embrace this with support for various popular extensions to Markdown
-  - Comparability with [Notable](https://notable.app) will be a priority, so you can use either app as it suits you. As Notability gets more feature-rich there may be less and less reason to switch back to Notable, but your files will remain compatible both ways.
+  - Compatibility with [Notable](https://notable.app) will be a priority, so you can use either app as it suits you. As Notability gets more feature-rich there may be less and less reason to switch back to Notable, but your files will remain compatible both ways.
   - You should also be able to use Marp to turn your notes into presentations, Logseq to build a knowledge graph using them, or Jekyll to turn them into a simple website. Once again, Notability won't get in your way.
