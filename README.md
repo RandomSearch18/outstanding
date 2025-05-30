@@ -1,6 +1,6 @@
 # Outstanding
 
-> Yet another markdown-based note-takining app
+> Yet another markdown-based note-taking app
 
 ## Goals
 
